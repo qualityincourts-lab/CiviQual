@@ -12,9 +12,7 @@ WATSON is a statistical analysis tool designed for Lean Six Sigma practitioners 
 
 ### About the Name
 
-WATSON is named in honor of **Dr. Gregory H. Watson**, internationally recognized quality management expert and former President of the American Society for Quality (ASQ) and the International Academy for Quality (IAQ). Dr. Watson's exploratory data analysis methodology and contributions to Lean Six Sigma education form the foundation of this software.
-
-> *WATSON (Workbench for Analysis, Testing, Statistics, Optimization & Navigation) is statistical analysis software honoring Dr. Gregory H. Watson. This software is not affiliated with IBM Corporation or IBM Watson.*
+WATSON (Workbench for Analysis, Testing, Statistics, Optimization & Navigation) for Lean Six Sigma is statistical analysis software not affiliated with IBM Corporation or IBM Watson.
 
 ---
 
