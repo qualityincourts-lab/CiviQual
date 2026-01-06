@@ -1,0 +1,85 @@
+WATSON for Lean Six Sigma - Important Information
+=================================================
+
+Workbench for Analysis, Testing, Statistics, Optimization & Navigation
+Version 1.3.0 - Section 508 Accessibility Release
+
+A QualityinCourts.com Project
+www.qualityincourts.com
+
+
+ABOUT THIS SOFTWARE
+-------------------
+WATSON (Workbench for Analysis, Testing, Statistics, Optimization &
+Navigation) is statistical analysis software for Lean Six Sigma.
+This software is NOT affiliated with IBM Corporation or IBM Watson.
+
+
+WHAT'S NEW IN VERSION 1.3.0
+---------------------------
+This release focuses on Section 508 accessibility compliance:
+
+• Enhanced focus indicators (gold outline on buttons)
+• Background highlight on focused input fields
+• Accessible names and descriptions on all controls
+• Label associations for screen readers
+• Tooltips on all input fields
+• Help → Keyboard Shortcuts dialog
+• Help → Accessibility Information dialog
+• Improved disabled button contrast
+• Full keyboard navigation support
+• Compatible with NVDA, JAWS, and Windows Narrator
+
+
+SYSTEM REQUIREMENTS
+-------------------
+• Windows 10 or later (64-bit)
+• 4 GB RAM minimum (8 GB recommended)
+• 200 MB available disk space
+• 1280x800 minimum display resolution
+
+
+LICENSE INFORMATION
+-------------------
+WATSON is provided FREE for:
+• Government agencies (federal, state, local, tribal)
+• Courts and judicial organizations
+• Public educational institutions
+• 501(c)(3) nonprofit organizations
+• Charitable, educational, and religious organizations
+
+COMMERCIAL USE REQUIRES A SEPARATE LICENSE.
+Contact: www.qualityincourts.com
+
+
+ACCESSIBILITY SUPPORT
+---------------------
+Watson 1.3 meets Section 508 and WCAG 2.0 Level AA standards.
+
+For accessibility feedback or assistance:
+• Email: accessibility@qualityincourts.com
+• Website: www.qualityincourts.com
+
+Press Ctrl+? after launching for keyboard shortcuts.
+Press Ctrl+Shift+F1 for accessibility information.
+
+
+WHAT'S INCLUDED
+---------------
+• WATSON application
+• User Guide (comprehensive documentation)
+• Section 508 Compliance Report
+• Sample data files for learning (11 public service scenarios)
+
+
+SUPPORT
+-------
+For technical support and commercial licensing inquiries:
+Website: www.qualityincourts.com
+
+
+Copyright (c) 2025 A Step in the Right Direction LLC
+All Rights Reserved.
+
+"WATSON for Lean Six Sigma" is a trademark of A Step in the Right Direction LLC.
+Not affiliated with IBM Corporation or IBM Watson.
