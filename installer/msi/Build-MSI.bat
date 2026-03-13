@@ -1,14 +1,14 @@
 @echo off
 REM =====================================================
-REM CIVIQUAL MSI Build Script (WiX v4 Required)
-REM Copyright (c) 2025 A Step in the Right Direction LLC
+REM CIVIQUAL MSI Build Script (WiX v6 Required)
+REM Copyright (c) 2026 A Step in the Right Direction LLC
 REM =====================================================
 REM
 REM Prerequisites:
 REM   1. Python 3.9+ with pip
 REM   2. .NET SDK 6.0+
-REM   3. WiX v4: dotnet tool install --global wix
-REM   4. WiX UI: wix extension add WixToolset.UI.wixext
+REM   3. WiX v6: dotnet tool install --global wix
+REM   4. WiX UI: wix extension add WixToolset.UI.wixext/6.0.0
 REM
 REM Usage:
 REM   cd installer\msi
@@ -18,7 +18,7 @@ REM =====================================================
 
 setlocal enabledelayedexpansion
 
-set VERSION=1.3.0
+set VERSION=1.0.0
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..\..
 set OUTPUT_FILE=CiviQual_%VERSION%.msi
@@ -43,30 +43,33 @@ if errorlevel 1 (
 )
 echo   [OK] Python found
 
-REM Check WiX v4
+REM Check WiX
 where wix >nul 2>&1
 if errorlevel 1 (
     echo.
-    echo   ERROR: WiX Toolset v4 not found.
+    echo   ERROR: WiX Toolset not found.
     echo.
-    echo   Install WiX v4:
+    echo   Install WiX:
     echo     1. Install .NET SDK from https://dotnet.microsoft.com/download
     echo     2. Run: dotnet tool install --global wix
-    echo     3. Run: wix extension add WixToolset.UI.wixext
+    echo     3. Run: wix extension add WixToolset.UI.wixext/6.0.0
     echo     4. Restart this command prompt
     echo.
     goto :error
 )
-echo   [OK] WiX v4 found
+
+REM Get WiX version
+for /f "tokens=1 delims=+" %%v in ('wix --version 2^>nul') do set WIX_VER=%%v
+echo   [OK] WiX %WIX_VER% found
 
 REM Check WiX UI extension
 wix extension list 2>&1 | findstr /i "WixToolset.UI.wixext" >nul
 if errorlevel 1 (
-    echo   Installing WixToolset.UI.wixext...
-    wix extension add WixToolset.UI.wixext
+    echo   Installing WixToolset.UI.wixext for WiX 6...
+    wix extension add WixToolset.UI.wixext/6.0.0
     if errorlevel 1 (
         echo   ERROR: Failed to install UI extension.
-        echo   Run manually: wix extension add WixToolset.UI.wixext
+        echo   Run manually: wix extension add WixToolset.UI.wixext/6.0.0
         goto :error
     )
 )
