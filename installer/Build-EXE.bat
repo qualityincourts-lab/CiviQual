@@ -1,16 +1,16 @@
 @echo off
 REM =====================================================
-REM WATSON EXE Installer Build Script
+REM CIVIQUAL EXE Installer Build Script
 REM Copyright (c) 2025 A Step in the Right Direction LLC
 REM =====================================================
 REM
-REM This script builds the complete Watson EXE installer
+REM This script builds the complete CiviQual EXE installer
 REM from source using Inno Setup.
 REM
 REM Prerequisites:
 REM   1. Python 3.9+ with pip
 REM   2. Inno Setup 6.x installed
-REM   3. All Watson source files in parent directory
+REM   3. All CiviQual source files in parent directory
 REM
 REM Usage:
 REM   Build-EXE.bat
@@ -26,7 +26,7 @@ set PROJECT_ROOT=%SCRIPT_DIR%..
 
 echo.
 echo =====================================================
-echo   WATSON EXE Installer Build Script
+echo   CIVIQUAL EXE Installer Build Script
 echo   Version: %VERSION%
 echo =====================================================
 echo.
@@ -108,11 +108,11 @@ if errorlevel 1 (
     goto :error
 )
 
-if not exist "watson_icon.ico" (
-    echo ERROR: watson_icon.ico was not created
+if not exist "civiqual_icon.ico" (
+    echo ERROR: civiqual_icon.ico was not created
     goto :error
 )
-echo   [OK] watson_icon.ico created
+echo   [OK] civiqual_icon.ico created
 echo.
 
 REM =====================================================
@@ -138,10 +138,10 @@ cd /d "%PROJECT_ROOT%"
 REM Clean previous builds
 if exist "dist" rmdir /s /q "dist"
 if exist "build" rmdir /s /q "build"
-if exist "Watson.spec" del "Watson.spec"
+if exist "CiviQual.spec" del "CiviQual.spec"
 
 REM Build executable
-pyinstaller --name Watson --windowed --icon=watson_icon.ico ^
+pyinstaller --name CiviQual --windowed --icon=civiqual_icon.ico ^
     --add-data "samples;samples" ^
     --noconfirm ^
     main.py
@@ -151,11 +151,11 @@ if errorlevel 1 (
     goto :error
 )
 
-if not exist "dist\Watson\Watson.exe" (
-    echo ERROR: Watson.exe was not created
+if not exist "dist\CiviQual\CiviQual.exe" (
+    echo ERROR: CiviQual.exe was not created
     goto :error
 )
-echo   [OK] Watson.exe built successfully
+echo   [OK] CiviQual.exe built successfully
 echo.
 
 REM =====================================================
@@ -169,16 +169,16 @@ REM Create Output directory if it does not exist
 if not exist "Output" mkdir "Output"
 
 REM Compile the installer
-"%ISCC_PATH%" Watson_Setup.iss
+"%ISCC_PATH%" CiviQual_Setup.iss
 if errorlevel 1 (
     echo ERROR: Inno Setup compilation failed
     goto :error
 )
 
-set OUTPUT_FILE=Output\Watson_Setup_%VERSION%.exe
+set OUTPUT_FILE=Output\CiviQual_Setup_%VERSION%.exe
 if not exist "%OUTPUT_FILE%" (
     REM Try alternate naming
-    set OUTPUT_FILE=Output\Watson_Setup_1.3.0.exe
+    set OUTPUT_FILE=Output\CiviQual_Setup_1.3.0.exe
 )
 
 if not exist "%OUTPUT_FILE%" (
@@ -199,13 +199,13 @@ echo   Output:   %SCRIPT_DIR%%OUTPUT_FILE%
 echo   Size:     ~%EXE_SIZE_MB% MB
 echo.
 echo   The installer will:
-echo     - Install Watson to Program Files
+echo     - Install CiviQual to Program Files
 echo     - Create Start Menu shortcuts
 echo     - Create desktop shortcut (optional)
 echo     - Register uninstaller
 echo.
 echo   Silent installation:
-echo     Watson_Setup_%VERSION%.exe /VERYSILENT /NORESTART
+echo     CiviQual_Setup_%VERSION%.exe /VERYSILENT /NORESTART
 echo.
 echo =====================================================
 goto :end

@@ -1,6 +1,6 @@
-# Watson MSI Build Instructions
+# CiviQual MSI Build Instructions
 
-**Version 1.3.0** | Step-by-step guide to building the Watson MSI installer
+**Version 1.3.0** | Step-by-step guide to building the CiviQual MSI installer
 
 ---
 
@@ -51,10 +51,10 @@ pip install pyinstaller
 
 ## Step 1: Prepare the Source Files
 
-Ensure you have the complete Watson v1.3 source package with this structure:
+Ensure you have the complete CiviQual v1.3 source package with this structure:
 
 ```
-Watson_v1.3/
+CiviQual_v1.3/
 ├── main.py
 ├── statistics_engine.py
 ├── visualizations.py
@@ -69,7 +69,7 @@ Watson_v1.3/
 ├── SECTION_508_COMPLIANCE.md
 └── installer/
     └── msi/
-        ├── Watson.wxs
+        ├── CiviQual.wxs
         ├── Build-MSI.ps1
         └── LICENSE.rtf
 ```
@@ -79,13 +79,13 @@ Watson_v1.3/
 ## Step 2: Install Python Dependencies
 
 ```powershell
-cd Watson_v1.3
+cd CiviQual_v1.3
 pip install -r requirements.txt
 ```
 
 ---
 
-## Step 3: Build Watson.exe with PyInstaller
+## Step 3: Build CiviQual.exe with PyInstaller
 
 ### Option A: Use the Build Script (Recommended)
 
@@ -93,19 +93,19 @@ pip install -r requirements.txt
 python build_installer.py
 ```
 
-This creates `dist/Watson.exe`
+This creates `dist/CiviQual.exe`
 
 ### Option B: Manual PyInstaller Command
 
 ```powershell
-pyinstaller --onefile --windowed --name Watson --icon=watson_icon.ico main.py
+pyinstaller --onefile --windowed --name CiviQual --icon=civiqual_icon.ico main.py
 ```
 
 ### Verify the Build
 
 ```powershell
-# Check that Watson.exe was created
-dir dist\Watson.exe
+# Check that CiviQual.exe was created
+dir dist\CiviQual.exe
 ```
 
 ---
@@ -122,7 +122,7 @@ cd installer\msi
 mkdir Files
 
 # Copy required files
-copy ..\..\dist\Watson.exe Files\
+copy ..\..\dist\CiviQual.exe Files\
 copy ..\..\sample_data.csv Files\
 copy ..\..\README.md Files\
 copy ..\..\LICENSE Files\
@@ -133,22 +133,22 @@ copy ..\..\SECTION_508_COMPLIANCE.md Files\
 
 You need two icon files:
 
-1. **watson_icon.ico** - Windows icon format (place in `installer\msi\`)
-2. **watson_icon.png** - PNG format (place in `installer\msi\Files\`)
+1. **civiqual_icon.ico** - Windows icon format (place in `installer\msi\`)
+2. **civiqual_icon.png** - PNG format (place in `installer\msi\Files\`)
 
-If you do not have icon files, you can create placeholder icons or download the Watson icon from the project repository.
+If you do not have icon files, you can create placeholder icons or download the CiviQual icon from the project repository.
 
 ### Final Directory Structure
 
 ```
 installer/msi/
-├── Watson.wxs
+├── CiviQual.wxs
 ├── Build-MSI.ps1
 ├── LICENSE.rtf
-├── watson_icon.ico          ← Windows icon
+├── civiqual_icon.ico          ← Windows icon
 └── Files/
-    ├── Watson.exe           ← PyInstaller output
-    ├── watson_icon.png      ← PNG icon
+    ├── CiviQual.exe           ← PyInstaller output
+    ├── civiqual_icon.png      ← PNG icon
     ├── sample_data.csv
     ├── README.md
     ├── LICENSE
@@ -170,13 +170,13 @@ cd installer\msi
 
 ```powershell
 cd installer\msi
-wix build Watson.wxs -o Watson_1.3.0.msi -ext WixToolset.UI.wixext
+wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
 ```
 
 ### Expected Output
 
 ```
-Watson_1.3.0.msi created successfully
+CiviQual_1.3.0.msi created successfully
 ```
 
 ---
@@ -186,32 +186,32 @@ Watson_1.3.0.msi created successfully
 ### Test Interactive Installation
 
 ```powershell
-msiexec /i Watson_1.3.0.msi
+msiexec /i CiviQual_1.3.0.msi
 ```
 
 ### Test Silent Installation
 
 ```powershell
-msiexec /i Watson_1.3.0.msi /qn /l*v install_test.log
+msiexec /i CiviQual_1.3.0.msi /qn /l*v install_test.log
 ```
 
 ### Verify Installation
 
 ```powershell
 # Check installed files
-dir "${env:ProgramFiles}\Watson"
+dir "${env:ProgramFiles}\CiviQual"
 
 # Check Start Menu shortcut
-dir "${env:APPDATA}\Microsoft\Windows\Start Menu\Programs\Watson"
+dir "${env:APPDATA}\Microsoft\Windows\Start Menu\Programs\CiviQual"
 
 # Launch application
-& "${env:ProgramFiles}\Watson\Watson.exe"
+& "${env:ProgramFiles}\CiviQual\CiviQual.exe"
 ```
 
 ### Test Uninstall
 
 ```powershell
-msiexec /x Watson_1.3.0.msi /qn
+msiexec /x CiviQual_1.3.0.msi /qn
 ```
 
 ---
@@ -221,13 +221,13 @@ msiexec /x Watson_1.3.0.msi /qn
 Save this as `Build-All.ps1` for a one-command build process:
 
 ```powershell
-# Build-All.ps1 - Complete Watson MSI Build Script
-# Run from Watson_v1.3 root directory
+# Build-All.ps1 - Complete CiviQual MSI Build Script
+# Run from CiviQual_v1.3 root directory
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  Watson MSI Complete Build Process" -ForegroundColor Cyan
+Write-Host "  CiviQual MSI Complete Build Process" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 # Step 1: Install dependencies
@@ -235,11 +235,11 @@ Write-Host "`n[1/5] Installing Python dependencies..." -ForegroundColor Yellow
 pip install -r requirements.txt
 
 # Step 2: Build executable
-Write-Host "`n[2/5] Building Watson.exe with PyInstaller..." -ForegroundColor Yellow
+Write-Host "`n[2/5] Building CiviQual.exe with PyInstaller..." -ForegroundColor Yellow
 python build_installer.py
 
-if (-not (Test-Path "dist\Watson.exe")) {
-    Write-Host "ERROR: Watson.exe was not created!" -ForegroundColor Red
+if (-not (Test-Path "dist\CiviQual.exe")) {
+    Write-Host "ERROR: CiviQual.exe was not created!" -ForegroundColor Red
     exit 1
 }
 
@@ -252,7 +252,7 @@ if (-not (Test-Path $filesDir)) {
     New-Item -ItemType Directory -Path $filesDir | Out-Null
 }
 
-Copy-Item "dist\Watson.exe" "$filesDir\" -Force
+Copy-Item "dist\CiviQual.exe" "$filesDir\" -Force
 Copy-Item "sample_data.csv" "$filesDir\" -Force
 Copy-Item "README.md" "$filesDir\" -Force
 Copy-Item "LICENSE" "$filesDir\" -Force
@@ -260,28 +260,28 @@ Copy-Item "SECTION_508_COMPLIANCE.md" "$filesDir\" -Force
 
 # Step 4: Check for icon files
 Write-Host "`n[4/5] Checking icon files..." -ForegroundColor Yellow
-if (-not (Test-Path "$msiDir\watson_icon.ico")) {
-    Write-Host "WARNING: watson_icon.ico not found. MSI build may fail." -ForegroundColor Yellow
-    Write-Host "         Please add watson_icon.ico to $msiDir\" -ForegroundColor Yellow
+if (-not (Test-Path "$msiDir\civiqual_icon.ico")) {
+    Write-Host "WARNING: civiqual_icon.ico not found. MSI build may fail." -ForegroundColor Yellow
+    Write-Host "         Please add civiqual_icon.ico to $msiDir\" -ForegroundColor Yellow
 }
 
-if (-not (Test-Path "$filesDir\watson_icon.png")) {
-    Write-Host "WARNING: watson_icon.png not found in Files directory." -ForegroundColor Yellow
-    Write-Host "         Please add watson_icon.png to $filesDir\" -ForegroundColor Yellow
+if (-not (Test-Path "$filesDir\civiqual_icon.png")) {
+    Write-Host "WARNING: civiqual_icon.png not found in Files directory." -ForegroundColor Yellow
+    Write-Host "         Please add civiqual_icon.png to $filesDir\" -ForegroundColor Yellow
 }
 
 # Step 5: Build MSI
 Write-Host "`n[5/5] Building MSI installer..." -ForegroundColor Yellow
 Push-Location $msiDir
 try {
-    wix build Watson.wxs -o Watson_1.3.0.msi -ext WixToolset.UI.wixext
+    wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
     
-    if (Test-Path "Watson_1.3.0.msi") {
-        $size = (Get-Item "Watson_1.3.0.msi").Length / 1MB
+    if (Test-Path "CiviQual_1.3.0.msi") {
+        $size = (Get-Item "CiviQual_1.3.0.msi").Length / 1MB
         Write-Host "`n========================================" -ForegroundColor Green
         Write-Host "  BUILD SUCCESSFUL!" -ForegroundColor Green
         Write-Host "========================================" -ForegroundColor Green
-        Write-Host "  Output: $msiDir\Watson_1.3.0.msi" -ForegroundColor White
+        Write-Host "  Output: $msiDir\CiviQual_1.3.0.msi" -ForegroundColor White
         Write-Host "  Size: $([math]::Round($size, 2)) MB" -ForegroundColor White
     }
 } finally {
@@ -319,7 +319,7 @@ dir installer\msi\Files\
 
 These are usually warnings and can often be ignored. To suppress:
 ```powershell
-wix build Watson.wxs -o Watson_1.3.0.msi -ext WixToolset.UI.wixext -sice:ICE61
+wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext -sice:ICE61
 ```
 
 ### PyInstaller antivirus false positives
@@ -334,7 +334,7 @@ Some antivirus software flags PyInstaller executables. Options:
 ## Summary of Commands
 
 ```powershell
-# From Watson_v1.3 root directory:
+# From CiviQual_v1.3 root directory:
 
 # 1. Install dependencies
 pip install -r requirements.txt
@@ -345,17 +345,17 @@ python build_installer.py
 # 3. Prepare files
 cd installer\msi
 mkdir Files
-copy ..\..\dist\Watson.exe Files\
+copy ..\..\dist\CiviQual.exe Files\
 copy ..\..\sample_data.csv Files\
 copy ..\..\README.md Files\
 copy ..\..\LICENSE Files\
 copy ..\..\SECTION_508_COMPLIANCE.md Files\
 
-# 4. Build MSI (ensure watson_icon.ico and watson_icon.png exist)
-wix build Watson.wxs -o Watson_1.3.0.msi -ext WixToolset.UI.wixext
+# 4. Build MSI (ensure civiqual_icon.ico and civiqual_icon.png exist)
+wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
 
 # 5. Test
-msiexec /i Watson_1.3.0.msi
+msiexec /i CiviQual_1.3.0.msi
 ```
 
 ---
@@ -366,11 +366,11 @@ After successful build, you will have:
 
 | File | Description |
 |------|-------------|
-| `Watson_1.3.0.msi` | Windows Installer package for distribution |
+| `CiviQual_1.3.0.msi` | Windows Installer package for distribution |
 
 This MSI can be used for:
 - Individual installation (double-click)
-- Silent deployment (`msiexec /i Watson_1.3.0.msi /qn`)
+- Silent deployment (`msiexec /i CiviQual_1.3.0.msi /qn`)
 - Group Policy distribution
 - SCCM/Intune deployment
 

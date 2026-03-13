@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WATSON Statistics Engine
+CiviQual Statistics Engine
 
 Provides statistical analysis capabilities for Lean Six Sigma practitioners.
 
@@ -14,7 +14,7 @@ from scipy import stats
 
 
 class StatisticsEngine:
-    """Statistical analysis engine for Watson."""
+    """Statistical analysis engine for CiviQual."""
     
     def __init__(self):
         """Initialize the statistics engine."""

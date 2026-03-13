@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WATSON Process Diagrams Module
+CiviQual Process Diagrams Module
 
 Provides Lean Six Sigma project diagram tools:
 - SIPOC Diagram (Define Phase)
@@ -53,7 +53,7 @@ class ProcessDiagramEngine:
     """Engine for generating Lean Six Sigma process diagrams."""
     
     def __init__(self):
-        self.chart_dir = Path(tempfile.gettempdir()) / 'watson_charts'
+        self.chart_dir = Path(tempfile.gettempdir()) / 'civiqual_charts'
         self.chart_dir.mkdir(exist_ok=True)
         
         # SIPOC column colors (light, accessible)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-WATSON Installer Build Script
+CiviQual Installer Build Script
 
-This script builds the WATSON application and creates a Windows installer.
+This script builds the CiviQual application and creates a Windows installer.
 
 Requirements:
 - Python 3.9+
@@ -16,7 +16,7 @@ Usage:
     python build_installer.py all        # Build everything
     python build_installer.py clean      # Clean build artifacts
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 """
 
@@ -27,8 +27,8 @@ import shutil
 from pathlib import Path
 
 
-class WatsonInstallerBuilder:
-    """Builds WATSON executable and Windows installer."""
+class CiviQualInstallerBuilder:
+    """Builds CiviQual executable and Windows installer."""
     
     def __init__(self):
         self.root_dir = Path(__file__).parent
@@ -38,8 +38,8 @@ class WatsonInstallerBuilder:
         self.output_dir = self.installer_dir / "output"
         
         # Application info
-        self.app_name = "Watson"
-        self.app_version = "1.3.0"
+        self.app_name = "CiviQual"
+        self.app_version = "1.0.0"
         
     def clean(self):
         """Clean previous build artifacts."""
@@ -62,9 +62,9 @@ class WatsonInstallerBuilder:
         """Convert PNG icon to ICO format for Windows."""
         print("Creating Windows icon file...")
         
-        png_path = self.root_dir / "watson_icon.png"
-        ico_path = self.root_dir / "watson_icon.ico"
-        installer_ico = self.installer_dir / "watson_icon.ico"
+        png_path = self.root_dir / "civiqual_icon.png"
+        ico_path = self.root_dir / "civiqual_icon.ico"
+        installer_ico = self.installer_dir / "civiqual_icon.ico"
         
         if not png_path.exists():
             print(f"  Warning: {png_path} not found. Generating icon...")
@@ -101,12 +101,12 @@ class WatsonInstallerBuilder:
             print("  Install with: pip install pillow")
     
     def _generate_icon_png(self, output_path):
-        """Generate Watson icon PNG file."""
+        """Generate CiviQual icon PNG file."""
         try:
             import matplotlib.pyplot as plt
             import matplotlib.patches as patches
             
-            # Watson Brand Colors
+            # CiviQual Brand Colors
             BURGUNDY = '#6d132a'
             GOLD = '#dcad73'
             
@@ -167,7 +167,7 @@ class WatsonInstallerBuilder:
         # Create icon first
         self.create_icon()
         
-        ico_path = self.root_dir / "watson_icon.ico"
+        ico_path = self.root_dir / "civiqual_icon.ico"
         
         cmd = [
             sys.executable, "-m", "PyInstaller",
@@ -184,7 +184,7 @@ class WatsonInstallerBuilder:
         
         # Add data files
         data_files = [
-            ("watson_icon.png", "."),
+            ("civiqual_icon.png", "."),
             ("sample_data.csv", "."),
             ("LICENSE", "."),
             ("README.md", "."),
@@ -261,19 +261,19 @@ class WatsonInstallerBuilder:
             print("Please install Inno Setup from: https://jrsoftware.org/isinfo.php")
             print("\nAlternatively, compile manually:")
             print(f"  1. Open Inno Setup Compiler")
-            print(f"  2. Open: {self.installer_dir / 'Watson_Setup.iss'}")
+            print(f"  2. Open: {self.installer_dir / 'CiviQual_Setup.iss'}")
             print(f"  3. Click Build > Compile")
             return False
         
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Copy icon to installer directory
-        ico_src = self.root_dir / "watson_icon.ico"
-        ico_dst = self.installer_dir / "watson_icon.ico"
+        ico_src = self.root_dir / "civiqual_icon.ico"
+        ico_dst = self.installer_dir / "civiqual_icon.ico"
         if ico_src.exists():
             shutil.copy2(ico_src, ico_dst)
         
-        iss_path = self.installer_dir / "Watson_Setup.iss"
+        iss_path = self.installer_dir / "CiviQual_Setup.iss"
         
         cmd = [str(iscc_path), str(iss_path)]
         print(f"  Command: {' '.join(cmd)}")
@@ -284,7 +284,7 @@ class WatsonInstallerBuilder:
             print("ERROR: Installer build failed!")
             return False
         
-        for file in self.output_dir.glob("Watson_Setup_*.exe"):
+        for file in self.output_dir.glob("CiviQual_Setup_*.exe"):
             size_mb = file.stat().st_size / (1024 * 1024)
             print(f"\nInstaller created: {file}")
             print(f"Size: {size_mb:.1f} MB")
@@ -304,11 +304,11 @@ class WatsonInstallerBuilder:
         
         import zipfile
         
-        zip_path = self.dist_dir / f"Watson_Portable_{self.app_version}.zip"
+        zip_path = self.dist_dir / f"CiviQual_Portable_{self.app_version}.zip"
         
         files_to_include = [
-            (exe_path, "Watson.exe"),
-            (self.root_dir / "watson_icon.png", "watson_icon.png"),
+            (exe_path, "CiviQual.exe"),
+            (self.root_dir / "civiqual_icon.png", "civiqual_icon.png"),
             (self.root_dir / "LICENSE", "LICENSE"),
             (self.root_dir / "README.md", "README.md"),
             (self.root_dir / "SECTION_508_COMPLIANCE.md", "SECTION_508_COMPLIANCE.md"),
@@ -329,7 +329,7 @@ class WatsonInstallerBuilder:
     def build_all(self):
         """Build everything."""
         print("=" * 60)
-        print(f"WATSON {self.app_version} - Complete Build")
+        print(f"CiviQual {self.app_version} - Complete Build")
         print("=" * 60)
         
         self.clean()
@@ -354,7 +354,7 @@ class WatsonInstallerBuilder:
 
 def main():
     """Main entry point."""
-    builder = WatsonInstallerBuilder()
+    builder = CiviQualInstallerBuilder()
     
     if len(sys.argv) < 2:
         print("Usage: python build_installer.py <command>")

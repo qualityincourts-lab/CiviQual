@@ -1,12 +1,12 @@
-# WATSON MSI Build Script
+# CIVIQUAL MSI Build Script
 # Copyright (c) 2025 A Step in the Right Direction LLC
 # 
-# This script builds the Watson MSI installer using WiX Toolset v4
+# This script builds the CiviQual MSI installer using WiX Toolset v4
 #
 # Prerequisites:
 #   1. .NET SDK 6.0 or later installed
 #   2. WiX Toolset v4 installed: dotnet tool install --global wix
-#   3. PyInstaller-built Watson.exe in Files\ directory
+#   3. PyInstaller-built CiviQual.exe in Files\ directory
 #
 # Usage:
 #   .\Build-MSI.ps1
@@ -19,7 +19,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "=============================================" -ForegroundColor Cyan
-Write-Host "  WATSON MSI Installer Build Script" -ForegroundColor Cyan
+Write-Host "  CIVIQUAL MSI Installer Build Script" -ForegroundColor Cyan
 Write-Host "  Version: $Version" -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host ""
@@ -46,11 +46,11 @@ Write-Host ""
 Write-Host "Checking required files..." -ForegroundColor Yellow
 
 $requiredFiles = @(
-    "Watson.wxs",
+    "CiviQual.wxs",
     "LICENSE.rtf",
-    "watson_icon.ico",
-    "Files\Watson.exe",
-    "Files\watson_icon.png",
+    "civiqual_icon.ico",
+    "Files\CiviQual.exe",
+    "Files\civiqual_icon.png",
     "Files\sample_data.csv",
     "Files\README.md",
     "Files\LICENSE",
@@ -72,9 +72,9 @@ if ($missingFiles.Count -gt 0) {
     Write-Host "ERROR: Missing required files. Cannot build MSI." -ForegroundColor Red
     Write-Host ""
     Write-Host "To prepare files:" -ForegroundColor Yellow
-    Write-Host "  1. Build Watson.exe using PyInstaller" -ForegroundColor Yellow
+    Write-Host "  1. Build CiviQual.exe using PyInstaller" -ForegroundColor Yellow
     Write-Host "  2. Copy all required files to Files\ directory" -ForegroundColor Yellow
-    Write-Host "  3. Ensure watson_icon.ico exists in current directory" -ForegroundColor Yellow
+    Write-Host "  3. Ensure civiqual_icon.ico exists in current directory" -ForegroundColor Yellow
     exit 1
 }
 
@@ -82,10 +82,10 @@ if ($missingFiles.Count -gt 0) {
 Write-Host ""
 Write-Host "Building MSI installer..." -ForegroundColor Yellow
 
-$outputFile = "Watson_$Version.msi"
+$outputFile = "CiviQual_$Version.msi"
 
 try {
-    wix build Watson.wxs -o $outputFile -ext WixToolset.UI.wixext
+    wix build CiviQual.wxs -o $outputFile -ext WixToolset.UI.wixext
     
     if (Test-Path $outputFile) {
         $fileInfo = Get-Item $outputFile
@@ -99,7 +99,7 @@ try {
         Write-Host "Deployment Commands:" -ForegroundColor Cyan
         Write-Host "  Interactive:    msiexec /i $outputFile" -ForegroundColor White
         Write-Host "  Silent:         msiexec /i $outputFile /qn" -ForegroundColor White
-        Write-Host "  With Log:       msiexec /i $outputFile /qn /l*v watson_install.log" -ForegroundColor White
+        Write-Host "  With Log:       msiexec /i $outputFile /qn /l*v civiqual_install.log" -ForegroundColor White
         Write-Host "  Uninstall:      msiexec /x $outputFile /qn" -ForegroundColor White
     } else {
         Write-Host "ERROR: MSI file was not created." -ForegroundColor Red

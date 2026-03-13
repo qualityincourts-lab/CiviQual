@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Generate Watson icon files (ICO and PNG).
+Generate CiviQual icon files (ICO and PNG).
 
-This script creates the Watson application icon in multiple formats
+This script creates the CiviQual application icon in multiple formats
 and sizes for use in Windows installers and application shortcuts.
 
 Requirements:
@@ -12,19 +12,19 @@ Usage:
     python create_icon.py
 
 Output:
-    watson_icon.ico - Windows icon (16, 32, 48, 64, 128, 256 px)
-    watson_icon.png - PNG icon (256x256 px)
+    civiqual_icon.ico - Windows icon (16, 32, 48, 64, 128, 256 px)
+    civiqual_icon.png - PNG icon (256x256 px)
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 """
 
 from PIL import Image, ImageDraw
 from pathlib import Path
 
 
-def create_watson_icon(output_dir: Path = None):
+def create_civiqual_icon(output_dir: Path = None):
     """
-    Create Watson icon at multiple sizes for ICO file.
+    Create CiviQual icon at multiple sizes for ICO file.
     
     Args:
         output_dir: Directory to save icon files (default: current directory)
@@ -176,7 +176,7 @@ def create_watson_icon(output_dir: Path = None):
         images.append(img)
     
     # Save as ICO (Windows icon with multiple sizes)
-    ico_path = output_dir / 'watson_icon.ico'
+    ico_path = output_dir / 'civiqual_icon.ico'
     
     # Save the largest image with all sizes embedded
     ico_sizes = [(s, s) for s in sizes]
@@ -189,7 +189,7 @@ def create_watson_icon(output_dir: Path = None):
     print(f"  Sizes: {', '.join(f'{s}x{s}' for s in sizes)}")
     
     # Save as PNG (256x256 for high-res use)
-    png_path = output_dir / 'watson_icon.png'
+    png_path = output_dir / 'civiqual_icon.png'
     images[-1].save(png_path, format='PNG')
     print(f"Created: {png_path}")
     print(f"  Size: 256x256")
@@ -198,4 +198,4 @@ def create_watson_icon(output_dir: Path = None):
 
 
 if __name__ == '__main__':
-    create_watson_icon()
+    create_civiqual_icon()

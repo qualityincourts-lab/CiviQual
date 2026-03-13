@@ -1,4 +1,4 @@
-# WATSON v1.3.0 - Section 508 Accessibility Release
+# CiviQual v1.0.0 - Quality Analytics for Public Service
 # Python Dependencies
 
 # Core GUI Framework (LGPL licensed - allows proprietary use)

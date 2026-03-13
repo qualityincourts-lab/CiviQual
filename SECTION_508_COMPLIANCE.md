@@ -1,4 +1,4 @@
-# WATSON Section 508 Compliance Report
+# CIVIQUAL Section 508 Compliance Report
 
 **Version 1.3.0 - Section 508 Accessibility Release**  
 **Date:** December 2025  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-Watson version 1.3.0 has been designed and tested to meet Section 508 of the Rehabilitation Act and WCAG 2.0 Level AA accessibility standards. This release includes comprehensive accessibility improvements to ensure that users with disabilities can effectively access and use the software.
+CiviQual version 1.3.0 has been designed and tested to meet Section 508 of the Rehabilitation Act and WCAG 2.0 Level AA accessibility standards. This release includes comprehensive accessibility improvements to ensure that users with disabilities can effectively access and use the software.
 
 **Compliance Status:** COMPLIANT with Section 508 requirements for software applications.
 
@@ -21,7 +21,7 @@ Watson version 1.3.0 has been designed and tested to meet Section 508 of the Reh
 
 **Requirement:** All functionality must be operable through a keyboard interface without requiring specific timings for individual keystrokes.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 | Feature | Status | Implementation |
 |---------|--------|----------------|
 | Full keyboard navigation | ✓ Compliant | Tab/Shift+Tab navigation through all controls |
@@ -48,7 +48,7 @@ Watson version 1.3.0 has been designed and tested to meet Section 508 of the Reh
 - F6: Move between panes
 
 *Analysis Actions:*
-- Ctrl+G: Generate Watson 4-Up Chart
+- Ctrl+G: Generate CiviQual 4-Up Chart
 - Ctrl+D: Run descriptive statistics
 - Ctrl+I: Generate I-Chart
 - Ctrl+A: Run ANOVA analysis
@@ -73,7 +73,7 @@ Watson version 1.3.0 has been designed and tested to meet Section 508 of the Reh
 
 **Requirement:** Any keyboard operable user interface must have a mode of operation where the keyboard focus indicator is visible.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 | Element Type | Focus Indicator | Contrast |
 |--------------|-----------------|----------|
 | Buttons | 3px blue (#56B4E9) outline with 2px offset | Meets 3:1 minimum |
@@ -90,7 +90,7 @@ Watson version 1.3.0 has been designed and tested to meet Section 508 of the Reh
 
 **Requirement:** For all user interface components, the name and role can be programmatically determined.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 | Control Type | Accessible Name | Accessible Description | Status |
 |--------------|-----------------|------------------------|--------|
 | Load Data button | "Load Data File" | "Open a CSV or Excel file containing data for analysis. Keyboard shortcut: Ctrl+O" | ✓ |
@@ -111,7 +111,7 @@ All form inputs use `setBuddy()` to associate labels with controls, enabling scr
 
 **Requirement:** Color is not used as the only visual means of conveying information. Text has a contrast ratio of at least 4.5:1.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 
 *Color Contrast Analysis:*
 | Element | Foreground | Background | Ratio | Status |
@@ -138,7 +138,7 @@ All form inputs use `setBuddy()` to associate labels with controls, enabling scr
 
 **Requirement:** All non-text content has a text alternative that serves the equivalent purpose.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 | Content Type | Text Alternative Method | Status |
 |--------------|------------------------|--------|
 | Charts/Graphs | Accessible description with statistical summary | ✓ |
@@ -147,7 +147,7 @@ All form inputs use `setBuddy()` to associate labels with controls, enabling scr
 | Status indicators | Text announcements via status bar | ✓ |
 
 *Chart Text Alternatives Example:*
-When a Watson 4-Up Chart is generated, the display area's accessible description is updated to include:
+When a CiviQual 4-Up Chart is generated, the display area's accessible description is updated to include:
 - Chart type and data column name
 - Mean value
 - Standard deviation
@@ -160,7 +160,7 @@ When a Watson 4-Up Chart is generated, the display area's accessible description
 
 **Requirement:** Text can be resized without assistive technology up to 200 percent without loss of content or functionality.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 - Application respects Windows display scaling settings
 - Tested at 100%, 125%, 150%, and 200% scaling
 - All text remains readable at 200% scaling
@@ -173,7 +173,7 @@ When a Watson 4-Up Chart is generated, the display area's accessible description
 
 **Requirement:** For time-limited content, users can turn off, adjust, or extend the time limit.
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 - No time limits on any user operations
 - All analyses run to completion regardless of duration
 - No auto-logout or session timeout
@@ -202,7 +202,7 @@ When a Watson 4-Up Chart is generated, the display area's accessible description
 
 ### 9. Assistive Technology Interoperability
 
-**Watson Implementation:**
+**CiviQual Implementation:**
 - Uses PySide6's native accessibility support
 - Integrates with Windows UI Automation framework
 - Supports Microsoft Active Accessibility (MSAA)
@@ -262,7 +262,7 @@ Provides detailed information about:
 
 ## Accessibility Feedback
 
-We are committed to making Watson accessible to all users. If you encounter any accessibility barriers or have suggestions for improvement:
+We are committed to making CiviQual accessible to all users. If you encounter any accessibility barriers or have suggestions for improvement:
 
 - **Email:** accessibility@qualityincourts.com
 - **Website:** www.qualityincourts.com

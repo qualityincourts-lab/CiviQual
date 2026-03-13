@@ -1,4 +1,4 @@
-# WATSON MSI Deployment Guide
+# CIVIQUAL MSI Deployment Guide
 
 **Version 1.3.0** | Copyright © 2025 A Step in the Right Direction LLC
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-This guide provides instructions for building and deploying WATSON using Windows Installer (MSI) technology. MSI deployment supports both individual users and enterprise environments:
+This guide provides instructions for building and deploying CIVIQUAL using Windows Installer (MSI) technology. MSI deployment supports both individual users and enterprise environments:
 
 **For Individual Users:**
 - Standard Windows installer wizard (double-click to install)
@@ -28,37 +28,37 @@ This guide provides instructions for building and deploying WATSON using Windows
 
 ### Interactive Installation (Recommended for Individual Users)
 
-Simply double-click `Watson_1.3.0.msi` to launch the installation wizard:
+Simply double-click `CiviQual_1.3.0.msi` to launch the installation wizard:
 
 1. **Welcome Screen** - Click Next
 2. **License Agreement** - Review and accept the license terms
 3. **Installation Folder** - Accept default or choose custom location
-   - Default: `C:\Program Files\Watson`
+   - Default: `C:\Program Files\CiviQual`
 4. **Ready to Install** - Click Install
 5. **Completion** - Click Finish
 
 ### Interactive Installation via Command Line
 
 ```powershell
-msiexec /i Watson_1.3.0.msi
+msiexec /i CiviQual_1.3.0.msi
 ```
 
 ### Modify Installation
 
 To change or repair the installation:
 ```powershell
-msiexec /f Watson_1.3.0.msi
+msiexec /f CiviQual_1.3.0.msi
 ```
 
-Or use **Settings → Apps → Installed Apps → WATSON → Modify**
+Or use **Settings → Apps → Installed Apps → CIVIQUAL → Modify**
 
 ### Uninstall
 
-**Option 1:** Settings → Apps → Installed Apps → WATSON → Uninstall
+**Option 1:** Settings → Apps → Installed Apps → CIVIQUAL → Uninstall
 
 **Option 2:** Command line:
 ```powershell
-msiexec /x Watson_1.3.0.msi
+msiexec /x CiviQual_1.3.0.msi
 ```
 
 ---
@@ -92,21 +92,21 @@ msiexec /x Watson_1.3.0.msi
    ```powershell
    dotnet tool install --global wix
    ```
-4. **Watson.exe** built via PyInstaller
+4. **CiviQual.exe** built via PyInstaller
 
 ### Directory Structure
 
 Prepare the following structure before building:
 
 ```
-Watson_MSI/
-├── Watson.wxs              # WiX source file (provided)
+CiviQual_MSI/
+├── CiviQual.wxs              # WiX source file (provided)
 ├── Build-MSI.ps1           # Build script (provided)
 ├── LICENSE.rtf             # License in RTF format
-├── watson_icon.ico         # Application icon
+├── civiqual_icon.ico         # Application icon
 └── Files/
-    ├── Watson.exe          # PyInstaller-built executable
-    ├── watson_icon.png     # Icon file
+    ├── CiviQual.exe          # PyInstaller-built executable
+    ├── civiqual_icon.png     # Icon file
     ├── sample_data.csv     # Sample data
     ├── README.md           # Documentation
     ├── LICENSE             # License text
@@ -117,19 +117,19 @@ Watson_MSI/
 
 **Using the Build Script (Recommended):**
 ```powershell
-cd Watson_MSI
+cd CiviQual_MSI
 .\Build-MSI.ps1
 ```
 
 **Manual Build with WiX v4:**
 ```powershell
-wix build Watson.wxs -o Watson_1.3.0.msi -ext WixToolset.UI.wixext
+wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
 ```
 
 **Manual Build with WiX v3 (Legacy):**
 ```powershell
-candle.exe Watson.wxs -ext WixUIExtension
-light.exe Watson.wixobj -ext WixUIExtension -o Watson_1.3.0.msi
+candle.exe CiviQual.wxs -ext WixUIExtension
+light.exe CiviQual.wixobj -ext WixUIExtension -o CiviQual_1.3.0.msi
 ```
 
 ---
@@ -138,32 +138,32 @@ light.exe Watson.wixobj -ext WixUIExtension -o Watson_1.3.0.msi
 
 ### Interactive Installation
 ```powershell
-msiexec /i Watson_1.3.0.msi
+msiexec /i CiviQual_1.3.0.msi
 ```
 
 ### Silent Installation
 ```powershell
-msiexec /i Watson_1.3.0.msi /qn
+msiexec /i CiviQual_1.3.0.msi /qn
 ```
 
 ### Silent with Logging
 ```powershell
-msiexec /i Watson_1.3.0.msi /qn /l*v C:\Logs\watson_install.log
+msiexec /i CiviQual_1.3.0.msi /qn /l*v C:\Logs\civiqual_install.log
 ```
 
 ### Custom Installation Path
 ```powershell
-msiexec /i Watson_1.3.0.msi /qn INSTALLFOLDER="D:\Apps\Watson"
+msiexec /i CiviQual_1.3.0.msi /qn INSTALLFOLDER="D:\Apps\CiviQual"
 ```
 
 ### Repair Installation
 ```powershell
-msiexec /f Watson_1.3.0.msi
+msiexec /f CiviQual_1.3.0.msi
 ```
 
 ### Silent Uninstall
 ```powershell
-msiexec /x Watson_1.3.0.msi /qn
+msiexec /x CiviQual_1.3.0.msi /qn
 ```
 
 ### Uninstall by Product Code
@@ -179,7 +179,7 @@ msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn
 
 1. **Copy MSI to Network Share**
    ```
-   \\server\share\Software\Watson\Watson_1.3.0.msi
+   \\server\share\Software\CiviQual\CiviQual_1.3.0.msi
    ```
    Ensure the share has read permissions for target computers.
 
@@ -188,12 +188,12 @@ msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn
 
 3. **Create or Edit GPO**
    - Right-click the target OU → **Create a GPO in this domain**
-   - Name: "Watson 1.3.0 Deployment"
+   - Name: "CiviQual 1.3.0 Deployment"
 
 4. **Configure Software Installation**
    - Navigate to: `Computer Configuration → Policies → Software Settings → Software Installation`
    - Right-click → **New → Package**
-   - Browse to the network share and select `Watson_1.3.0.msi`
+   - Browse to the network share and select `CiviQual_1.3.0.msi`
    - Select **Assigned** for automatic installation
 
 5. **Configure Options (Optional)**
@@ -221,14 +221,14 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 1. **Navigate to**: Software Library → Application Management → Applications
 2. **Create Application** → Windows Installer (*.msi)
-3. **Browse** to `Watson_1.3.0.msi`
+3. **Browse** to `CiviQual_1.3.0.msi`
 4. **Detection Method**: MSI Product Code `{E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B}`
 
 ### Deployment Type Settings
 
 | Setting | Value |
 |---------|-------|
-| Installation Program | `msiexec /i "Watson_1.3.0.msi" /qn` |
+| Installation Program | `msiexec /i "CiviQual_1.3.0.msi" /qn` |
 | Uninstall Program | `msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn` |
 | Installation Behavior | Install for system |
 | Logon Requirement | Whether or not a user is logged on |
@@ -249,9 +249,9 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 1. **Navigate to**: Microsoft Endpoint Manager admin center → Apps → All apps
 2. **Add** → App type: **Line-of-business app**
-3. **Select** the `Watson_1.3.0.msi` file
+3. **Select** the `CiviQual_1.3.0.msi` file
 4. **Configure App Information**:
-   - Name: WATSON
+   - Name: CIVIQUAL
    - Description: Statistical Analysis Tool for Lean Six Sigma
    - Publisher: A Step in the Right Direction LLC
    - App Version: 1.3.0
@@ -275,13 +275,13 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 | Property | Value |
 |----------|-------|
-| Product Name | WATSON |
+| Product Name | CIVIQUAL |
 | Product Version | 1.3.0.0 |
 | Product Code | {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} |
 | Upgrade Code | E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B |
 | Manufacturer | A Step in the Right Direction LLC |
 | Install Scope | Per-machine |
-| Install Location | %ProgramFiles%\Watson |
+| Install Location | %ProgramFiles%\CiviQual |
 
 ---
 
@@ -289,7 +289,7 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 After installation, the following registry keys are created:
 
-**HKEY_CURRENT_USER\Software\AStepInTheRightDirection\Watson**
+**HKEY_CURRENT_USER\Software\AStepInTheRightDirection\CiviQual**
 | Value | Type | Data |
 |-------|------|------|
 | InstallPath | REG_SZ | [Installation Directory] |
@@ -301,12 +301,12 @@ After installation, the following registry keys are created:
 
 | File | Location |
 |------|----------|
-| Watson.exe | %ProgramFiles%\Watson\ |
-| watson_icon.png | %ProgramFiles%\Watson\ |
-| sample_data.csv | %ProgramFiles%\Watson\ |
-| README.md | %ProgramFiles%\Watson\Documentation\ |
-| LICENSE | %ProgramFiles%\Watson\Documentation\ |
-| SECTION_508_COMPLIANCE.md | %ProgramFiles%\Watson\Documentation\ |
+| CiviQual.exe | %ProgramFiles%\CiviQual\ |
+| civiqual_icon.png | %ProgramFiles%\CiviQual\ |
+| sample_data.csv | %ProgramFiles%\CiviQual\ |
+| README.md | %ProgramFiles%\CiviQual\Documentation\ |
+| LICENSE | %ProgramFiles%\CiviQual\Documentation\ |
+| SECTION_508_COMPLIANCE.md | %ProgramFiles%\CiviQual\Documentation\ |
 
 ---
 
@@ -314,8 +314,8 @@ After installation, the following registry keys are created:
 
 | Shortcut | Location |
 |----------|----------|
-| WATSON | Start Menu\Programs\WATSON\ |
-| WATSON | Desktop |
+| CIVIQUAL | Start Menu\Programs\CIVIQUAL\ |
+| CIVIQUAL | Desktop |
 
 ---
 
@@ -326,7 +326,7 @@ After installation, the following registry keys are created:
 **Installation Fails Silently**
 ```powershell
 # Check MSI log
-msiexec /i Watson_1.3.0.msi /l*v install.log
+msiexec /i CiviQual_1.3.0.msi /l*v install.log
 # Review install.log for errors
 ```
 
@@ -345,17 +345,17 @@ net start msiserver
 
 **Check if installed:**
 ```powershell
-Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "*WATSON*"}
+Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "*CIVIQUAL*"}
 ```
 
 **Check registry:**
 ```powershell
-Get-ItemProperty "HKCU:\Software\AStepInTheRightDirection\Watson"
+Get-ItemProperty "HKCU:\Software\AStepInTheRightDirection\CiviQual"
 ```
 
 **Check installation path:**
 ```powershell
-Test-Path "${env:ProgramFiles}\Watson\Watson.exe"
+Test-Path "${env:ProgramFiles}\CiviQual\CiviQual.exe"
 ```
 
 ---

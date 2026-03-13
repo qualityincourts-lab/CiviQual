@@ -1,6 +1,6 @@
 @echo off
 REM =====================================================
-REM WATSON MSI Build Script (WiX v4 Required)
+REM CIVIQUAL MSI Build Script (WiX v4 Required)
 REM Copyright (c) 2025 A Step in the Right Direction LLC
 REM =====================================================
 REM
@@ -21,11 +21,11 @@ setlocal enabledelayedexpansion
 set VERSION=1.3.0
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..\..
-set OUTPUT_FILE=Watson_%VERSION%.msi
+set OUTPUT_FILE=CiviQual_%VERSION%.msi
 
 echo.
 echo =====================================================
-echo   WATSON MSI Build Script
+echo   CIVIQUAL MSI Build Script
 echo   Version: %VERSION%
 echo =====================================================
 echo.
@@ -95,8 +95,8 @@ REM =====================================================
 echo [2/6] Generating application icon...
 cd /d "%PROJECT_ROOT%"
 python create_icon.py
-if not exist "watson_icon.ico" (
-    echo   ERROR: Failed to create watson_icon.ico
+if not exist "civiqual_icon.ico" (
+    echo   ERROR: Failed to create civiqual_icon.ico
     goto :error
 )
 echo   [OK] Icon created
@@ -113,20 +113,20 @@ echo.
 REM =====================================================
 REM Build Executable
 REM =====================================================
-echo [4/6] Building Watson.exe with PyInstaller...
+echo [4/6] Building CiviQual.exe with PyInstaller...
 echo   This takes 2-5 minutes...
 
 cd /d "%PROJECT_ROOT%"
 if exist "dist" rmdir /s /q "dist"
 if exist "build" rmdir /s /q "build"
 
-pyinstaller --name Watson --onefile --windowed --icon=watson_icon.ico --add-data "samples;samples" --noconfirm main.py
+pyinstaller --name CiviQual --onefile --windowed --icon=civiqual_icon.ico --add-data "samples;samples" --noconfirm main.py
 
-if not exist "dist\Watson.exe" (
-    echo   ERROR: PyInstaller failed to create Watson.exe
+if not exist "dist\CiviQual.exe" (
+    echo   ERROR: PyInstaller failed to create CiviQual.exe
     goto :error
 )
-echo   [OK] Watson.exe created
+echo   [OK] CiviQual.exe created
 echo.
 
 REM =====================================================
@@ -139,14 +139,14 @@ if exist "Files" rmdir /s /q "Files"
 mkdir "Files"
 mkdir "Files\samples"
 
-copy "%PROJECT_ROOT%\dist\Watson.exe" "Files\" >nul
-copy "%PROJECT_ROOT%\watson_icon.png" "Files\" >nul
-copy "%PROJECT_ROOT%\watson_icon.ico" "Files\" >nul
+copy "%PROJECT_ROOT%\dist\CiviQual.exe" "Files\" >nul
+copy "%PROJECT_ROOT%\civiqual_icon.png" "Files\" >nul
+copy "%PROJECT_ROOT%\civiqual_icon.ico" "Files\" >nul
 copy "%PROJECT_ROOT%\README.md" "Files\" >nul
 copy "%PROJECT_ROOT%\LICENSE" "Files\" >nul
 copy "%PROJECT_ROOT%\SECTION_508_COMPLIANCE.md" "Files\" >nul
 copy "%PROJECT_ROOT%\samples\*.csv" "Files\samples\" >nul
-copy "%PROJECT_ROOT%\watson_icon.ico" "." >nul
+copy "%PROJECT_ROOT%\civiqual_icon.ico" "." >nul
 
 echo   [OK] Files prepared
 echo.
@@ -164,10 +164,10 @@ echo   Verifying Files\samples\ directory contents:
 dir Files\samples\ /b
 echo.
 
-echo   Running: wix build Watson.wxs -o %OUTPUT_FILE% -ext WixToolset.UI.wixext
+echo   Running: wix build CiviQual.wxs -o %OUTPUT_FILE% -ext WixToolset.UI.wixext
 echo.
 
-wix build Watson.wxs -o "%OUTPUT_FILE%" -ext WixToolset.UI.wixext 2>&1
+wix build CiviQual.wxs -o "%OUTPUT_FILE%" -ext WixToolset.UI.wixext 2>&1
 
 if errorlevel 1 (
     echo.
@@ -178,7 +178,7 @@ if errorlevel 1 (
     echo   Common fixes:
     echo     1. wix extension add WixToolset.UI.wixext
     echo     2. Ensure all source files exist in Files\
-    echo     3. Check Watson.wxs XML syntax
+    echo     3. Check CiviQual.wxs XML syntax
     echo.
     goto :error
 )

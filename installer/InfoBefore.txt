@@ -1,4 +1,4 @@
-WATSON for Lean Six Sigma - Important Information
+CIVIQUAL for Lean Six Sigma - Important Information
 =================================================
 
 Workbench for Analysis, Testing, Statistics, Optimization & Navigation
@@ -10,9 +10,9 @@ www.qualityincourts.com
 
 ABOUT THIS SOFTWARE
 -------------------
-WATSON (Workbench for Analysis, Testing, Statistics, Optimization &
+CIVIQUAL (Workbench for Analysis, Testing, Statistics, Optimization &
 Navigation) is statistical analysis software for Lean Six Sigma.
-This software is NOT affiliated with IBM Corporation or IBM Watson.
+This software is NOT affiliated with IBM Corporation or IBM CiviQual.
 
 
 WHAT'S NEW IN VERSION 1.3.0
@@ -41,7 +41,7 @@ SYSTEM REQUIREMENTS
 
 LICENSE INFORMATION
 -------------------
-WATSON is provided FREE for:
+CIVIQUAL is provided FREE for:
 • Government agencies (federal, state, local, tribal)
 • Courts and judicial organizations
 • Public educational institutions
@@ -54,7 +54,7 @@ Contact: www.qualityincourts.com
 
 ACCESSIBILITY SUPPORT
 ---------------------
-Watson 1.3 meets Section 508 and WCAG 2.0 Level AA standards.
+CiviQual 1.3 meets Section 508 and WCAG 2.0 Level AA standards.
 
 For accessibility feedback or assistance:
 • Email: accessibility@qualityincourts.com
@@ -66,7 +66,7 @@ Press Ctrl+Shift+F1 for accessibility information.
 
 WHAT'S INCLUDED
 ---------------
-• WATSON application
+• CIVIQUAL application
 • User Guide (comprehensive documentation)
 • Section 508 Compliance Report
 • Sample data files for learning (11 public service scenarios)
@@ -81,5 +81,5 @@ Website: www.qualityincourts.com
 Copyright (c) 2025 A Step in the Right Direction LLC
 All Rights Reserved.
 
-"WATSON for Lean Six Sigma" is a trademark of A Step in the Right Direction LLC.
-Not affiliated with IBM Corporation or IBM Watson.
+"CIVIQUAL for Lean Six Sigma" is a trademark of A Step in the Right Direction LLC.
+Not affiliated with IBM Corporation or IBM CiviQual.

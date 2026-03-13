@@ -1,4 +1,4 @@
-# Watson MSI Build Prerequisites
+# CiviQual MSI Build Prerequisites
 
 **Step-by-step installation guide for all required tools**
 
@@ -6,14 +6,14 @@
 
 ## Overview
 
-Building the Watson MSI installer requires these components:
+Building the CiviQual MSI installer requires these components:
 
 | Component | Purpose | Download Size |
 |-----------|---------|---------------|
-| Python 3.9+ | Run Watson source code | ~25 MB |
+| Python 3.9+ | Run CiviQual source code | ~25 MB |
 | .NET SDK 6.0+ | Required for WiX Toolset | ~200 MB |
 | WiX Toolset v4 | Build MSI installer | ~5 MB |
-| PyInstaller | Create Watson.exe | ~15 MB |
+| PyInstaller | Create CiviQual.exe | ~15 MB |
 
 **Estimated total time:** 15-20 minutes
 
@@ -220,12 +220,12 @@ Expected output:
 
 ---
 
-## Step 5: Install Watson Python Dependencies
+## Step 5: Install CiviQual Python Dependencies
 
-Navigate to the Watson source directory and install required packages:
+Navigate to the CiviQual source directory and install required packages:
 
 ```powershell
-cd path\to\Watson_v1.3
+cd path\to\CiviQual_v1.3
 pip install -r requirements.txt
 ```
 
@@ -315,13 +315,13 @@ All prerequisites checked!
 | WiX Toolset | `dotnet tool install --global wix` | `wix --version` |
 | WiX UI Extension | `wix extension add WixToolset.UI.wixext` | `wix extension list` |
 | PyInstaller | `pip install pyinstaller` | `pyinstaller --version` |
-| Watson dependencies | `pip install -r requirements.txt` | `pip list` |
+| CiviQual dependencies | `pip install -r requirements.txt` | `pip list` |
 
 ---
 
 ## Next Steps
 
-Once all prerequisites are installed, proceed to **BUILD_INSTRUCTIONS.md** to build the Watson MSI installer.
+Once all prerequisites are installed, proceed to **BUILD_INSTRUCTIONS.md** to build the CiviQual MSI installer.
 
 ---
 

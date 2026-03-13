@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WATSON Data Handler
+CiviQual Data Handler
 
 Handles loading and processing of data files.
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 class DataHandler:
-    """Data handling for Watson."""
+    """Data handling for CiviQual."""
     
     def __init__(self):
         """Initialize the data handler."""

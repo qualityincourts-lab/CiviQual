@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 """
-WATSON - Workbench for Analysis, Testing, Statistics, Optimization & Navigation
+CiviQual - Quality Analytics for Public Service
 
-Version 1.3.0 - Section 508 Accessibility Release
+Version 1.0.0 - Initial Public Release
 
-A statistical analysis tool for Lean Six Sigma practitioners in government.
-Named in honor of Dr. Gregory H. Watson.
+A statistical analysis tool for Lean Six Sigma practitioners in government
+and public service organizations.
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+The 4-Up Chart methodology is based on the exploratory data analysis
+approach developed by Dr. Gregory H. Watson.
+
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 
-This version includes comprehensive Section 508 accessibility improvements:
-- Minimal focus indicators for a clean interface
-- Accessible names and descriptions on all interactive controls
-- Label associations using setBuddy()
-- Tooltips on all input fields
-- Help → Keyboard Shortcuts dialog
-- Help → Accessibility Information dialog
-- Improved disabled button contrast
+This version includes:
+- Full Windows dark mode support
+- Section 508 accessibility compliance
+- CPI Process Diagram tools
+- Colorblind-friendly visualizations
+- Enhanced I-Chart with Western Electric rule filtering
+- Improved capability analysis with normality checking
 """
 
 import sys
@@ -38,7 +40,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSize, QStandardPaths, QTimer
 from PySide6.QtGui import (
     QAction, QFont, QIcon, QColor, QPixmap, QPainter, QPen, QBrush,
-    QKeySequence, QShortcut
+    QKeySequence, QShortcut, QPalette
 )
 
 import pandas as pd
@@ -54,19 +56,144 @@ from process_diagrams import ProcessDiagramEngine
 # =============================================================================
 # Version Information
 # =============================================================================
-VERSION = "1.3.0"
-VERSION_NAME = "Section 508 Accessibility Release"
+VERSION = "1.0.0"
+VERSION_NAME = "Initial Public Release"
+
+
+# =============================================================================
+# Theme and Dark Mode Support
+# =============================================================================
+def is_dark_mode():
+    """Detect if the system is using dark mode."""
+    # Try to detect Windows dark mode via registry
+    if sys.platform == 'win32':
+        try:
+            import winreg
+            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+            key = winreg.OpenKey(registry, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+            winreg.CloseKey(key)
+            return value == 0  # 0 = dark mode, 1 = light mode
+        except Exception:
+            pass
+    
+    # Fallback: check Qt palette
+    app = QApplication.instance()
+    if app:
+        palette = app.palette()
+        bg_color = palette.color(QPalette.ColorRole.Window)
+        # If background luminance is low, assume dark mode
+        luminance = (0.299 * bg_color.red() + 0.587 * bg_color.green() + 0.114 * bg_color.blue()) / 255
+        return luminance < 0.5
+    
+    return False
+
+
+def create_dark_palette():
+    """Create a dark color palette for the application."""
+    palette = QPalette()
+    
+    # Dark mode colors
+    dark_bg = QColor(30, 30, 30)
+    dark_alt = QColor(45, 45, 45)
+    dark_text = QColor(220, 220, 220)
+    dark_highlight = QColor(109, 19, 42)  # Brand burgundy
+    dark_highlight_text = QColor(255, 255, 255)
+    dark_link = QColor(86, 180, 233)  # Sky blue
+    dark_disabled = QColor(128, 128, 128)
+    dark_mid = QColor(60, 60, 60)
+    
+    # Set colors for different roles
+    palette.setColor(QPalette.ColorRole.Window, dark_bg)
+    palette.setColor(QPalette.ColorRole.WindowText, dark_text)
+    palette.setColor(QPalette.ColorRole.Base, dark_alt)
+    palette.setColor(QPalette.ColorRole.AlternateBase, dark_bg)
+    palette.setColor(QPalette.ColorRole.ToolTipBase, dark_alt)
+    palette.setColor(QPalette.ColorRole.ToolTipText, dark_text)
+    palette.setColor(QPalette.ColorRole.Text, dark_text)
+    palette.setColor(QPalette.ColorRole.Button, dark_alt)
+    palette.setColor(QPalette.ColorRole.ButtonText, dark_text)
+    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    palette.setColor(QPalette.ColorRole.Link, dark_link)
+    palette.setColor(QPalette.ColorRole.Highlight, dark_highlight)
+    palette.setColor(QPalette.ColorRole.HighlightedText, dark_highlight_text)
+    palette.setColor(QPalette.ColorRole.Mid, dark_mid)
+    
+    # Disabled colors
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText, dark_disabled)
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, dark_disabled)
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, dark_disabled)
+    
+    return palette
+
+
+def create_light_palette():
+    """Create a light color palette for the application."""
+    palette = QPalette()
+    
+    # Light mode colors
+    light_bg = QColor(255, 255, 255)
+    light_alt = QColor(245, 245, 245)
+    light_text = QColor(0, 0, 0)
+    light_highlight = QColor(109, 19, 42)  # Brand burgundy
+    light_highlight_text = QColor(255, 255, 255)
+    light_link = QColor(0, 114, 178)  # Blue
+    light_disabled = QColor(160, 160, 160)
+    light_mid = QColor(200, 200, 200)
+    
+    # Set colors for different roles
+    palette.setColor(QPalette.ColorRole.Window, light_bg)
+    palette.setColor(QPalette.ColorRole.WindowText, light_text)
+    palette.setColor(QPalette.ColorRole.Base, light_bg)
+    palette.setColor(QPalette.ColorRole.AlternateBase, light_alt)
+    palette.setColor(QPalette.ColorRole.ToolTipBase, light_alt)
+    palette.setColor(QPalette.ColorRole.ToolTipText, light_text)
+    palette.setColor(QPalette.ColorRole.Text, light_text)
+    palette.setColor(QPalette.ColorRole.Button, light_alt)
+    palette.setColor(QPalette.ColorRole.ButtonText, light_text)
+    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    palette.setColor(QPalette.ColorRole.Link, light_link)
+    palette.setColor(QPalette.ColorRole.Highlight, light_highlight)
+    palette.setColor(QPalette.ColorRole.HighlightedText, light_highlight_text)
+    palette.setColor(QPalette.ColorRole.Mid, light_mid)
+    
+    # Disabled colors
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText, light_disabled)
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, light_disabled)
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, light_disabled)
+    
+    return palette
+
+
+# Global flag for dark mode (set at startup)
+DARK_MODE = False
+
+
+def get_chart_display_style():
+    """Get stylesheet for chart display areas based on current theme."""
+    if DARK_MODE:
+        return "background-color: #1e1e1e; border: 1px solid #555;"
+    else:
+        return "background-color: white; border: 1px solid #ccc;"
+
+
+def get_text_edit_style():
+    """Get stylesheet for text edit areas based on current theme."""
+    if DARK_MODE:
+        return "background-color: #2d2d2d; color: #dcdcdc; border: 1px solid #555; font-family: 'Consolas', monospace;"
+    else:
+        return "background-color: #f8f9fa; color: #333; border: 1px solid #ccc; font-family: 'Consolas', monospace;"
 
 
 # =============================================================================
 # Splash Screen
 # =============================================================================
 class SplashScreen(QDialog):
-    """Splash screen showing WATSON branding and attribution."""
+    """Splash screen showing CiviQual branding and attribution."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WATSON for Lean Six Sigma")
+        self.setWindowTitle("CiviQual")
         self.setFixedSize(500, 400)
         self.setWindowFlags(Qt.WindowType.SplashScreen | Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet("""
@@ -88,25 +215,25 @@ class SplashScreen(QDialog):
         layout.addWidget(logo_label)
         
         # Title
-        title = QLabel("WATSON")
+        title = QLabel("CiviQual")
         title.setFont(QFont("Arial", 32, QFont.Weight.Bold))
         title.setStyleSheet("color: #6d132a;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
         
+        # Tagline
+        tagline = QLabel("Quality Analytics for Public Service")
+        tagline.setFont(QFont("Arial", 12))
+        tagline.setStyleSheet("color: #6d132a;")
+        tagline.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(tagline)
+        
         # Subtitle
-        subtitle = QLabel("for Lean Six Sigma")
-        subtitle.setFont(QFont("Arial", 14))
-        subtitle.setStyleSheet("color: #6d132a;")
+        subtitle = QLabel("Statistical Analysis for Lean Six Sigma")
+        subtitle.setFont(QFont("Arial", 10))
+        subtitle.setStyleSheet("color: #666;")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
-        
-        # Acronym
-        acronym = QLabel("Workbench for Analysis, Testing, Statistics,\nOptimization & Navigation")
-        acronym.setFont(QFont("Arial", 10))
-        acronym.setStyleSheet("color: #666;")
-        acronym.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(acronym)
         
         layout.addSpacing(15)
         
@@ -120,8 +247,7 @@ class SplashScreen(QDialog):
         
         # Disclaimer
         disclaimer = QLabel(
-            "Statistical analysis software for government and public service.\n"
-            "Not affiliated with IBM Corporation or IBM Watson."
+            "Free for government, courts, and nonprofit organizations."
         )
         disclaimer.setFont(QFont("Arial", 8))
         disclaimer.setStyleSheet("color: #888;")
@@ -129,13 +255,13 @@ class SplashScreen(QDialog):
         layout.addWidget(disclaimer)
         
         # Copyright
-        copyright_label = QLabel("© 2025 A Step in the Right Direction LLC")
+        copyright_label = QLabel("© 2026 A Step in the Right Direction LLC")
         copyright_label.setStyleSheet("color: #999; font-size: 8px;")
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(copyright_label)
     
     def _create_logo(self):
-        """Create Watson logo with burgundy/gold color scheme."""
+        """Create CiviQual logo with burgundy/gold color scheme."""
         pixmap = QPixmap(80, 80)
         pixmap.fill(QColor("#6d132a"))  # Burgundy background
         
@@ -189,9 +315,9 @@ class SplashScreen(QDialog):
 def get_config_path():
     """Get the path to the configuration file."""
     if sys.platform == 'win32':
-        config_dir = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'WATSON'
+        config_dir = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'CiviQual'
     else:
-        config_dir = Path.home() / '.watson'
+        config_dir = Path.home() / '.civiqual'
     
     config_dir.mkdir(parents=True, exist_ok=True)
     return config_dir / 'config.json'
@@ -254,7 +380,7 @@ class KeyboardShortcutsDialog(QDialog):
         layout.addWidget(title)
         
         # Description
-        desc = QLabel("Watson supports full keyboard navigation. "
+        desc = QLabel("CiviQual supports full keyboard navigation. "
                      "Use Tab to move between controls, Enter to activate buttons, "
                      "and the shortcuts below for quick access to features.")
         desc.setWordWrap(True)
@@ -316,7 +442,7 @@ class KeyboardShortcutsDialog(QDialog):
         
         <h3>Analysis Actions</h3>
         <table>
-            <tr><td><span class="key">Ctrl+G</span></td><td>Generate Watson 4-Up Chart</td></tr>
+            <tr><td><span class="key">Ctrl+G</span></td><td>Generate CiviQual 4-Up Chart</td></tr>
             <tr><td><span class="key">Ctrl+D</span></td><td>Run descriptive statistics</td></tr>
             <tr><td><span class="key">Ctrl+I</span></td><td>Generate I-Chart</td></tr>
             <tr><td><span class="key">Ctrl+A</span></td><td>Run ANOVA analysis</td></tr>
@@ -375,7 +501,7 @@ class AccessibilityInfoDialog(QDialog):
         # Content browser
         content = QTextBrowser()
         content.setAccessibleName("Accessibility features and information")
-        content.setAccessibleDescription("Detailed information about Watson's accessibility features and compliance")
+        content.setAccessibleDescription("Detailed information about CiviQual's accessibility features and compliance")
         content.setOpenExternalLinks(True)
         content.setHtml(self._get_accessibility_html())
         layout.addWidget(content)
@@ -407,7 +533,7 @@ class AccessibilityInfoDialog(QDialog):
         </style>
         
         <h3>Section 508 Compliance</h3>
-        <p>Watson version 1.3 has been designed to meet <strong>Section 508 of the Rehabilitation Act</strong> 
+        <p>CiviQual version 1.3 has been designed to meet <strong>Section 508 of the Rehabilitation Act</strong> 
         and <strong>WCAG 2.0 Level AA</strong> accessibility standards. These standards ensure that people 
         with disabilities can effectively use the software.</p>
         
@@ -452,7 +578,7 @@ class AccessibilityInfoDialog(QDialog):
         </div>
         
         <h3>Assistive Technology Compatibility</h3>
-        <p>Watson has been tested with:</p>
+        <p>CiviQual has been tested with:</p>
         <ul>
             <li>NVDA (NonVisual Desktop Access) - Free screen reader</li>
             <li>Windows Narrator - Built into Windows</li>
@@ -461,7 +587,7 @@ class AccessibilityInfoDialog(QDialog):
         </ul>
         
         <h3>Accessibility Feedback</h3>
-        <p>We are committed to making Watson accessible to all users. If you encounter any 
+        <p>We are committed to making CiviQual accessible to all users. If you encounter any 
         accessibility barriers or have suggestions for improvement, please contact us:</p>
         <ul>
             <li><strong>Website:</strong> <a href="https://www.qualityincourts.com">www.qualityincourts.com</a></li>
@@ -486,7 +612,7 @@ class LicenseDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("WATSON License Agreement")
+        self.setWindowTitle("CiviQual License Agreement")
         self.setMinimumSize(600, 500)
         self.setModal(True)
         self.accepted_license = False
@@ -497,7 +623,7 @@ class LicenseDialog(QDialog):
         layout = QVBoxLayout(self)
         
         # Title
-        title = QLabel("WATSON Software License Agreement")
+        title = QLabel("CiviQual Software License Agreement")
         title.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         title.setAccessibleName("License Agreement Title")
         layout.addWidget(title)
@@ -543,7 +669,7 @@ class LicenseDialog(QDialog):
             h3 { color: #6d132a; }
         </style>
         
-        <h3>WATSON Software License</h3>
+        <h3>CiviQual Software License</h3>
         <h4>Public Sector and Nonprofit License</h4>
         
         <p>Copyright © 2025 A Step in the Right Direction LLC. All Rights Reserved.</p>
@@ -601,7 +727,7 @@ class AboutDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About WATSON")
+        self.setWindowTitle("About CiviQual")
         self.setFixedSize(500, 580)
         self.setModal(True)
         self._setup_ui()
@@ -615,29 +741,29 @@ class AboutDialog(QDialog):
         logo_pixmap = self._create_logo()
         logo_label.setPixmap(logo_pixmap)
         logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        logo_label.setAccessibleName("Watson logo")
+        logo_label.setAccessibleName("CiviQual logo")
         layout.addWidget(logo_label)
         
         # Title
-        title = QLabel("WATSON")
+        title = QLabel("CiviQual")
         title.setFont(QFont("Arial", 24, QFont.Weight.Bold))
         title.setStyleSheet("color: #6d132a;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setAccessibleName("Watson application title")
+        title.setAccessibleName("CiviQual application title")
         layout.addWidget(title)
         
         # Product subtitle
-        product_subtitle = QLabel("for Lean Six Sigma")
+        product_subtitle = QLabel("Quality Analytics for Public Service")
         product_subtitle.setFont(QFont("Arial", 12))
         product_subtitle.setStyleSheet("color: #6d132a; ")
         product_subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(product_subtitle)
         
-        # Acronym
-        subtitle = QLabel("Workbench for Analysis, Testing, Statistics,\nOptimization & Navigation")
+        # Tagline
+        subtitle = QLabel("Statistical Analysis for Lean Six Sigma\nin Government and Courts")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet("font-size: 10px; color: #666;")
-        subtitle.setAccessibleName("Watson full name")
+        subtitle.setAccessibleName("CiviQual tagline")
         layout.addWidget(subtitle)
         
         # Version
@@ -674,21 +800,12 @@ class AboutDialog(QDialog):
         
         # Copyright
         copyright_label = QLabel(
-            "© 2025 A Step in the Right Direction LLC\n"
+            "© 2026 A Step in the Right Direction LLC\n"
             "www.qualityincourts.com"
         )
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         copyright_label.setStyleSheet("color: #666; font-size: 10px;")
         layout.addWidget(copyright_label)
-        
-        # Disclaimer
-        disclaimer_label = QLabel(
-            "Not affiliated with IBM Corporation or IBM Watson."
-        )
-        disclaimer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        disclaimer_label.setStyleSheet("color: #888; font-size: 9px;")
-        disclaimer_label.setWordWrap(True)
-        layout.addWidget(disclaimer_label)
         
         layout.addStretch()
         
@@ -700,7 +817,7 @@ class AboutDialog(QDialog):
         layout.addWidget(close_btn, alignment=Qt.AlignmentFlag.AlignCenter)
     
     def _create_logo(self):
-        """Create Watson logo programmatically."""
+        """Create CiviQual logo programmatically."""
         pixmap = QPixmap(80, 80)
         pixmap.fill(QColor("#6d132a"))
         
@@ -753,11 +870,11 @@ class AboutDialog(QDialog):
 # Main Window
 # =============================================================================
 class MainWindow(QMainWindow):
-    """Main application window for Watson with Section 508 accessibility."""
+    """Main application window for CiviQual with Section 508 accessibility."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WATSON for Lean Six Sigma")
+        self.setWindowTitle("CiviQual")
         self.setMinimumSize(1200, 800)
         
         # Set window icon
@@ -788,7 +905,7 @@ class MainWindow(QMainWindow):
     def _create_window_icon(self):
         """Create a default icon for the window."""
         try:
-            icon_path = Path(__file__).parent / "watson_icon.png"
+            icon_path = Path(__file__).parent / "civiqual_icon.png"
             if icon_path.exists():
                 self.setWindowIcon(QIcon(str(icon_path)))
             else:
@@ -870,9 +987,9 @@ class MainWindow(QMainWindow):
         analysis_menu = menubar.addMenu("&Analysis")
         analysis_menu.setAccessibleName("Analysis menu")
         
-        four_up_action = QAction("Watson &4-Up Chart", self)
+        four_up_action = QAction("CiviQual &4-Up Chart", self)
         four_up_action.setShortcut("Ctrl+G")
-        four_up_action.setStatusTip("Generate Watson 4-Up exploratory data analysis chart")
+        four_up_action.setStatusTip("Generate CiviQual 4-Up exploratory data analysis chart")
         four_up_action.triggered.connect(self._generate_four_up)
         analysis_menu.addAction(four_up_action)
         
@@ -939,7 +1056,7 @@ class MainWindow(QMainWindow):
         
         help_menu.addSeparator()
         
-        about_action = QAction("&About WATSON", self)
+        about_action = QAction("&About CiviQual", self)
         about_action.setStatusTip("About this application")
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
@@ -1031,21 +1148,21 @@ class MainWindow(QMainWindow):
     
     def _create_analysis_tabs(self):
         """Create analysis tab widgets with accessibility support."""
-        # Watson 4-Up Chart tab
+        # CiviQual 4-Up Chart tab
         four_up_tab = QWidget()
-        four_up_tab.setAccessibleName("Watson 4-Up Chart analysis tab")
+        four_up_tab.setAccessibleName("CiviQual 4-Up Chart analysis tab")
         four_up_layout = QVBoxLayout(four_up_tab)
         
         four_up_controls = QHBoxLayout()
         
         self.four_up_btn = QPushButton("Generate 4-Up Chart")
         self.four_up_btn.clicked.connect(self._generate_four_up)
-        self.four_up_btn.setAccessibleName("Generate Watson 4-Up Chart")
+        self.four_up_btn.setAccessibleName("Generate CiviQual 4-Up Chart")
         self.four_up_btn.setAccessibleDescription(
-            "Generate a Watson 4-Up exploratory data analysis chart showing statistical summary, "
+            "Generate a CiviQual 4-Up exploratory data analysis chart showing statistical summary, "
             "probability plot, I-Chart, and capability analysis. Keyboard shortcut: Ctrl+G"
         )
-        self.four_up_btn.setToolTip("Generate Watson 4-Up Chart - Ctrl+G")
+        self.four_up_btn.setToolTip("Generate CiviQual 4-Up Chart - Ctrl+G")
         four_up_controls.addWidget(self.four_up_btn)
         
         four_up_controls.addStretch()
@@ -1072,14 +1189,14 @@ class MainWindow(QMainWindow):
         self.four_up_display = QLabel("Load data and click 'Generate 4-Up Chart' to begin")
         self.four_up_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.four_up_display.setMinimumHeight(500)
-        self.four_up_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
-        self.four_up_display.setAccessibleName("Watson 4-Up Chart display area")
+        self.four_up_display.setStyleSheet(get_chart_display_style())
+        self.four_up_display.setAccessibleName("CiviQual 4-Up Chart display area")
         self.four_up_display.setAccessibleDescription(
-            "Displays the generated Watson 4-Up Chart with four analysis views"
+            "Displays the generated CiviQual 4-Up Chart with four analysis views"
         )
         four_up_layout.addWidget(self.four_up_display)
         
-        self.tab_widget.addTab(four_up_tab, "Watson 4-Up Chart")
+        self.tab_widget.addTab(four_up_tab, "CiviQual 4-Up Chart")
         
         # Descriptive Statistics tab
         desc_tab = QWidget()
@@ -1193,7 +1310,7 @@ class MainWindow(QMainWindow):
         self.control_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.control_display.setMinimumHeight(400)
         self.control_display.setMinimumWidth(500)
-        self.control_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.control_display.setStyleSheet(get_chart_display_style())
         self.control_display.setAccessibleName("Control chart display area")
         control_splitter.addWidget(self.control_display)
         
@@ -1302,7 +1419,7 @@ class MainWindow(QMainWindow):
         self.capability_chart_display = QLabel("Select column and spec limits, then click Calculate")
         self.capability_chart_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.capability_chart_display.setMinimumHeight(300)
-        self.capability_chart_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.capability_chart_display.setStyleSheet(get_chart_display_style())
         self.capability_chart_display.setAccessibleName("Capability analysis chart")
         cap_splitter.addWidget(self.capability_chart_display)
         
@@ -1359,7 +1476,7 @@ class MainWindow(QMainWindow):
         self.prob_plot_display = QLabel("Select columns and click Generate")
         self.prob_plot_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.prob_plot_display.setMinimumHeight(400)
-        self.prob_plot_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.prob_plot_display.setStyleSheet(get_chart_display_style())
         self.prob_plot_display.setAccessibleName("Probability plot display area")
         prob_plot_layout.addWidget(self.prob_plot_display)
         
@@ -1394,7 +1511,7 @@ class MainWindow(QMainWindow):
         self.anova_chart_display = QLabel("Run ANOVA to display box plots by group")
         self.anova_chart_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.anova_chart_display.setMinimumHeight(350)
-        self.anova_chart_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.anova_chart_display.setStyleSheet(get_chart_display_style())
         self.anova_chart_display.setAccessibleName("ANOVA box plot display")
         self.anova_chart_display.setAccessibleDescription(
             "Displays box plots showing the distribution of data for each group in the factor"
@@ -1472,7 +1589,7 @@ class MainWindow(QMainWindow):
         self.correlation_display = QLabel("Select X and Y variables, then click Generate")
         self.correlation_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.correlation_display.setMinimumHeight(400)
-        self.correlation_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.correlation_display.setStyleSheet(get_chart_display_style())
         self.correlation_display.setAccessibleName("Correlation scatter plot display")
         correlation_layout.addWidget(self.correlation_display)
         
@@ -1507,7 +1624,7 @@ class MainWindow(QMainWindow):
         self.run_chart_display = QLabel("Select a column and click Generate")
         self.run_chart_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.run_chart_display.setMinimumHeight(400)
-        self.run_chart_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.run_chart_display.setStyleSheet(get_chart_display_style())
         self.run_chart_display.setAccessibleName("Run chart display area")
         run_chart_layout.addWidget(self.run_chart_display)
         
@@ -1564,7 +1681,7 @@ class MainWindow(QMainWindow):
         self.histogram_display = QLabel("Select a column and click Generate")
         self.histogram_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.histogram_display.setMinimumHeight(500)
-        self.histogram_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.histogram_display.setStyleSheet(get_chart_display_style())
         self.histogram_display.setAccessibleName("Histogram display area")
         histogram_layout.addWidget(self.histogram_display)
         
@@ -1604,7 +1721,7 @@ class MainWindow(QMainWindow):
         self.boxplot_display = QLabel("Select a column and click Generate")
         self.boxplot_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.boxplot_display.setMinimumHeight(500)
-        self.boxplot_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.boxplot_display.setStyleSheet(get_chart_display_style())
         self.boxplot_display.setAccessibleName("Box plot display area")
         boxplot_layout.addWidget(self.boxplot_display)
         
@@ -1647,7 +1764,7 @@ class MainWindow(QMainWindow):
         self.pareto_display = QLabel("Select category column and click Generate")
         self.pareto_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pareto_display.setMinimumHeight(500)
-        self.pareto_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.pareto_display.setStyleSheet(get_chart_display_style())
         self.pareto_display.setAccessibleName("Pareto chart display area")
         pareto_layout.addWidget(self.pareto_display)
         
@@ -1897,7 +2014,7 @@ class MainWindow(QMainWindow):
         self.sipoc_display = QLabel("Enter data above and click Generate")
         self.sipoc_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.sipoc_display.setMinimumHeight(400)
-        self.sipoc_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.sipoc_display.setStyleSheet(get_chart_display_style())
         self.sipoc_display.setAccessibleName("SIPOC diagram display area")
         sipoc_layout.addWidget(self.sipoc_display)
         
@@ -1962,7 +2079,7 @@ class MainWindow(QMainWindow):
         self.process_map_display = QLabel("Enter steps above and click Generate")
         self.process_map_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.process_map_display.setMinimumHeight(400)
-        self.process_map_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.process_map_display.setStyleSheet(get_chart_display_style())
         self.process_map_display.setAccessibleName("Process map display area")
         process_map_layout.addWidget(self.process_map_display)
         
@@ -2017,7 +2134,7 @@ class MainWindow(QMainWindow):
         self.raci_display = QLabel("Enter data above and click Generate")
         self.raci_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.raci_display.setMinimumHeight(400)
-        self.raci_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.raci_display.setStyleSheet(get_chart_display_style())
         self.raci_display.setAccessibleName("RACI matrix display area")
         raci_layout.addWidget(self.raci_display)
         
@@ -2069,7 +2186,7 @@ class MainWindow(QMainWindow):
         self.swimlane_display = QLabel("Enter data above and click Generate")
         self.swimlane_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.swimlane_display.setMinimumHeight(400)
-        self.swimlane_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.swimlane_display.setStyleSheet(get_chart_display_style())
         self.swimlane_display.setAccessibleName("Swim lane diagram display area")
         swimlane_layout.addWidget(self.swimlane_display)
         
@@ -2119,7 +2236,7 @@ class MainWindow(QMainWindow):
         self.vsm_display = QLabel("Enter data above and click Generate")
         self.vsm_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.vsm_display.setMinimumHeight(350)
-        self.vsm_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.vsm_display.setStyleSheet(get_chart_display_style())
         self.vsm_display.setAccessibleName("Value Stream Map display area")
         vsm_layout.addWidget(self.vsm_display)
         
@@ -2197,7 +2314,7 @@ class MainWindow(QMainWindow):
         self.fishbone_display = QLabel("Enter data above and click Generate")
         self.fishbone_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.fishbone_display.setMinimumHeight(350)
-        self.fishbone_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
+        self.fishbone_display.setStyleSheet(get_chart_display_style())
         self.fishbone_display.setAccessibleName("Fishbone diagram display area")
         fishbone_layout.addWidget(self.fishbone_display)
         
@@ -2223,33 +2340,55 @@ class MainWindow(QMainWindow):
             self.tab_widget.setCurrentIndex(index)
     
     def _apply_styles(self):
-        """Apply Watson brand styling with Section 508 accessibility compliance."""
-        # Watson Brand Colors:
-        # Blue (Primary): #6d132a
-        # Sky Blue (Accent): #dcad73
+        """Apply CiviQual brand styling with Section 508 accessibility compliance and dark mode support."""
+        # CiviQual Brand Colors:
+        # Burgundy (Primary): #6d132a
+        # Gold (Accent): #dcad73
         # Gray (Secondary): #b2b2b2
         # Black: #000000
         
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #f5f5f5;
-            }
-            QGroupBox {
+        if DARK_MODE:
+            # Dark mode colors
+            bg_main = "#1e1e1e"
+            bg_widget = "#2d2d2d"
+            bg_alt = "#3d3d3d"
+            text_color = "#dcdcdc"
+            text_secondary = "#a0a0a0"
+            border_color = "#555555"
+            tab_inactive = "#3d3d3d"
+            tab_hover = "#4d4d4d"
+        else:
+            # Light mode colors
+            bg_main = "#f5f5f5"
+            bg_widget = "white"
+            bg_alt = "#e8e8e8"
+            text_color = "#333333"
+            text_secondary = "#666666"
+            border_color = "#b2b2b2"
+            tab_inactive = "#e8e8e8"
+            tab_hover = "#e0e0e0"
+        
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {bg_main};
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 1px solid #b2b2b2;
+                border: 1px solid {border_color};
                 border-radius: 5px;
                 margin-top: 10px;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+                color: {text_color};
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px;
                 color: #6d132a;
-            }
+            }}
             
             /* Buttons with enhanced focus indicators */
-            QPushButton {
+            QPushButton {{
                 background-color: #6d132a;
                 color: white;
                 border: none;
@@ -2257,156 +2396,215 @@ class MainWindow(QMainWindow):
                 border-radius: 4px;
                 font-weight: bold;
                 min-height: 30px;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: #4a0919;
-            }
-            QPushButton:pressed {
+            }}
+            QPushButton:pressed {{
                 background-color: #004166;
-            }
-            QPushButton:focus {
+            }}
+            QPushButton:focus {{
                 outline: none;
-            }
+            }}
             /* Improved disabled button contrast - Section 508 requirement */
-            QPushButton:disabled {
+            QPushButton:disabled {{
                 background-color: #888888;
                 color: #e0e0e0;
-            }
+            }}
             
             /* Tables */
-            QTableWidget {
-                gridline-color: #e0e0e0;
-                background-color: white;
-            }
-            QTableWidget::item {
+            QTableWidget {{
+                gridline-color: {border_color};
+                background-color: {bg_widget};
+                color: {text_color};
+            }}
+            QTableWidget::item {{
                 padding: 5px;
-            }
-            QTableWidget::item:selected {
-                background-color: white;
-                color: black;
-            }
+            }}
+            QTableWidget::item:selected {{
+                background-color: #6d132a;
+                color: white;
+            }}
+            QHeaderView::section {{
+                background-color: {bg_alt};
+                color: {text_color};
+                padding: 5px;
+                border: 1px solid {border_color};
+            }}
             
             /* Tabs */
-            QTabWidget::pane {
-                border: 1px solid #b2b2b2;
-                background-color: white;
-            }
-            QTabBar::tab {
-                background-color: #e8e8e8;
+            QTabWidget::pane {{
+                border: 1px solid {border_color};
+                background-color: {bg_widget};
+            }}
+            QTabBar::tab {{
+                background-color: {tab_inactive};
                 padding: 8px 16px;
                 margin-right: 2px;
-                color: #333333;
-            }
-            QTabBar::tab:selected {
-                background-color: white;
+                color: {text_color};
+            }}
+            QTabBar::tab:selected {{
+                background-color: {bg_widget};
                 border-bottom: 3px solid #6d132a;
                 color: #6d132a;
                 font-weight: bold;
-            }
-            QTabBar::tab:hover:!selected {
-                background-color: #e0e0e0;
-                color: #000000;
-            }
-            QTabBar::tab:focus {
+            }}
+            QTabBar::tab:hover:!selected {{
+                background-color: {tab_hover};
+                color: {text_color};
+            }}
+            QTabBar::tab:focus {{
                 outline: none;
-            }
+            }}
             
             /* Input fields */
-            QComboBox {
-                border: 1px solid #b2b2b2;
+            QComboBox {{
+                border: 1px solid {border_color};
                 border-radius: 3px;
                 padding: 4px 8px;
                 min-height: 24px;
-            }
-            QComboBox:focus {
+                background-color: {bg_widget};
+                color: {text_color};
+            }}
+            QComboBox:focus {{
                 border: 1px solid #6d132a;
-            }
+            }}
+            QComboBox QAbstractItemView {{
+                background-color: {bg_widget};
+                color: {text_color};
+                selection-background-color: #6d132a;
+                selection-color: white;
+            }}
             
-            QLineEdit, QSpinBox, QDoubleSpinBox {
-                border: 1px solid #b2b2b2;
+            QLineEdit, QSpinBox, QDoubleSpinBox {{
+                border: 1px solid {border_color};
                 border-radius: 3px;
                 padding: 4px 8px;
                 min-height: 24px;
-            }
-            QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
+                background-color: {bg_widget};
+                color: {text_color};
+            }}
+            QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {{
                 border: 1px solid #6d132a;
-            }
+            }}
             
-            QTextEdit {
-                border: 1px solid #b2b2b2;
+            QTextEdit {{
+                border: 1px solid {border_color};
                 border-radius: 3px;
-            }
-            QTextEdit:focus {
+                background-color: {bg_widget};
+                color: {text_color};
+            }}
+            QTextEdit:focus {{
                 border: 1px solid #6d132a;
-            }
+            }}
+            
+            /* Labels */
+            QLabel {{
+                color: {text_color};
+            }}
             
             /* Checkboxes */
-            QCheckBox {
+            QCheckBox {{
                 spacing: 8px;
-            }
-            QCheckBox::indicator {
+                color: {text_color};
+            }}
+            QCheckBox::indicator {{
                 width: 18px;
                 height: 18px;
-            }
-            QCheckBox::indicator:checked {
+            }}
+            QCheckBox::indicator:checked {{
                 background-color: #6d132a;
                 border: 1px solid #6d132a;
-            }
-            QCheckBox::indicator:unchecked {
-                background-color: white;
-                border: 1px solid #b2b2b2;
-            }
+            }}
+            QCheckBox::indicator:unchecked {{
+                background-color: {bg_widget};
+                border: 1px solid {border_color};
+            }}
             
             /* Scrollbars */
-            QScrollBar:vertical {
-                background-color: #f0f0f0;
+            QScrollBar:vertical {{
+                background-color: {bg_alt};
                 width: 14px;
-            }
-            QScrollBar::handle:vertical {
-                background-color: #b2b2b2;
+            }}
+            QScrollBar::handle:vertical {{
+                background-color: {border_color};
                 border-radius: 7px;
                 min-height: 30px;
-            }
-            QScrollBar::handle:vertical:hover {
+            }}
+            QScrollBar::handle:vertical:hover {{
                 background-color: #6d132a;
-            }
+            }}
+            QScrollBar:horizontal {{
+                background-color: {bg_alt};
+                height: 14px;
+            }}
+            QScrollBar::handle:horizontal {{
+                background-color: {border_color};
+                border-radius: 7px;
+                min-width: 30px;
+            }}
+            QScrollBar::handle:horizontal:hover {{
+                background-color: #6d132a;
+            }}
             
             /* Menu bar */
-            QMenuBar {
+            QMenuBar {{
                 background-color: #6d132a;
                 color: white;
-            }
-            QMenuBar::item {
+            }}
+            QMenuBar::item {{
                 padding: 6px 12px;
-            }
-            QMenuBar::item:selected {
+            }}
+            QMenuBar::item:selected {{
                 background-color: #4a0919;
                 color: white;
-            }
+            }}
             
             /* Menus */
-            QMenu {
-                background-color: white;
-                border: 1px solid #b2b2b2;
-            }
-            QMenu::item {
+            QMenu {{
+                background-color: {bg_widget};
+                border: 1px solid {border_color};
+                color: {text_color};
+            }}
+            QMenu::item {{
                 padding: 6px 30px 6px 20px;
-            }
-            QMenu::item:selected {
-                background-color: #e0e0e0;
-            }
-            
-            /* Status bar */
-            QStatusBar {
+            }}
+            QMenu::item:selected {{
                 background-color: #6d132a;
                 color: white;
-            }
+            }}
+            
+            /* Status bar */
+            QStatusBar {{
+                background-color: #6d132a;
+                color: white;
+            }}
             
             /* Text browser (for dialogs) */
-            QTextBrowser {
-                border: 1px solid #b2b2b2;
-                background-color: white;
-            }
+            QTextBrowser {{
+                border: 1px solid {border_color};
+                background-color: {bg_widget};
+                color: {text_color};
+            }}
+            
+            /* Splitters */
+            QSplitter::handle {{
+                background-color: {border_color};
+            }}
+            QSplitter::handle:hover {{
+                background-color: #6d132a;
+            }}
+            
+            /* List widgets */
+            QListWidget {{
+                background-color: {bg_widget};
+                color: {text_color};
+                border: 1px solid {border_color};
+            }}
+            QListWidget::item:selected {{
+                background-color: #6d132a;
+                color: white;
+            }}
         """)
     
     # =========================================================================
@@ -2520,7 +2718,7 @@ class MainWindow(QMainWindow):
     # Analysis Methods (Stubs - Implementation in separate modules)
     # =========================================================================
     def _generate_four_up(self):
-        """Generate Watson 4-Up Chart."""
+        """Generate CiviQual 4-Up Chart."""
         if self.data is None:
             QMessageBox.warning(self, "No Data", "Please load a data file first.")
             return
@@ -2556,7 +2754,7 @@ class MainWindow(QMainWindow):
                 # Update accessible description with results
                 stats = self.stats_engine.descriptive_stats(data)
                 self.four_up_display.setAccessibleDescription(
-                    f"Watson 4-Up Chart for {column}. "
+                    f"CiviQual 4-Up Chart for {column}. "
                     f"Mean: {stats['mean']:.2f}, "
                     f"Standard Deviation: {stats['std']:.2f}, "
                     f"Sample Size: {stats['n']}"
@@ -2742,6 +2940,9 @@ class MainWindow(QMainWindow):
         d4 = 3.267
         mr_ucl = d4 * mr_bar
         
+        # Get detailed flagged points using statistics engine
+        flagged = self.stats_engine.detect_special_causes(data, rules)
+        
         # Count out-of-control points
         ooc_high = np.sum(data > ucl)
         ooc_low = np.sum(data < lcl)
@@ -2793,16 +2994,24 @@ class MainWindow(QMainWindow):
         lines.append("-" * 30)
         
         stability_issues = []
+        total_flagged = len(flagged.get('all', []))
         
-        if ooc_total > 0:
-            lines.append(f"Out-of-Control Points:  {ooc_total}")
-            if ooc_high > 0:
-                lines.append(f"  - Above UCL:          {ooc_high}")
-            if ooc_low > 0:
-                lines.append(f"  - Below LCL:          {ooc_low}")
-            stability_issues.append(f"{ooc_total} point(s) outside control limits")
+        if total_flagged > 0:
+            lines.append(f"Flagged Points:         {total_flagged}")
+            
+            # Count by test
+            test_counts = {}
+            for rule_num in [1, 2, 3, 4]:
+                rule_key = f'rule{rule_num}'
+                if rule_key in flagged and len(flagged[rule_key]) > 0:
+                    test_counts[rule_num] = len(flagged[rule_key])
+            
+            for test_num, count in sorted(test_counts.items()):
+                lines.append(f"  - Test {test_num}:            {count} point(s)")
+            
+            stability_issues.append(f"{total_flagged} point(s) flagged by Western Electric rules")
         else:
-            lines.append("Out-of-Control Points:  0")
+            lines.append("Flagged Points:         0")
         
         if chart_type in ['MR Chart', 'I-MR Chart'] and mr_ooc > 0:
             lines.append(f"MR Out-of-Control:      {mr_ooc}")
@@ -2811,6 +3020,31 @@ class MainWindow(QMainWindow):
         lines.append(f"Number of Runs:         {runs}")
         lines.append(f"Expected Runs:          {expected_runs:.1f}")
         lines.append("")
+        
+        # Detailed flagged points by test
+        if total_flagged > 0:
+            lines.append("FLAGGED POINTS DETAIL")
+            lines.append("-" * 30)
+            
+            # Build mapping of point to tests
+            point_tests = {}
+            for rule_num in [1, 2, 3, 4]:
+                rule_key = f'rule{rule_num}'
+                if rule_key in flagged:
+                    for idx in flagged[rule_key]:
+                        if idx not in point_tests:
+                            point_tests[idx] = []
+                        point_tests[idx].append(rule_num)
+            
+            # Sort by observation number
+            for idx in sorted(point_tests.keys()):
+                obs_num = idx + 1  # 1-based observation number
+                value = data[idx]
+                tests = point_tests[idx]
+                test_str = ', '.join(f'T{t}' for t in sorted(tests))
+                lines.append(f"  Obs {obs_num:3d}: {value:10.4f} → {test_str}")
+            
+            lines.append("")
         
         # Interpretation
         lines.append("INTERPRETATION")
@@ -2985,7 +3219,16 @@ class MainWindow(QMainWindow):
             # Cp=1.0 Natural Tolerance
             output += "NATURAL TOLERANCE (Cp=1.0)\n"
             output += "-" * 40 + "\n"
-            output += f"  Natural LSL (Mean - 3σ): {cp_one_lsl:.4f}\n"
+            
+            # Check if all data is positive and natural LSL would be negative
+            all_positive = np.min(data) >= 0
+            display_nat_lsl = cp_one_lsl
+            if all_positive and cp_one_lsl < 0:
+                display_nat_lsl = 0
+                output += f"  Natural LSL (Mean - 3σ): 0.0000 (clamped)\n"
+                output += f"    (Calculated: {cp_one_lsl:.4f}, but data is all positive)\n"
+            else:
+                output += f"  Natural LSL (Mean - 3σ): {cp_one_lsl:.4f}\n"
             output += f"  Natural USL (Mean + 3σ): {cp_one_usl:.4f}\n"
             output += f"  Natural Tolerance (6σ):  {6 * std:.4f}\n"
             output += "\n"
@@ -3894,7 +4137,7 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             "Save Report",
-            str(Path.home() / "Watson_Report.docx"),
+            str(Path.home() / "CiviQual_Report.docx"),
             "Word Document (*.docx);;HTML (*.html);;All Files (*)"
         )
         
@@ -3907,15 +4150,77 @@ class MainWindow(QMainWindow):
     
     def _export_chart(self):
         """Export current chart as image."""
-        file_path, _ = QFileDialog.getSaveFileName(
+        # Map tab indices to their chart display widgets
+        chart_displays = {
+            0: self.four_up_display,           # CiviQual 4-Up Chart
+            2: self.control_display,           # Control Charts
+            3: self.capability_chart_display,  # Capability Analysis
+            4: self.prob_plot_display,         # Probability Plot
+            5: self.anova_chart_display,       # ANOVA
+            6: self.correlation_display,       # Correlation
+            7: self.run_chart_display,         # Run Chart
+            8: self.histogram_display,         # Histogram
+            9: self.boxplot_display,           # Box Plot
+            10: self.pareto_display,           # Pareto Analysis
+            14: self.sipoc_display,            # SIPOC Diagram
+            15: self.process_map_display,      # Process Map
+            16: self.raci_display,             # RACI Matrix
+            17: self.swimlane_display,         # Swim Lane
+            18: self.vsm_display,              # Value Stream Map
+            19: self.fishbone_display,         # Fishbone Diagram
+        }
+        
+        current_tab = self.tab_widget.currentIndex()
+        
+        if current_tab not in chart_displays:
+            QMessageBox.warning(
+                self, "No Chart", 
+                "The current tab does not contain an exportable chart.\n"
+                "Please switch to a tab with a chart and try again."
+            )
+            return
+        
+        display_widget = chart_displays[current_tab]
+        pixmap = display_widget.pixmap()
+        
+        if pixmap is None or pixmap.isNull():
+            QMessageBox.warning(
+                self, "No Chart",
+                "No chart has been generated yet.\n"
+                "Please generate a chart first, then export."
+            )
+            return
+        
+        file_path, selected_filter = QFileDialog.getSaveFileName(
             self,
             "Export Chart",
-            str(Path.home() / "Watson_Chart.png"),
+            str(Path.home() / "CiviQual_Chart.png"),
             "PNG Image (*.png);;JPEG Image (*.jpg);;All Files (*)"
         )
         
         if file_path:
-            self.status_bar.showMessage(f"Chart exported to {file_path}")
+            # Determine format from extension or filter
+            if file_path.lower().endswith('.jpg') or file_path.lower().endswith('.jpeg'):
+                img_format = 'JPEG'
+                quality = 95
+            else:
+                img_format = 'PNG'
+                quality = -1  # Default PNG compression
+                if not file_path.lower().endswith('.png'):
+                    file_path += '.png'
+            
+            if pixmap.save(file_path, img_format, quality):
+                self.status_bar.showMessage(f"Chart exported to {file_path}")
+                QMessageBox.information(
+                    self, "Export Successful",
+                    f"Chart exported successfully to:\n{file_path}"
+                )
+            else:
+                QMessageBox.critical(
+                    self, "Export Failed",
+                    f"Could not save chart to:\n{file_path}\n\n"
+                    "Please check that you have write permissions to this location."
+                )
     
     # =========================================================================
     # Help Methods
@@ -3925,7 +4230,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Quick Reference",
-            "Watson Quick Reference\n\n"
+            "CiviQual Quick Reference\n\n"
             "1. Load Data: Click 'Load Data File' or press Ctrl+O\n"
             "2. Select Column: Choose the numeric column to analyze\n"
             "3. Generate Charts: Use the tabs to access different analyses\n"
@@ -3947,7 +4252,7 @@ class MainWindow(QMainWindow):
     def _show_user_guide(self):
         """Display user guide in a dialog."""
         dialog = QDialog(self)
-        dialog.setWindowTitle("WATSON User Guide")
+        dialog.setWindowTitle("CiviQual User Guide")
         dialog.setMinimumSize(850, 700)
         dialog.resize(900, 750)
         
@@ -3995,7 +4300,7 @@ class MainWindow(QMainWindow):
         </head>
         <body>
         
-        <h1>WATSON User Guide</h1>
+        <h1>CiviQual User Guide</h1>
         <p><strong>Version 1.3</strong> — for Lean Six Sigma</p>
         <p><strong>W</strong>orkbench for <strong>A</strong>nalysis, <strong>T</strong>esting, <strong>S</strong>tatistics, <strong>O</strong>ptimization &amp; <strong>N</strong>avigation</p>
         <p>A statistical analysis tool for Lean Six Sigma practitioners in government and public service organizations.</p>
@@ -4013,8 +4318,8 @@ class MainWindow(QMainWindow):
         
         <h2>Statistical Analysis Tools</h2>
         
-        <h3>Watson 4-Up Chart <span class="phase measure">Measure</span></h3>
-        <p>The signature Watson analysis providing four complementary views of your data in a single chart. Based on the exploratory data analysis methodology developed by Dr. Gregory H. Watson.</p>
+        <h3>CiviQual 4-Up Chart <span class="phase measure">Measure</span></h3>
+        <p>The signature CiviQual analysis providing four complementary views of your data in a single chart. Based on the exploratory data analysis methodology developed by Dr. Gregory H. Watson.</p>
         <table>
             <tr><th>Quadrant</th><th>Chart Type</th><th>Purpose</th></tr>
             <tr><td>Upper Left</td><td>Statistical Summary</td><td>Histogram with normal curve overlay and descriptive statistics</td></tr>
@@ -4261,9 +4566,9 @@ Manager: Approve request</pre>
         </table>
         
         <h2>About DMAIC Phases</h2>
-        <p>Watson tools are organized by Lean Six Sigma DMAIC phases:</p>
+        <p>CiviQual tools are organized by Lean Six Sigma DMAIC phases:</p>
         <table>
-            <tr><th>Phase</th><th>Purpose</th><th>Watson Tools</th></tr>
+            <tr><th>Phase</th><th>Purpose</th><th>CiviQual Tools</th></tr>
             <tr><td><span class="phase define">Define</span></td><td>Define the problem and scope</td><td>SIPOC, Process Map, RACI, Swim Lane</td></tr>
             <tr><td><span class="phase measure">Measure</span></td><td>Measure current performance</td><td>4-Up Chart, Descriptive Stats, I-Chart, Run Chart, Histogram, Box Plot, Probability Plot, Capability</td></tr>
             <tr><td><span class="phase analyze">Analyze</span></td><td>Analyze root causes</td><td>Pareto, ANOVA, Correlation, Fishbone, Value Stream Map, Swim Lane</td></tr>
@@ -4287,10 +4592,9 @@ Manager: Approve request</pre>
         
         <hr>
         <p style="text-align: center; color: #666;">
-        <strong>WATSON for Lean Six Sigma v1.3</strong><br>
-        © 2025 A Step in the Right Direction LLC<br>
-        www.qualityincourts.com<br>
-        <span style="font-size: 0.85em;">Not affiliated with IBM Corporation or IBM Watson.</span>
+        <strong>CiviQual v1.0.0</strong><br>
+        © 2026 A Step in the Right Direction LLC<br>
+        www.qualityincourts.com
         </p>
         
         </body>
@@ -4314,10 +4618,21 @@ Manager: Approve request</pre>
 # =============================================================================
 def main():
     """Main entry point."""
+    global DARK_MODE
+    
     app = QApplication(sys.argv)
-    app.setApplicationName("WATSON")
+    app.setApplicationName("CiviQual")
     app.setOrganizationName("A Step in the Right Direction LLC")
     app.setApplicationVersion(VERSION)
+    
+    # Detect and apply system theme
+    DARK_MODE = is_dark_mode()
+    if DARK_MODE:
+        app.setPalette(create_dark_palette())
+        # Set fusion style for better dark mode support
+        app.setStyle("Fusion")
+    else:
+        app.setPalette(create_light_palette())
     
     # Set application font
     font = QFont("Arial", 10)
