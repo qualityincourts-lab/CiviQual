@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CiviQual Statistics Engine
+WATSON Statistics Engine
 
 Provides statistical analysis capabilities for Lean Six Sigma practitioners.
 
@@ -14,7 +14,7 @@ from scipy import stats
 
 
 class StatisticsEngine:
-    """Statistical analysis engine for CiviQual."""
+    """Statistical analysis engine for Watson."""
     
     def __init__(self):
         """Initialize the statistics engine."""
@@ -225,14 +225,14 @@ class StatisticsEngine:
             dict: Lists of indices flagged by each rule
         """
         if rules is None:
-            rules = {'rule1': True, 'rule2': True, 'rule3': True, 'rule4': True}
+            rules = {'rule1': True, 'rule2': True, 'rule3': True, 'rule4': True, 'rule5': True, 'rule6': True}
         
         data = np.array(data)
         data = data[~np.isnan(data)]
         
         limits = self.control_chart_limits(data)
         if limits is None:
-            return {'rule1': [], 'rule2': [], 'rule3': [], 'rule4': [], 'all': []}
+            return {'rule1': [], 'rule2': [], 'rule3': [], 'rule4': [], 'rule5': [], 'rule6': [], 'all': []}
         
         center = limits['center']
         sigma = limits['sigma']
@@ -244,6 +244,8 @@ class StatisticsEngine:
             'rule2': [],
             'rule3': [],
             'rule4': [],
+            'rule5': [],
+            'rule6': [],
             'all': set()
         }
         
@@ -293,6 +295,52 @@ class StatisticsEngine:
                 
                 if above == 8 or below == 8:
                     flagged['rule4'].append(i)
+                    flagged['all'].add(i)
+        
+        # Rule 5: 6 consecutive points steadily increasing or decreasing (trend)
+        if rules.get('rule5', True):
+            for i in range(5, n):
+                window = data[i-5:i+1]
+                # Check for strictly increasing
+                increasing = all(window[j] < window[j+1] for j in range(5))
+                # Check for strictly decreasing
+                decreasing = all(window[j] > window[j+1] for j in range(5))
+                
+                if increasing or decreasing:
+                    flagged['rule5'].append(i)
+                    flagged['all'].add(i)
+        
+        # Rule 6: 14 consecutive points alternating up and down
+        if rules.get('rule6', True):
+            for i in range(13, n):
+                window = data[i-13:i+1]
+                # Check alternating pattern
+                alternating = True
+                for j in range(13):
+                    if j % 2 == 0:  # Even index: should go up
+                        if window[j] >= window[j+1]:
+                            alternating = False
+                            break
+                    else:  # Odd index: should go down
+                        if window[j] <= window[j+1]:
+                            alternating = False
+                            break
+                
+                if not alternating:
+                    # Try opposite pattern (down first)
+                    alternating = True
+                    for j in range(13):
+                        if j % 2 == 0:  # Even index: should go down
+                            if window[j] <= window[j+1]:
+                                alternating = False
+                                break
+                        else:  # Odd index: should go up
+                            if window[j] >= window[j+1]:
+                                alternating = False
+                                break
+                
+                if alternating:
+                    flagged['rule6'].append(i)
                     flagged['all'].add(i)
         
         flagged['all'] = list(flagged['all'])
@@ -388,12 +436,13 @@ class StatisticsEngine:
             dict: ANOVA results
         """
         groups = []
-        group_names = data[factor_col].unique()
+        valid_group_names = []  # Track only groups with data
         
-        for name in group_names:
+        for name in data[factor_col].unique():
             group_data = data[data[factor_col] == name][response_col].dropna()
             if len(group_data) > 0:
                 groups.append(group_data.values)
+                valid_group_names.append(name)
         
         if len(groups) < 2:
             return {
@@ -431,10 +480,10 @@ class StatisticsEngine:
         ms_between = ss_between / df_between if df_between > 0 else 0
         ms_within = ss_within / df_within if df_within > 0 else 0
         
-        # Group statistics
-        group_means = {str(name): np.mean(groups[i]) for i, name in enumerate(group_names)}
-        group_stds = {str(name): np.std(groups[i], ddof=1) for i, name in enumerate(group_names)}
-        group_ns = {str(name): len(groups[i]) for i, name in enumerate(group_names)}
+        # Group statistics - use valid_group_names which matches groups list
+        group_means = {str(name): np.mean(groups[i]) for i, name in enumerate(valid_group_names)}
+        group_stds = {str(name): np.std(groups[i], ddof=1) for i, name in enumerate(valid_group_names)}
+        group_ns = {str(name): len(groups[i]) for i, name in enumerate(valid_group_names)}
         
         return {
             'f_stat': f_stat if not np.isnan(f_stat) else 0,
@@ -451,6 +500,86 @@ class StatisticsEngine:
             'group_stds': group_stds,
             'group_ns': group_ns
         }
+    
+    def tukey_hsd(self, data, response_col, factor_col):
+        """
+        Perform Tukey's Honest Significant Difference post-hoc test.
+        
+        Args:
+            data: pandas DataFrame
+            response_col: Name of response (Y) column
+            factor_col: Name of factor (X) column
+            
+        Returns:
+            list: List of dicts with pairwise comparisons
+        """
+        from scipy.stats import studentized_range
+        
+        groups = []
+        valid_group_names = []
+        
+        for name in data[factor_col].unique():
+            group_data = data[data[factor_col] == name][response_col].dropna()
+            if len(group_data) > 0:
+                groups.append(group_data.values)
+                valid_group_names.append(str(name))
+        
+        if len(groups) < 2:
+            return []
+        
+        # Calculate pooled variance (MSE)
+        all_data = np.concatenate(groups)
+        n_total = len(all_data)
+        n_groups = len(groups)
+        
+        # Calculate MSE (within-group variance)
+        ss_within = sum(sum((x - np.mean(g))**2 for x in g) for g in groups)
+        df_within = n_total - n_groups
+        mse = ss_within / df_within if df_within > 0 else 1
+        
+        comparisons = []
+        
+        for i in range(len(groups)):
+            for j in range(i + 1, len(groups)):
+                name_i = valid_group_names[i]
+                name_j = valid_group_names[j]
+                mean_i = np.mean(groups[i])
+                mean_j = np.mean(groups[j])
+                n_i = len(groups[i])
+                n_j = len(groups[j])
+                
+                # Mean difference
+                mean_diff = abs(mean_i - mean_j)
+                
+                # Standard error for unequal sample sizes
+                se = np.sqrt(mse * 0.5 * (1/n_i + 1/n_j))
+                
+                # q statistic
+                q_stat = mean_diff / se if se > 0 else 0
+                
+                # Calculate p-value using studentized range distribution
+                # df = df_within, k = n_groups
+                try:
+                    p_value = 1 - studentized_range.cdf(q_stat, n_groups, df_within)
+                except:
+                    # Fallback: use conservative estimate
+                    p_value = 1.0 if q_stat < 2 else 0.05 if q_stat < 4 else 0.01
+                
+                comparisons.append({
+                    'group1': name_i,
+                    'group2': name_j,
+                    'mean1': mean_i,
+                    'mean2': mean_j,
+                    'mean_diff': mean_diff,
+                    'q_stat': q_stat,
+                    'p_value': p_value,
+                    'significant': p_value < 0.05
+                })
+        
+        # Sort by mean difference (largest first)
+        comparisons.sort(key=lambda x: x['mean_diff'], reverse=True)
+        
+        return comparisons
     
     def two_sample_t_test(self, data1, data2, alternative='two-sided'):
         """
