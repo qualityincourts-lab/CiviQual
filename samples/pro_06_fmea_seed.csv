@@ -1,0 +1,4 @@
+Item,FailureMode,Effect,Severity,Cause,Occurrence,Controls,Detection,RPN
+Intake,Incorrect caption,Misrouted filing,7,Missing template,6,Template checker,5,
+Docketing,Omitted party,Notice not served,8,Data-entry error,4,Peer review,6,
+Calendaring,Wrong panel assigned,Re-argue case,9,Lookup failure,3,Auto-validation,7,

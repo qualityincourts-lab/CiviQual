@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CiviQual Stats — User Guide</title>
+<style>
+  :root {
+    --burgundy: #6d132a;
+    --gold: #dcad73;
+    --ink: #1f1f1f;
+    --muted: #6d6d6d;
+    --rule: #e6dccd;
+    --bg: #fbf8f3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+  }
+  header {
+    background: var(--burgundy);
+    color: #fff;
+    padding: 36px 8vw 28px;
+    border-bottom: 5px solid var(--gold);
+  }
+  header h1 { margin: 0 0 4px; font-size: 2rem; letter-spacing: 0.5px; }
+  header .sub { color: var(--gold); font-style: italic; }
+  nav {
+    background: #fff;
+    padding: 12px 8vw;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.92rem;
+  }
+  nav a {
+    color: var(--burgundy);
+    margin-right: 18px;
+    text-decoration: none;
+  }
+  nav a:hover { text-decoration: underline; }
+  main { max-width: 900px; margin: 0 auto; padding: 32px 8vw 64px; }
+  h2 {
+    color: var(--burgundy);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 4px;
+    margin-top: 2.4em;
+  }
+  h3 { color: var(--burgundy); margin-top: 1.6em; }
+  code, kbd {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.93em;
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre {
+    background: #fff; border: 1px solid var(--rule);
+    padding: 12px 14px; overflow-x: auto;
+  }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    background: var(--gold); color: var(--ink);
+    font-size: 0.78rem; letter-spacing: 0.5px; margin-left: 8px;
+    vertical-align: middle;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--rule); }
+  th { background: var(--burgundy); color: #fff; }
+  .callout {
+    background: #fff;
+    border-left: 4px solid var(--gold);
+    padding: 14px 18px; margin: 1.5em 0;
+  }
+  footer {
+    text-align: center; padding: 28px; color: var(--muted);
+    border-top: 1px solid var(--rule); font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CiviQual Stats — User Guide</h1>
+  <div class="sub">v2.0.0 &nbsp;·&nbsp; DMAIC Edition</div>
+</header>
+
+<nav>
+  <a href="#intro">Introduction</a>
+  <a href="#start">Getting Started</a>
+  <a href="#define">Define</a>
+  <a href="#measure">Measure</a>
+  <a href="#analyze">Analyze</a>
+  <a href="#improve">Improve</a>
+  <a href="#control">Control</a>
+  <a href="#license">Pro License</a>
+  <a href="#troubleshoot">Troubleshooting</a>
+</nav>
+
+<main>
+
+<section id="intro">
+<h2>Introduction</h2>
+<p>CiviQual Stats is a free, open-source statistical process control and Lean
+Six Sigma analytics application designed for public-sector organizations. It
+organizes its tools around the DMAIC improvement cycle, providing a
+structured workflow for quality management activities. A separately licensed
+Pro edition unlocks the Green Belt and Black Belt toolkit.</p>
+</section>
+
+<section id="start">
+<h2>Getting Started</h2>
+<h3>Loading data</h3>
+<p>From the <b>File</b> menu choose <b>Open Data…</b> and select a CSV, TSV,
+or Excel file. The first row is treated as column headers. After a file
+loads, a status line at the bottom shows the active dataset.</p>
+
+<h3>Navigating the DMAIC workspace</h3>
+<p>The main window uses top-level tabs for each DMAIC phase. Within each
+phase, left-side sub-tabs list the available tools. Free tools are always
+available; Pro tools appear only when a valid Pro license is installed.</p>
+
+<h3>Running analyses</h3>
+<p>Each tool panel follows the same pattern: inputs on the left, a chart in
+the upper right, and a results pane at the bottom. Click
+<b>Run Analysis</b> to execute the current tool.</p>
+</section>
+
+<section id="define">
+<h2>Define Phase</h2>
+<p>Define tools help scope a project and document processes.</p>
+<ul>
+  <li><b>SIPOC</b> — Suppliers, Inputs, Process, Outputs, Customers.</li>
+  <li><b>Process Map</b> — High-level linear process diagram.</li>
+  <li><b>RACI</b> — Responsibility assignment matrix.</li>
+  <li><b>Data Sampling</b> — Random, systematic, or range-based sampling.</li>
+  <li><b>Split Worksheet</b> — Export subsets by a grouping column.</li>
+</ul>
+</section>
+
+<section id="measure">
+<h2>Measure Phase</h2>
+<p>Measure tools establish baselines and evaluate current performance.</p>
+<ul>
+  <li><b>4-Up Chart</b> — Histogram, run chart, X-chart, and probability plot.</li>
+  <li><b>Descriptive Stats</b> — Summary statistics and Anderson-Darling
+    normality test.</li>
+  <li><b>Control Charts (XmR)</b> — Individuals and moving range chart with
+    Western Electric rule detection.</li>
+  <li><b>Capability</b> — Cp, Cpk, Pp, Ppk and PPM projections.</li>
+  <li><b>Probability Plot</b> — Normal probability plot.</li>
+  <li><b>Histogram</b> — Frequency distribution with normal overlay.</li>
+  <li><b>Box Plot</b> — Quartile distribution view.</li>
+  <li><b>Run Chart</b> — Time series with runs test and Mann-Kendall trend.</li>
+  <li><span class="pill">Pro</span> <b>MSA (Gage R&amp;R)</b>, <b>Sample Size</b>,
+    <b>Advanced Capability</b> (Box-Cox).</li>
+</ul>
+<div class="callout">
+  Western Electric Rules detect: (1) points beyond 3σ, (2) 9 points on one
+  side, (3) 6 trending, (4) 14 alternating, (5) 2 of 3 beyond 2σ,
+  (6) 4 of 5 beyond 1σ, (7) 15 within 1σ (stratification), and
+  (8) 8 beyond 1σ (mixture).
+</div>
+</section>
+
+<section id="analyze">
+<h2>Analyze Phase</h2>
+<ul>
+  <li><b>ANOVA</b> — One-way ANOVA with Tukey HSD post-hoc comparisons.</li>
+  <li><b>Correlation</b> — Pearson and Spearman correlation.</li>
+  <li><b>Pareto</b> — Vital few analysis with cumulative percentage.</li>
+  <li><b>Swim Lane</b>, <b>VSM</b>, <b>Fishbone</b> — Process and cause
+    mapping diagrams.</li>
+  <li><span class="pill">Pro</span> <b>Hypothesis Tests</b>, <b>DOE</b>
+    (2^k factorial), <b>Multiple Regression</b>, <b>Root Cause</b> (5 Whys,
+    Is/Is-Not), <b>Data Tools</b> (outlier detection and transforms).</li>
+</ul>
+</section>
+
+<section id="improve">
+<h2>Improve Phase</h2>
+<ul>
+  <li><b>ROI Calculator</b> — Cumulative net benefit projection.</li>
+  <li><span class="pill">Pro</span> <b>Solution Tools</b> (PICK chart) and
+    <b>Lean Calculators</b> (Takt, OEE, PCE, Little's Law).</li>
+</ul>
+</section>
+
+<section id="control">
+<h2>Control Phase</h2>
+<ul>
+  <li><b>Control Chart Review</b> — Rule-based review of a recent window.</li>
+  <li><span class="pill">Pro</span> <b>CUSUM / EWMA</b>, <b>Planning Tools</b>
+    (FMEA and Control Plan), <b>Chart Editor</b>.</li>
+</ul>
+</section>
+
+<section id="license">
+<h2>Pro License</h2>
+<p>A Pro license is a signed JSON file. To install:</p>
+<ol>
+  <li>Open the <b>License</b> menu and choose <b>Install License File…</b>.</li>
+  <li>Select the license file provided by the publisher.</li>
+  <li>Restart CiviQual Stats. Pro sub-tabs appear in each phase.</li>
+</ol>
+<p>The application uses RSA-PSS signature verification to authenticate the
+license. If the signature is invalid, expired, or missing the
+<code>cryptography</code> package, the application runs in Free mode and
+displays a diagnostic in the <b>License Status</b> dialog.</p>
+</section>
+
+<section id="troubleshoot">
+<h2>Troubleshooting</h2>
+<h3>Pro tools do not appear after installing a license</h3>
+<p>Restart the application. The license file is read only at startup.</p>
+
+<h3>The application fails to launch</h3>
+<p>Open a command prompt, activate the Python environment, and run
+<code>python main.py</code> to see the error trace. Confirm that every
+dependency in <code>requirements.txt</code> is installed.</p>
+
+<h3>Plots look small or misaligned on a high-DPI display</h3>
+<p>Launch from the MSI installer rather than a manually unpacked copy; the
+installer sets the high-DPI environment variable. When running from source,
+ensure <code>QT_AUTO_SCREEN_SCALE_FACTOR=1</code> is in the environment.</p>
+</section>
+
+</main>
+
+<footer>
+  © 2026 A Step in the Right Direction, LLC &nbsp;·&nbsp;
+  <a style="color: var(--burgundy)" href="https://qualityincourts.com">qualityincourts.com</a>
+</footer>
+
+</body>
+</html>
