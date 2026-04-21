@@ -1,7 +1,7 @@
 # CiviQual Stats Section 508 Compliance Report
 
-**Version 1.1.0 - Section 508 Accessibility Release**  
-**Date:** December 2025  
+**Version 1.2.0 - CiviQual Stats Pro Release**  
+**Date:** April 2026  
 **Standard:** Section 508 of the Rehabilitation Act (Revised 2017)  
 **Reference:** WCAG 2.0 Level AA
 
@@ -264,7 +264,7 @@ Provides detailed information about:
 
 We are committed to making CiviQual Stats accessible to all users. If you encounter any accessibility barriers or have suggestions for improvement:
 
-- **Email:** accessibility@qualityincourts.com
+- **Email:** support@qualityincourts.com
 - **Website:** www.qualityincourts.com
 
 ---
@@ -280,5 +280,5 @@ We are committed to making CiviQual Stats accessible to all users. If you encoun
 
 ---
 
-*Report prepared: December 2025*  
+*Report prepared: April 2026*  
 *Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.*

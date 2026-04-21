@@ -1,6 +1,6 @@
 # CiviQual Stats Pro Features
 
-CiviQual Stats Pro extends the free CiviQual Stats application with advanced statistical analysis, quality planning, and Lean Six Sigma tools designed for Green Belt and Black Belt practitioners.
+CiviQual Stats Pro extends the free tier (Yellow Belt and basic Green Belt tools) with advanced statistical analysis, quality planning, and Lean Six Sigma tools designed for advanced Green Belt and Black Belt practitioners.
 
 ## Feature Overview
 

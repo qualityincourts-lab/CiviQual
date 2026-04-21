@@ -10,16 +10,24 @@ OVERVIEW
 
 CiviQual Stats is dual-licensed:
 
-- CORE COMPONENTS (Free Tier): MIT License
-- PRO COMPONENTS (Paid Tier): Proprietary License
+- FREE TIER (MIT License): Yellow Belt and basic Green Belt statistical
+  tools for basic SPC and data analysis
+- PRO TIER (Proprietary License): Advanced Green Belt and Black Belt
+  statistical tools
 
 This allows free use and modification of core statistical tools while
 protecting the advanced Pro features that require a paid license.
 
 
 ============================================================================
-PART 1: MIT LICENSE (Core Components)
+PART 1: MIT LICENSE (Free Tier)
 ============================================================================
+
+Yellow Belt and basic Green Belt statistical tools for basic SPC and
+data analysis. Includes: XmR control charts, histogram with normality
+testing, Pareto analysis, scatter diagrams, box plots, run charts, basic
+capability analysis (Cp/Cpk), descriptive statistics, Anderson-Darling
+normality test, t-tests, ANOVA, correlation analysis, and 4-Up Chart output.
 
 The following files are licensed under the MIT License:
 
@@ -57,8 +65,14 @@ SOFTWARE.
 
 
 ============================================================================
-PART 2: PROPRIETARY LICENSE (Pro Components)
+PART 2: PROPRIETARY LICENSE (Pro Tier)
 ============================================================================
+
+Advanced Green Belt and Black Belt statistical tools. Includes: Gage R&R
+(MSA), Design of Experiments (DOE), non-parametric hypothesis tests, sample
+size calculators, advanced capability analysis (Pp/Ppk, Cpm), multiple
+regression, CUSUM/EWMA charts, Lean calculators, root cause tools, solution
+tools, planning tools, and advanced data tools.
 
 The following files are proprietary and require a paid license for use:
 

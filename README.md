@@ -16,8 +16,8 @@ CiviQual Stats provides the analytical capabilities needed to complete DMAIC pro
 
 | Tier | Description |
 |------|-------------|
-| **CiviQual Stats** (Free) | Yellow Belt statistical tools for basic SPC and data analysis |
-| **CiviQual Stats Pro** (Paid) | Green Belt + Black Belt tools including DOE, MSA, hypothesis testing, and advanced capability analysis |
+| **CiviQual Stats** (Free) | Yellow Belt and basic Green Belt statistical tools for basic SPC and data analysis |
+| **CiviQual Stats Pro** (Paid) | Advanced Green Belt and Black Belt tools including DOE, MSA, hypothesis testing, and advanced capability analysis |
 
 ### CiviQual Suite Family
 
@@ -125,7 +125,7 @@ The signature 4-Up Chart displays four complementary views:
 
 ---
 
-## New in v1.3: Statistical Tools Details
+## Statistical Tools Details
 
 ### Correlation Analysis
 Examines the relationship between two numeric variables:
@@ -320,21 +320,22 @@ CiviQual Stats 1.2.0 meets **Section 508** and **WCAG 2.0 Level AA** accessibili
 - No time limits on operations
 - Large click targets (44x44 pixels minimum)
 
-For accessibility feedback: accessibility@qualityincourts.com
+For accessibility feedback: support@qualityincourts.com
 
 ---
 
 ## License
 
-CiviQual Stats is provided **FREE** for:
-- Government agencies (federal, state, local, tribal)
-- Courts and judicial organizations
-- Public educational institutions
-- 501(c)(3) nonprofit organizations
+CiviQual Stats is dual-licensed:
 
-**Commercial use requires a separate license.**
+- **Free Tier (MIT License):** Yellow Belt and basic Green Belt statistical tools for basic SPC and data analysis
+- **Pro Tier (Proprietary License):** Advanced Green Belt and Black Belt statistical tools
 
-Contact: www.qualityincourts.com
+See [LICENSE](LICENSE) for full details.
+
+**Licensing inquiries:** licensing@qualityincourts.com  
+**Support:** support@qualityincourts.com  
+**Website:** qualityincourts.com
 
 ---
 
@@ -342,10 +343,9 @@ Contact: www.qualityincourts.com
 
 | Version | Date | Description |
 |---------|------|-------------|
-| 1.3.0 | December 2025 | Section 508 Accessibility + CPI Process Diagrams |
-| 1.2.0 | November 2025 | Windows installer, license acceptance dialog |
-| 1.2.0 | April 2026 | CiviQual Stats 4-Up, Pro features Chart, brand identity |
-| 1.0.0 | September 2025 | Initial release |
+| 1.2.0 | April 2026 | CiviQual Stats Pro release, brand identity, enterprise licensing |
+| 1.1.0 | January 2026 | Section 508 Accessibility, CPI Process Diagrams, rebrand to CiviQual |
+| 1.0.0 | September 2025 | Initial release (as Watson for Lean Six Sigma) |
 
 ---
 

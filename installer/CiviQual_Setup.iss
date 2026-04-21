@@ -134,7 +134,6 @@ begin
   WizardForm.WelcomeLabel2.Caption := 
     'This will install CiviQual Stats (Statistical Process Control for Public-Sector Quality Management) on your computer.' + #13#10 + #13#10 +
     'CiviQual Stats is the first product in the CiviQual Suite family of quality management tools, designed for Lean Six Sigma practitioners in government and public service organizations.' + #13#10 + #13#10 +
-    'Version 1.2.0 includes CiviQual Stats Pro features for Green Belt and Black Belt practitioners.' + #13#10 + #13#10 +
-    'The base application is FREE for government agencies and nonprofit organizations. CiviQual Stats Pro features require a separate license.' + #13#10 + #13#10 +
+    'The Free Tier includes Yellow Belt and basic Green Belt statistical tools for basic SPC and data analysis. CiviQual Stats Pro (paid license) adds advanced Green Belt and Black Belt tools.' + #13#10 + #13#10 +
     'Click Next to continue, or Cancel to exit Setup.';
 end;

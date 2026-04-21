@@ -1,67 +1,62 @@
-CiviQual
+CiviQual Stats
 ================================================================================
-Quality Analytics for Public Service
+Statistical Process Control for Public-Sector Quality Management
 ================================================================================
 
 ABOUT THIS SOFTWARE
 -------------------
-CiviQual (Quality Analytics for Public Service) for Lean Six Sigma
-is statistical analysis software designed for public service organizations.
+CiviQual Stats is statistical analysis software designed for Lean Six Sigma
+practitioners in government and public service organizations. It is the first
+product in the CiviQual Suite family of quality management tools.
 
-Named in honor of Dr. Gregory H. Watson, a pioneer in quality management.
+CiviQual Stats provides Yellow Belt and basic Green Belt statistical tools
+for basic SPC and data analysis. CiviQual Stats Pro (paid license) adds
+advanced Green Belt and Black Belt tools.
 
 LICENSE
 -------
-CiviQual software is provided under the MIT License.
+CiviQual Stats is dual-licensed:
+
+- FREE TIER (MIT License): Yellow Belt and basic Green Belt statistical
+  tools for basic SPC and data analysis
+
+- PRO TIER (Proprietary License): Advanced Green Belt and Black Belt
+  statistical tools - requires paid license
+
+Free Tier includes: XmR control charts, histogram with normality testing,
+Pareto analysis, scatter diagrams, box plots, run charts, basic capability
+analysis (Cp/Cpk), descriptive statistics, Anderson-Darling normality test,
+t-tests, ANOVA, correlation analysis, and 4-Up Chart output.
 
 Copyright (c) 2026 A Step in the Right Direction LLC
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-
-INTENDED USE
-------------
-CiviQual is provided FREE for:
-- Federal, state, and local government agencies
-- Courts and judicial organizations
-- Non-profit organizations
-- Educational institutions
-- Any organization seeking to improve public service delivery
+See LICENSE file for complete license terms.
 
 ACCESSIBILITY
 -------------
-CiviQual 1.1.0 meets Section 508 and WCAG 2.0 Level AA standards.
+CiviQual Stats 1.2.0 meets Section 508 and WCAG 2.0 Level AA standards.
 
 WHAT WILL BE INSTALLED
 ----------------------
 This installer will add the following to your system:
 
-• CiviQual application
-• Sample data files
-• Documentation
-• Start Menu shortcuts
-• Desktop shortcut (optional)
+- CiviQual Stats application
+- Sample data files
+- Documentation
+- Start Menu shortcuts
+- Desktop shortcut (optional)
 
 REQUIREMENTS
 ------------
-• Windows 10 or later
-• 100 MB disk space
-• 4 GB RAM recommended
+- Windows 10 or later (64-bit)
+- 200 MB disk space
+- 4 GB RAM minimum (8 GB recommended)
 
 SUPPORT
 -------
-For questions or support, visit: qualityincourts.com
+Website: qualityincourts.com
+Licensing: licensing@qualityincourts.com
+Support: support@qualityincourts.com
 
 ================================================================================
 Click Next to continue with the installation.
