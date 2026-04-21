@@ -1,59 +1,122 @@
-WATSON SOFTWARE LICENSE
-=======================
+CIVIQUAL STATS DUAL LICENSE
+============================
 
-Public Sector and Nonprofit License
-
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 
 
+OVERVIEW
+--------
+
+CiviQual Stats is dual-licensed:
+
+- CORE COMPONENTS (Free Tier): MIT License
+- PRO COMPONENTS (Paid Tier): Proprietary License
+
+This allows free use and modification of core statistical tools while
+protecting the advanced Pro features that require a paid license.
+
+
+============================================================================
+PART 1: MIT LICENSE (Core Components)
+============================================================================
+
+The following files are licensed under the MIT License:
+
+- main.py (core application)
+- statistics_engine.py
+- visualizations.py
+- data_handler.py
+- report_generator.py
+- process_diagrams.py
+- create_icon.py
+- build_installer.py
+- All files in samples/
+- All files in fonts/
+- All files in installer/
+
+MIT License:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+============================================================================
+PART 2: PROPRIETARY LICENSE (Pro Components)
+============================================================================
+
+The following files are proprietary and require a paid license for use:
+
+- license_manager.py
+- msa.py (Measurement Systems Analysis)
+- doe.py (Design of Experiments)
+- hypothesis_tests.py
+- sample_size.py
+- advanced_capability.py
+- multiple_regression.py
+- advanced_control_charts.py
+- lean_calculators.py
+- chart_editor.py
+- root_cause_tools.py
+- solution_tools.py
+- planning_tools.py
+- data_tools.py
+
 GRANT OF LICENSE
-----------------
 
-This software is provided FREE OF CHARGE for use by:
+A valid CiviQual Stats Pro license grants you the right to:
 
-1. Government agencies (federal, state, local, tribal)
-2. Courts and judicial organizations
-3. Public educational institutions
-4. 501(c)(3) nonprofit organizations
-5. Charitable, educational, and religious organizations
-
-
-COMMERCIAL USE
---------------
-
-For-profit commercial use of this software requires a separate commercial
-license. Contact www.qualityincourts.com for licensing information.
-
+1. Use the Pro components for your organization's internal purposes
+2. Install the software on devices owned or controlled by the licensee
+3. Receive updates to the Pro components during the license term
 
 RESTRICTIONS
-------------
 
-You may NOT:
+Without a valid Pro license, you may NOT:
 
-1. Redistribute this software
-2. Modify or create derivative works
-3. Reverse engineer, decompile, or disassemble this software
-4. Remove any copyright notices or proprietary labels
+1. Use, execute, or access Pro component functionality
+2. Redistribute Pro components in source or compiled form
+3. Modify or create derivative works from Pro components
+4. Reverse engineer, decompile, or disassemble Pro components
+5. Remove or alter any license validation mechanisms
+6. Sublicense or transfer your license without written consent
 
+The Pro components are provided for reference and transparency. Viewing the
+source code does not grant any rights to use, copy, or distribute it.
+
+
+============================================================================
+GENERAL TERMS
+============================================================================
 
 TRADEMARKS
-----------
 
-"WATSON for Lean Six Sigma" and the WATSON logo are trademarks of
-A Step in the Right Direction LLC.
+"CiviQual," "CiviQual Stats," "CiviQual Tier," "CiviQual Risk," and the
+CiviQual logo are trademarks of A Step in the Right Direction LLC.
+"Quality in Courts" is a trademark of A Step in the Right Direction LLC.
 
+ATTRIBUTION
 
-DISCLAIMERS
------------
-
-WATSON is not affiliated with, endorsed by, or connected to IBM Corporation
-or IBM Watson. The 4-Up Chart methodology is based on the exploratory data
-analysis approach developed by Dr. Gregory H. Watson.
-
+CiviQual Stats incorporates the 4-Up Chart methodology based on the
+exploratory data analysis approach developed by Dr. Donald J. Wheeler and
+Dr. Gregory H. Watson.
 
 WARRANTY DISCLAIMER
--------------------
 
 THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -63,33 +126,30 @@ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
 ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
-
 LIMITATION OF LIABILITY
------------------------
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW, A STEP IN THE RIGHT DIRECTION LLC
 SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
 OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES.
 
-
 TERMINATION
------------
 
-This license is effective until terminated. Your rights under this license
-will terminate automatically without notice if you fail to comply with any
-of its terms.
-
+This license terminates automatically if you fail to comply with its terms.
+Upon termination, you must cease all use of Pro components and delete any
+copies in your possession.
 
 ACCESSIBILITY
--------------
 
-Version 1.3.0 includes Section 508 accessibility features to ensure users
-with disabilities can effectively use the software. For accessibility
-feedback or assistance, contact accessibility@qualityincourts.com.
+CiviQual Stats includes Section 508 accessibility features. For accessibility
+feedback or assistance, contact support@qualityincourts.com.
 
 
+============================================================================
 CONTACT
--------
+============================================================================
 
 A Step in the Right Direction LLC
-www.qualityincourts.com
+https://qualityincourts.com
+
+For licensing inquiries: licensing@qualityincourts.com
+For support: support@qualityincourts.com
