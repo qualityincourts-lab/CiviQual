@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CiviQual Process Diagrams Module
+CiviQual Stats Process Diagrams Module
 
 Provides Lean Six Sigma project diagram tools:
 - SIPOC Diagram (Define Phase)
@@ -10,7 +10,7 @@ Provides Lean Six Sigma project diagram tools:
 - Value Stream Map (Analyze Phase)
 - Fishbone Diagram (Analyze Phase)
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 """
 
@@ -53,7 +53,7 @@ class ProcessDiagramEngine:
     """Engine for generating Lean Six Sigma process diagrams."""
     
     def __init__(self):
-        self.chart_dir = Path(tempfile.gettempdir()) / 'civiqual_charts'
+        self.chart_dir = Path(tempfile.gettempdir()) / 'watson_charts'
         self.chart_dir.mkdir(exist_ok=True)
         
         # SIPOC column colors (light, accessible)

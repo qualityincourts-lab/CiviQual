@@ -87,7 +87,7 @@ C:\Program Files (x86)\Inno Setup 6\ISCC.exe
 Navigate to the CiviQual source folder:
 
 ```powershell
-cd path\to\CiviQual_v1.3
+cd path\to\CiviQual
 pip install -r requirements.txt
 ```
 
@@ -145,7 +145,7 @@ If you do not have one, you can:
 ### Final Directory Structure
 
 ```
-CiviQual_v1.3/
+CiviQual/
 ├── installer/
 │   ├── CiviQual_Setup.iss      ← Inno Setup script (provided)
 │   ├── LICENSE.rtf           ← License file (provided)
@@ -164,7 +164,7 @@ CiviQual_v1.3/
 
 1. Open **Inno Setup Compiler** from Start Menu
 2. Click **File → Open**
-3. Navigate to `CiviQual_v1.3\installer\CiviQual_Setup.iss`
+3. Navigate to `CiviQual\installer\CiviQual_Setup.iss`
 4. Click **Build → Compile** (or press F9)
 5. Wait for compilation to complete
 6. Find the installer in `installer\output\CiviQual_Setup_1.3.0.exe`
@@ -172,7 +172,7 @@ CiviQual_v1.3/
 ### Option B: Using Command Line
 
 ```powershell
-cd CiviQual_v1.3\installer
+cd CiviQual\installer
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" CiviQual_Setup.iss
 ```
 
@@ -180,7 +180,7 @@ cd CiviQual_v1.3\installer
 
 ```
 Successful compile (X.XX sec). Resulting Setup program filename is:
-C:\...\CiviQual_v1.3\installer\output\CiviQual_Setup_1.3.0.exe
+C:\...\CiviQual\installer\output\CiviQual_Setup_1.3.0.exe
 ```
 
 ---
@@ -196,7 +196,7 @@ C:\...\CiviQual_v1.3\installer\output\CiviQual_Setup_1.3.0.exe
 ### Test Uninstall
 
 1. Go to **Settings → Apps → Installed Apps**
-2. Find **CIVIQUAL**
+2. Find **CiviQual**
 3. Click **Uninstall**
 4. Verify clean removal
 
@@ -204,7 +204,7 @@ C:\...\CiviQual_v1.3\installer\output\CiviQual_Setup_1.3.0.exe
 
 ## Complete Build Script
 
-Save this as `Build-EXE-Installer.ps1` in the CiviQual_v1.3 folder:
+Save this as `Build-EXE-Installer.ps1` in the CiviQual folder:
 
 ```powershell
 # Build-EXE-Installer.ps1
@@ -344,4 +344,4 @@ After successful build:
 
 ---
 
-*Copyright © 2025 A Step in the Right Direction LLC. All Rights Reserved.*
+*Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.*

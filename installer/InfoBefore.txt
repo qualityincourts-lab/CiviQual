@@ -1,85 +1,68 @@
-CIVIQUAL for Lean Six Sigma - Important Information
-=================================================
-
-Workbench for Analysis, Testing, Statistics, Optimization & Navigation
-Version 1.3.0 - Section 508 Accessibility Release
-
-A QualityinCourts.com Project
-www.qualityincourts.com
-
+CiviQual
+================================================================================
+Quality Analytics for Public Service
+================================================================================
 
 ABOUT THIS SOFTWARE
 -------------------
-CIVIQUAL (Workbench for Analysis, Testing, Statistics, Optimization &
-Navigation) is statistical analysis software for Lean Six Sigma.
-This software is NOT affiliated with IBM Corporation or IBM CiviQual.
+CiviQual (Quality Analytics for Public Service) for Lean Six Sigma
+is statistical analysis software designed for public service organizations.
 
+Named in honor of Dr. Gregory H. Watson, a pioneer in quality management.
 
-WHAT'S NEW IN VERSION 1.3.0
----------------------------
-This release focuses on Section 508 accessibility compliance:
+LICENSE
+-------
+CiviQual software is provided under the MIT License.
 
-• Enhanced focus indicators (gold outline on buttons)
-• Background highlight on focused input fields
-• Accessible names and descriptions on all controls
-• Label associations for screen readers
-• Tooltips on all input fields
-• Help → Keyboard Shortcuts dialog
-• Help → Accessibility Information dialog
-• Improved disabled button contrast
-• Full keyboard navigation support
-• Compatible with NVDA, JAWS, and Windows Narrator
+Copyright (c) 2026 A Step in the Right Direction LLC
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-SYSTEM REQUIREMENTS
--------------------
-• Windows 10 or later (64-bit)
-• 4 GB RAM minimum (8 GB recommended)
-• 200 MB available disk space
-• 1280x800 minimum display resolution
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
-LICENSE INFORMATION
--------------------
-CIVIQUAL is provided FREE for:
-• Government agencies (federal, state, local, tribal)
-• Courts and judicial organizations
-• Public educational institutions
-• 501(c)(3) nonprofit organizations
-• Charitable, educational, and religious organizations
+INTENDED USE
+------------
+CiviQual is provided FREE for:
+- Federal, state, and local government agencies
+- Courts and judicial organizations
+- Non-profit organizations
+- Educational institutions
+- Any organization seeking to improve public service delivery
 
-COMMERCIAL USE REQUIRES A SEPARATE LICENSE.
-Contact: www.qualityincourts.com
+ACCESSIBILITY
+-------------
+CiviQual 1.1.0 meets Section 508 and WCAG 2.0 Level AA standards.
 
+WHAT WILL BE INSTALLED
+----------------------
+This installer will add the following to your system:
 
-ACCESSIBILITY SUPPORT
----------------------
-CiviQual 1.3 meets Section 508 and WCAG 2.0 Level AA standards.
+• CiviQual application
+• Sample data files
+• Documentation
+• Start Menu shortcuts
+• Desktop shortcut (optional)
 
-For accessibility feedback or assistance:
-• Email: accessibility@qualityincourts.com
-• Website: www.qualityincourts.com
-
-Press Ctrl+? after launching for keyboard shortcuts.
-Press Ctrl+Shift+F1 for accessibility information.
-
-
-WHAT'S INCLUDED
----------------
-• CIVIQUAL application
-• User Guide (comprehensive documentation)
-• Section 508 Compliance Report
-• Sample data files for learning (11 public service scenarios)
-
+REQUIREMENTS
+------------
+• Windows 10 or later
+• 100 MB disk space
+• 4 GB RAM recommended
 
 SUPPORT
 -------
-For technical support and commercial licensing inquiries:
-Website: www.qualityincourts.com
+For questions or support, visit: qualityincourts.com
 
-
-Copyright (c) 2025 A Step in the Right Direction LLC
-All Rights Reserved.
-
-"CIVIQUAL for Lean Six Sigma" is a trademark of A Step in the Right Direction LLC.
-Not affiliated with IBM Corporation or IBM CiviQual.
+================================================================================
+Click Next to continue with the installation.
+================================================================================

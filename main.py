@@ -1,23 +1,19 @@
 #!/usr/bin/env python3
 """
-WATSON - Workbench for Analysis, Testing, Statistics, Optimization & Navigation
+CiviQual Stats - Statistical Process Control for Public-Sector Quality Management
 
-Version 1.3.0 - Section 508 Accessibility Release
+Version 1.2.0 - Pro Features Release
 
 A statistical analysis tool for Lean Six Sigma practitioners in government.
-Named in honor of Dr. Gregory H. Watson.
+Part of the CiviQual Suite family of quality management tools.
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 
-This version includes comprehensive Section 508 accessibility improvements:
-- Minimal focus indicators for a clean interface
-- Accessible names and descriptions on all interactive controls
-- Label associations using setBuddy()
-- Tooltips on all input fields
-- Help → Keyboard Shortcuts dialog
-- Help → Accessibility Information dialog
-- Improved disabled button contrast
+Features:
+- Section 508 accessibility compliance
+- Yellow Belt statistical tools (free tier)
+- Green Belt / Black Belt tools (CiviQual Stats Pro)
 """
 
 import sys
@@ -54,19 +50,19 @@ from process_diagrams import ProcessDiagramEngine
 # =============================================================================
 # Version Information
 # =============================================================================
-VERSION = "1.3.0"
-VERSION_NAME = "Section 508 Accessibility Release"
+VERSION = "1.2.0"
+VERSION_NAME = "CiviQual Stats Pro Release"
 
 
 # =============================================================================
 # Splash Screen
 # =============================================================================
 class SplashScreen(QDialog):
-    """Splash screen showing WATSON branding and attribution."""
+    """Splash screen showing CiviQual Stats branding."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WATSON for Lean Six Sigma")
+        self.setWindowTitle("CiviQual Stats")
         self.setFixedSize(500, 400)
         self.setWindowFlags(Qt.WindowType.SplashScreen | Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet("""
@@ -88,21 +84,21 @@ class SplashScreen(QDialog):
         layout.addWidget(logo_label)
         
         # Title
-        title = QLabel("WATSON")
+        title = QLabel("CiviQual Stats")
         title.setFont(QFont("Arial", 32, QFont.Weight.Bold))
         title.setStyleSheet("color: #6d132a;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
         
         # Subtitle
-        subtitle = QLabel("for Lean Six Sigma")
+        subtitle = QLabel("Statistical Process Control")
         subtitle.setFont(QFont("Arial", 14))
         subtitle.setStyleSheet("color: #6d132a;")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
         
         # Acronym
-        acronym = QLabel("Workbench for Analysis, Testing, Statistics,\nOptimization & Navigation")
+        acronym = QLabel("for Public-Sector Quality Management")
         acronym.setFont(QFont("Arial", 10))
         acronym.setStyleSheet("color: #666;")
         acronym.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -121,7 +117,7 @@ class SplashScreen(QDialog):
         # Disclaimer
         disclaimer = QLabel(
             "Statistical analysis software for government and public service.\n"
-            "Not affiliated with IBM Corporation or IBM Watson."
+            ""
         )
         disclaimer.setFont(QFont("Arial", 8))
         disclaimer.setStyleSheet("color: #888;")
@@ -129,13 +125,13 @@ class SplashScreen(QDialog):
         layout.addWidget(disclaimer)
         
         # Copyright
-        copyright_label = QLabel("© 2025 A Step in the Right Direction LLC")
+        copyright_label = QLabel("© 2026 A Step in the Right Direction LLC")
         copyright_label.setStyleSheet("color: #999; font-size: 8px;")
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(copyright_label)
     
     def _create_logo(self):
-        """Create Watson logo with burgundy/gold color scheme."""
+        """Create CiviQual Stats logo with burgundy/gold color scheme."""
         pixmap = QPixmap(80, 80)
         pixmap.fill(QColor("#6d132a"))  # Burgundy background
         
@@ -189,9 +185,9 @@ class SplashScreen(QDialog):
 def get_config_path():
     """Get the path to the configuration file."""
     if sys.platform == 'win32':
-        config_dir = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'WATSON'
+        config_dir = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'CiviQualStats'
     else:
-        config_dir = Path.home() / '.watson'
+        config_dir = Path.home() / '.civiqual-stats'
     
     config_dir.mkdir(parents=True, exist_ok=True)
     return config_dir / 'config.json'
@@ -254,7 +250,7 @@ class KeyboardShortcutsDialog(QDialog):
         layout.addWidget(title)
         
         # Description
-        desc = QLabel("Watson supports full keyboard navigation. "
+        desc = QLabel("CiviQual Stats supports full keyboard navigation. "
                      "Use Tab to move between controls, Enter to activate buttons, "
                      "and the shortcuts below for quick access to features.")
         desc.setWordWrap(True)
@@ -316,7 +312,7 @@ class KeyboardShortcutsDialog(QDialog):
         
         <h3>Analysis Actions</h3>
         <table>
-            <tr><td><span class="key">Ctrl+G</span></td><td>Generate Watson 4-Up Chart</td></tr>
+            <tr><td><span class="key">Ctrl+G</span></td><td>Generate CiviQual Stats 4-Up Chart</td></tr>
             <tr><td><span class="key">Ctrl+D</span></td><td>Run descriptive statistics</td></tr>
             <tr><td><span class="key">Ctrl+I</span></td><td>Generate I-Chart</td></tr>
             <tr><td><span class="key">Ctrl+A</span></td><td>Run ANOVA analysis</td></tr>
@@ -375,7 +371,7 @@ class AccessibilityInfoDialog(QDialog):
         # Content browser
         content = QTextBrowser()
         content.setAccessibleName("Accessibility features and information")
-        content.setAccessibleDescription("Detailed information about Watson's accessibility features and compliance")
+        content.setAccessibleDescription("Detailed information about CiviQual Stats's accessibility features and compliance")
         content.setOpenExternalLinks(True)
         content.setHtml(self._get_accessibility_html())
         layout.addWidget(content)
@@ -407,7 +403,7 @@ class AccessibilityInfoDialog(QDialog):
         </style>
         
         <h3>Section 508 Compliance</h3>
-        <p>Watson version 1.3 has been designed to meet <strong>Section 508 of the Rehabilitation Act</strong> 
+        <p>CiviQual Stats version 1.1.0 has been designed to meet <strong>Section 508 of the Rehabilitation Act</strong> 
         and <strong>WCAG 2.0 Level AA</strong> accessibility standards. These standards ensure that people 
         with disabilities can effectively use the software.</p>
         
@@ -452,7 +448,7 @@ class AccessibilityInfoDialog(QDialog):
         </div>
         
         <h3>Assistive Technology Compatibility</h3>
-        <p>Watson has been tested with:</p>
+        <p>CiviQual Stats has been tested with:</p>
         <ul>
             <li>NVDA (NonVisual Desktop Access) - Free screen reader</li>
             <li>Windows Narrator - Built into Windows</li>
@@ -461,7 +457,7 @@ class AccessibilityInfoDialog(QDialog):
         </ul>
         
         <h3>Accessibility Feedback</h3>
-        <p>We are committed to making Watson accessible to all users. If you encounter any 
+        <p>We are committed to making CiviQual Stats accessible to all users. If you encounter any 
         accessibility barriers or have suggestions for improvement, please contact us:</p>
         <ul>
             <li><strong>Website:</strong> <a href="https://www.qualityincourts.com">www.qualityincourts.com</a></li>
@@ -486,7 +482,7 @@ class LicenseDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("WATSON License Agreement")
+        self.setWindowTitle("CiviQual Stats License Agreement")
         self.setMinimumSize(600, 500)
         self.setModal(True)
         self.accepted_license = False
@@ -497,7 +493,7 @@ class LicenseDialog(QDialog):
         layout = QVBoxLayout(self)
         
         # Title
-        title = QLabel("WATSON Software License Agreement")
+        title = QLabel("CiviQual Stats Software License Agreement")
         title.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         title.setAccessibleName("License Agreement Title")
         layout.addWidget(title)
@@ -543,10 +539,10 @@ class LicenseDialog(QDialog):
             h3 { color: #6d132a; }
         </style>
         
-        <h3>WATSON Software License</h3>
+        <h3>CiviQual Stats Software License</h3>
         <h4>Public Sector and Nonprofit License</h4>
         
-        <p>Copyright © 2025 A Step in the Right Direction LLC. All Rights Reserved.</p>
+        <p>Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.</p>
         
         <p><strong>FREE USE PERMITTED FOR:</strong></p>
         <ul>
@@ -601,7 +597,7 @@ class AboutDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About WATSON")
+        self.setWindowTitle("About CiviQual Stats")
         self.setFixedSize(500, 580)
         self.setModal(True)
         self._setup_ui()
@@ -615,15 +611,15 @@ class AboutDialog(QDialog):
         logo_pixmap = self._create_logo()
         logo_label.setPixmap(logo_pixmap)
         logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        logo_label.setAccessibleName("Watson logo")
+        logo_label.setAccessibleName("CiviQual Stats logo")
         layout.addWidget(logo_label)
         
         # Title
-        title = QLabel("WATSON")
+        title = QLabel("CiviQual Stats")
         title.setFont(QFont("Arial", 24, QFont.Weight.Bold))
         title.setStyleSheet("color: #6d132a;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setAccessibleName("Watson application title")
+        title.setAccessibleName("CiviQual Stats application title")
         layout.addWidget(title)
         
         # Product subtitle
@@ -634,10 +630,10 @@ class AboutDialog(QDialog):
         layout.addWidget(product_subtitle)
         
         # Acronym
-        subtitle = QLabel("Workbench for Analysis, Testing, Statistics,\nOptimization & Navigation")
+        subtitle = QLabel("Quality Analytics for Public Service")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet("font-size: 10px; color: #666;")
-        subtitle.setAccessibleName("Watson full name")
+        subtitle.setAccessibleName("CiviQual Stats full name")
         layout.addWidget(subtitle)
         
         # Version
@@ -674,7 +670,7 @@ class AboutDialog(QDialog):
         
         # Copyright
         copyright_label = QLabel(
-            "© 2025 A Step in the Right Direction LLC\n"
+            "© 2026 A Step in the Right Direction LLC\n"
             "www.qualityincourts.com"
         )
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -683,7 +679,7 @@ class AboutDialog(QDialog):
         
         # Disclaimer
         disclaimer_label = QLabel(
-            "Not affiliated with IBM Corporation or IBM Watson."
+            ""
         )
         disclaimer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         disclaimer_label.setStyleSheet("color: #888; font-size: 9px;")
@@ -700,7 +696,7 @@ class AboutDialog(QDialog):
         layout.addWidget(close_btn, alignment=Qt.AlignmentFlag.AlignCenter)
     
     def _create_logo(self):
-        """Create Watson logo programmatically."""
+        """Create CiviQual Stats logo programmatically."""
         pixmap = QPixmap(80, 80)
         pixmap.fill(QColor("#6d132a"))
         
@@ -753,11 +749,11 @@ class AboutDialog(QDialog):
 # Main Window
 # =============================================================================
 class MainWindow(QMainWindow):
-    """Main application window for Watson with Section 508 accessibility."""
+    """Main application window for CiviQual Stats with Section 508 accessibility."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WATSON for Lean Six Sigma")
+        self.setWindowTitle("CiviQual Stats")
         self.setMinimumSize(1200, 800)
         
         # Set window icon
@@ -788,7 +784,7 @@ class MainWindow(QMainWindow):
     def _create_window_icon(self):
         """Create a default icon for the window."""
         try:
-            icon_path = Path(__file__).parent / "watson_icon.png"
+            icon_path = Path(__file__).parent / "civiqual_icon.png"
             if icon_path.exists():
                 self.setWindowIcon(QIcon(str(icon_path)))
             else:
@@ -870,9 +866,9 @@ class MainWindow(QMainWindow):
         analysis_menu = menubar.addMenu("&Analysis")
         analysis_menu.setAccessibleName("Analysis menu")
         
-        four_up_action = QAction("Watson &4-Up Chart", self)
+        four_up_action = QAction("CiviQual Stats &4-Up Chart", self)
         four_up_action.setShortcut("Ctrl+G")
-        four_up_action.setStatusTip("Generate Watson 4-Up exploratory data analysis chart")
+        four_up_action.setStatusTip("Generate CiviQual Stats 4-Up exploratory data analysis chart")
         four_up_action.triggered.connect(self._generate_four_up)
         analysis_menu.addAction(four_up_action)
         
@@ -939,7 +935,7 @@ class MainWindow(QMainWindow):
         
         help_menu.addSeparator()
         
-        about_action = QAction("&About WATSON", self)
+        about_action = QAction("&About CiviQual Stats", self)
         about_action.setStatusTip("About this application")
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
@@ -1031,21 +1027,21 @@ class MainWindow(QMainWindow):
     
     def _create_analysis_tabs(self):
         """Create analysis tab widgets with accessibility support."""
-        # Watson 4-Up Chart tab
+        # CiviQual Stats 4-Up Chart tab
         four_up_tab = QWidget()
-        four_up_tab.setAccessibleName("Watson 4-Up Chart analysis tab")
+        four_up_tab.setAccessibleName("CiviQual Stats 4-Up Chart analysis tab")
         four_up_layout = QVBoxLayout(four_up_tab)
         
         four_up_controls = QHBoxLayout()
         
         self.four_up_btn = QPushButton("Generate 4-Up Chart")
         self.four_up_btn.clicked.connect(self._generate_four_up)
-        self.four_up_btn.setAccessibleName("Generate Watson 4-Up Chart")
+        self.four_up_btn.setAccessibleName("Generate CiviQual Stats 4-Up Chart")
         self.four_up_btn.setAccessibleDescription(
-            "Generate a Watson 4-Up exploratory data analysis chart showing statistical summary, "
+            "Generate a CiviQual Stats 4-Up exploratory data analysis chart showing statistical summary, "
             "probability plot, I-Chart, and capability analysis. Keyboard shortcut: Ctrl+G"
         )
-        self.four_up_btn.setToolTip("Generate Watson 4-Up Chart - Ctrl+G")
+        self.four_up_btn.setToolTip("Generate CiviQual Stats 4-Up Chart - Ctrl+G")
         four_up_controls.addWidget(self.four_up_btn)
         
         four_up_controls.addStretch()
@@ -1073,13 +1069,13 @@ class MainWindow(QMainWindow):
         self.four_up_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.four_up_display.setMinimumHeight(500)
         self.four_up_display.setStyleSheet("background-color: white; border: 1px solid #ccc;")
-        self.four_up_display.setAccessibleName("Watson 4-Up Chart display area")
+        self.four_up_display.setAccessibleName("CiviQual Stats 4-Up Chart display area")
         self.four_up_display.setAccessibleDescription(
-            "Displays the generated Watson 4-Up Chart with four analysis views"
+            "Displays the generated CiviQual Stats 4-Up Chart with four analysis views"
         )
         four_up_layout.addWidget(self.four_up_display)
         
-        self.tab_widget.addTab(four_up_tab, "Watson 4-Up Chart")
+        self.tab_widget.addTab(four_up_tab, "CiviQual Stats 4-Up Chart")
         
         # Descriptive Statistics tab
         desc_tab = QWidget()
@@ -2298,8 +2294,8 @@ class MainWindow(QMainWindow):
             self.tab_widget.setCurrentIndex(index)
     
     def _apply_styles(self):
-        """Apply Watson brand styling with Section 508 accessibility compliance."""
-        # Watson Brand Colors:
+        """Apply CiviQual brand styling with Section 508 accessibility compliance."""
+        # CiviQual Stats Brand Colors:
         # Blue (Primary): #6d132a
         # Sky Blue (Accent): #dcad73
         # Gray (Secondary): #b2b2b2
@@ -2595,7 +2591,7 @@ class MainWindow(QMainWindow):
     # Analysis Methods (Stubs - Implementation in separate modules)
     # =========================================================================
     def _generate_four_up(self):
-        """Generate Watson 4-Up Chart."""
+        """Generate CiviQual Stats 4-Up Chart."""
         if self.data is None:
             QMessageBox.warning(self, "No Data", "Please load a data file first.")
             return
@@ -2631,7 +2627,7 @@ class MainWindow(QMainWindow):
                 # Update accessible description with results
                 stats = self.stats_engine.descriptive_stats(data)
                 self.four_up_display.setAccessibleDescription(
-                    f"Watson 4-Up Chart for {column}. "
+                    f"CiviQual Stats 4-Up Chart for {column}. "
                     f"Mean: {stats['mean']:.2f}, "
                     f"Standard Deviation: {stats['std']:.2f}, "
                     f"Sample Size: {stats['n']}"
@@ -2958,79 +2954,6 @@ class MainWindow(QMainWindow):
         
         return "\n".join(lines)
     
-    def _export_flagged_points(self):
-        """Export all flagged control chart observations with full data rows."""
-        if self.data is None:
-            QMessageBox.warning(self, "No Data", "Please load a data file first.")
-            return
-        
-        if not hasattr(self, '_last_control_chart_data') or self._last_control_chart_data is None:
-            QMessageBox.warning(self, "No Chart", "Please generate a control chart first.")
-            return
-        
-        try:
-            data = self._last_control_chart_data
-            column = self._last_control_chart_column
-            rules = self._last_control_chart_rules
-            
-            # Get flagged points
-            flagged = self.stats_engine.detect_special_causes(data, rules)
-            
-            if not flagged['all']:
-                QMessageBox.information(self, "No Flagged Points", 
-                    "No control chart rule violations detected.\nThere are no flagged points to export.")
-                return
-            
-            # Get original data indices for flagged points
-            # Find which rows in original data correspond to flagged indices
-            valid_mask = self.data[column].notna()
-            valid_indices = self.data.index[valid_mask].tolist()
-            
-            flagged_original_indices = [valid_indices[i] for i in flagged['all'] if i < len(valid_indices)]
-            
-            # Create export dataframe with full rows
-            export_df = self.data.loc[flagged_original_indices].copy()
-            export_df.insert(0, 'Observation_Number', [i + 1 for i in flagged['all'] if i < len(valid_indices)])
-            
-            # Add columns for which tests flagged each point
-            test_flags = []
-            for i in flagged['all']:
-                if i >= len(valid_indices):
-                    continue
-                tests = []
-                if i in flagged['rule1']:
-                    tests.append('T1')
-                if i in flagged['rule2']:
-                    tests.append('T2')
-                if i in flagged['rule3']:
-                    tests.append('T3')
-                if i in flagged['rule4']:
-                    tests.append('T4')
-                if i in flagged.get('rule5', []):
-                    tests.append('T5')
-                if i in flagged.get('rule6', []):
-                    tests.append('T6')
-                test_flags.append(','.join(tests) if tests else '')
-            
-            export_df.insert(1, 'Tests_Triggered', test_flags)
-            
-            # Prompt for save location
-            file_path, _ = QFileDialog.getSaveFileName(
-                self, "Export Flagged Points", f"flagged_points_{column}.csv",
-                "CSV Files (*.csv)"
-            )
-            
-            if file_path:
-                export_df.to_csv(file_path, index=False)
-                self.status_bar.showMessage(f"Exported {len(export_df)} flagged points to {file_path}")
-                QMessageBox.information(self, "Export Complete", 
-                    f"Exported {len(export_df)} flagged observations to:\n{file_path}\n\n"
-                    f"Columns: {len(export_df.columns)}\n"
-                    f"Includes: Observation number, tests triggered, and all data columns")
-                    
-        except Exception as e:
-            QMessageBox.critical(self, "Export Error", f"Failed to export: {str(e)}")
-    
     def _run_capability(self):
         """Run capability analysis with chart and enhanced interpretation."""
         if self.data is None:
@@ -3227,7 +3150,7 @@ class MainWindow(QMainWindow):
             
             # Generate multi-series probability plot with 80% line option
             title = "Probability Plot Comparison" if len(datasets) > 1 else f"Probability Plot: {labels[0]}"
-            chart_path = self.viz_engine.generate_multi_probability_plot_with_80(
+            chart_path = self.viz_engine.generate_multi_probability_plot(
                 datasets, labels, title, show_80_line=show_80_line
             )
             
@@ -3487,11 +3410,11 @@ class MainWindow(QMainWindow):
             # Store full rows or just selected column
             if export_full_row:
                 self._last_sample_df = valid_data.iloc[sample_indices].copy()
-                self._last_sample_df.insert(0, 'Original_Row', valid_data.index[sample_indices])
+                self._last_sample_df.insert(0, 'Original_Row', valid_data.index[sample_indices] + 1)
             else:
                 sample_data = valid_data[column].iloc[sample_indices]
                 self._last_sample_df = pd.DataFrame({
-                    'Original_Row': valid_data.index[sample_indices],
+                    'Original_Row': valid_data.index[sample_indices] + 1,
                     column: sample_data.values
                 })
             
@@ -3523,13 +3446,8 @@ class MainWindow(QMainWindow):
             output += "Sample Values:\n"
             output += "-" * 30 + "\n"
             
-            if export_full_row:
-                output += f"Columns: {', '.join(self._last_sample_df.columns)}\n\n"
-                for i, (idx, row) in enumerate(self._last_sample_df.iterrows(), 1):
-                    output += f"{i:3d}. Row {row['Original_Row']}: {row[column]}\n"
-            else:
-                for i, (idx, row) in enumerate(self._last_sample_df.iterrows(), 1):
-                    output += f"{i:3d}. Row {row['Original_Row']}: {row[column]}\n"
+            for i, (idx, row) in enumerate(self._last_sample_df.iterrows(), 1):
+                output += f"{i:3d}. Row {int(row['Original_Row'])}: {row[column] if column in self._last_sample_df.columns else row.iloc[1]}\n"
             
             self.sampling_output.setPlainText(output)
             self.status_bar.showMessage(f"Generated sample of {actual_sample_size} records")
@@ -3575,7 +3493,7 @@ class MainWindow(QMainWindow):
             # Get selected rows
             if export_full_row:
                 self._last_sample_df = self.data.iloc[valid_indices].copy()
-                self._last_sample_df.insert(0, 'Original_Row', [i + 1 for i in valid_indices])  # 1-based for display
+                self._last_sample_df.insert(0, 'Original_Row', [i + 1 for i in valid_indices])
             else:
                 self._last_sample_df = pd.DataFrame({
                     'Original_Row': [i + 1 for i in valid_indices],
@@ -3598,9 +3516,9 @@ class MainWindow(QMainWindow):
             
             for i, (idx, row) in enumerate(self._last_sample_df.iterrows(), 1):
                 if column in self._last_sample_df.columns:
-                    output += f"{i:3d}. Row {row['Original_Row']}: {row[column]}\n"
+                    output += f"{i:3d}. Row {int(row['Original_Row'])}: {row[column]}\n"
                 else:
-                    output += f"{i:3d}. Row {row['Original_Row']}\n"
+                    output += f"{i:3d}. Row {int(row['Original_Row'])}\n"
             
             self.sampling_output.setPlainText(output)
             self.status_bar.showMessage(f"Selected {len(valid_indices)} observations")
@@ -3629,6 +3547,78 @@ class MainWindow(QMainWindow):
                     f"Columns: {len(self._last_sample_df.columns)}")
             except Exception as e:
                 QMessageBox.critical(self, "Export Error", f"Failed to export: {str(e)}")
+    
+    def _export_flagged_points(self):
+        """Export all flagged control chart observations with full data rows."""
+        if self.data is None:
+            QMessageBox.warning(self, "No Data", "Please load a data file first.")
+            return
+        
+        if not hasattr(self, '_last_control_chart_data') or self._last_control_chart_data is None:
+            QMessageBox.warning(self, "No Chart", "Please generate a control chart first.")
+            return
+        
+        try:
+            data = self._last_control_chart_data
+            column = self._last_control_chart_column
+            rules = self._last_control_chart_rules
+            
+            # Get flagged points
+            flagged = self.stats_engine.detect_special_causes(data, rules)
+            
+            if not flagged['all']:
+                QMessageBox.information(self, "No Flagged Points", 
+                    "No control chart rule violations detected.\nThere are no flagged points to export.")
+                return
+            
+            # Get original data indices for flagged points
+            valid_mask = self.data[column].notna()
+            valid_indices = self.data.index[valid_mask].tolist()
+            
+            flagged_original_indices = [valid_indices[i] for i in flagged['all'] if i < len(valid_indices)]
+            
+            # Create export dataframe with full rows
+            export_df = self.data.loc[flagged_original_indices].copy()
+            export_df.insert(0, 'Observation_Number', [i + 1 for i in flagged['all'] if i < len(valid_indices)])
+            
+            # Add columns for which tests flagged each point
+            test_flags = []
+            for i in flagged['all']:
+                if i >= len(valid_indices):
+                    continue
+                tests = []
+                if i in flagged['rule1']:
+                    tests.append('T1')
+                if i in flagged['rule2']:
+                    tests.append('T2')
+                if i in flagged['rule3']:
+                    tests.append('T3')
+                if i in flagged['rule4']:
+                    tests.append('T4')
+                if i in flagged.get('rule5', []):
+                    tests.append('T5')
+                if i in flagged.get('rule6', []):
+                    tests.append('T6')
+                test_flags.append(','.join(tests) if tests else '')
+            
+            export_df.insert(1, 'Tests_Triggered', test_flags)
+            
+            # Prompt for save location
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export Flagged Points", f"flagged_points_{column}.csv",
+                "CSV Files (*.csv)"
+            )
+            
+            if file_path:
+                export_df.to_csv(file_path, index=False)
+                self.status_bar.showMessage(f"Exported {len(export_df)} flagged points to {file_path}")
+                QMessageBox.information(self, "Export Complete", 
+                    f"Exported {len(export_df)} flagged observations to:\n{file_path}\n\n"
+                    f"Columns: {len(export_df.columns)}\n"
+                    f"Includes: Observation number, tests triggered, and all data columns")
+                    
+        except Exception as e:
+            QMessageBox.critical(self, "Export Error", f"Failed to export: {str(e)}")
     
     # =================================================================
     # Split Worksheet Methods
@@ -4191,7 +4181,7 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             "Save Report",
-            str(Path.home() / "Watson_Report.docx"),
+            str(Path.home() / "CiviQualStats_Report.docx"),
             "Word Document (*.docx);;HTML (*.html);;All Files (*)"
         )
         
@@ -4207,7 +4197,7 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             "Export Chart",
-            str(Path.home() / "Watson_Chart.png"),
+            str(Path.home() / "CiviQualStats_Chart.png"),
             "PNG Image (*.png);;JPEG Image (*.jpg);;All Files (*)"
         )
         
@@ -4222,7 +4212,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Quick Reference",
-            "Watson Quick Reference\n\n"
+            "CiviQual Stats Quick Reference\n\n"
             "1. Load Data: Click 'Load Data File' or press Ctrl+O\n"
             "2. Select Column: Choose the numeric column to analyze\n"
             "3. Generate Charts: Use the tabs to access different analyses\n"
@@ -4244,7 +4234,7 @@ class MainWindow(QMainWindow):
     def _show_user_guide(self):
         """Display user guide in a dialog."""
         dialog = QDialog(self)
-        dialog.setWindowTitle("WATSON User Guide")
+        dialog.setWindowTitle("CiviQual Stats User Guide")
         dialog.setMinimumSize(850, 700)
         dialog.resize(900, 750)
         
@@ -4292,9 +4282,8 @@ class MainWindow(QMainWindow):
         </head>
         <body>
         
-        <h1>WATSON User Guide</h1>
-        <p><strong>Version 1.3</strong> — for Lean Six Sigma</p>
-        <p><strong>W</strong>orkbench for <strong>A</strong>nalysis, <strong>T</strong>esting, <strong>S</strong>tatistics, <strong>O</strong>ptimization &amp; <strong>N</strong>avigation</p>
+        <h1>CiviQual Stats User Guide</h1>
+        <p><strong>Version 1.1.0</strong> — Quality Analytics for Public Service</p>
         <p>A statistical analysis tool for Lean Six Sigma practitioners in government and public service organizations.</p>
         
         <h2>Getting Started</h2>
@@ -4310,8 +4299,8 @@ class MainWindow(QMainWindow):
         
         <h2>Statistical Analysis Tools</h2>
         
-        <h3>Watson 4-Up Chart <span class="phase measure">Measure</span></h3>
-        <p>The signature Watson analysis providing four complementary views of your data in a single chart. Based on the exploratory data analysis methodology developed by Dr. Gregory H. Watson.</p>
+        <h3>CiviQual Stats 4-Up Chart <span class="phase measure">Measure</span></h3>
+        <p>The signature CiviQual Stats analysis providing four complementary views of your data in a single chart. Based on the exploratory data analysis methodology developed by Dr. Gregory H. Watson.</p>
         <table>
             <tr><th>Quadrant</th><th>Chart Type</th><th>Purpose</th></tr>
             <tr><td>Upper Left</td><td>Statistical Summary</td><td>Histogram with normal curve overlay and descriptive statistics</td></tr>
@@ -4337,12 +4326,14 @@ class MainWindow(QMainWindow):
         <h4>Western Electric Rules for Special Cause Detection:</h4>
         <table>
             <tr><th>Rule</th><th>Description</th><th>Indication</th></tr>
-            <tr><td>Rule 1</td><td>1 point beyond 3σ</td><td>Extreme value - investigate immediately</td></tr>
-            <tr><td>Rule 2</td><td>9 consecutive points on same side of center</td><td>Process shift</td></tr>
-            <tr><td>Rule 3</td><td>6 consecutive points trending up or down</td><td>Process drift/trend</td></tr>
-            <tr><td>Rule 4</td><td>14 points alternating up and down</td><td>Over-adjustment or two processes</td></tr>
+            <tr><td>Test 1</td><td>1 point beyond 3σ</td><td>Extreme value - investigate immediately</td></tr>
+            <tr><td>Test 2</td><td>9 consecutive points on same side of center</td><td>Process shift</td></tr>
+            <tr><td>Test 3</td><td>6 consecutive points trending up or down</td><td>Process drift/trend</td></tr>
+            <tr><td>Test 4</td><td>14 points alternating up and down</td><td>Over-adjustment or two processes</td></tr>
+            <tr><td>Test 5</td><td>2 of 3 consecutive points beyond 2σ (same side)</td><td>Early warning of shift</td></tr>
+            <tr><td>Test 6</td><td>4 of 5 consecutive points beyond 1σ (same side)</td><td>Small sustained shift</td></tr>
         </table>
-        <div class="tip"><strong>Interpretation:</strong> Flagged points appear in red. A stable process shows only common cause variation (random scatter within limits).</div>
+        <div class="tip"><strong>Interpretation:</strong> Flagged points appear in red. A stable process shows only common cause variation (random scatter within limits). Use "Export Flagged Points" to get full data rows for investigation.</div>
         
         <h3>Capability Analysis <span class="phase measure">Measure</span></h3>
         <p>Compares process performance to customer specifications.</p>
@@ -4558,9 +4549,9 @@ Manager: Approve request</pre>
         </table>
         
         <h2>About DMAIC Phases</h2>
-        <p>Watson tools are organized by Lean Six Sigma DMAIC phases:</p>
+        <p>CiviQual Stats tools are organized by Lean Six Sigma DMAIC phases:</p>
         <table>
-            <tr><th>Phase</th><th>Purpose</th><th>Watson Tools</th></tr>
+            <tr><th>Phase</th><th>Purpose</th><th>CiviQual Stats Tools</th></tr>
             <tr><td><span class="phase define">Define</span></td><td>Define the problem and scope</td><td>SIPOC, Process Map, RACI, Swim Lane</td></tr>
             <tr><td><span class="phase measure">Measure</span></td><td>Measure current performance</td><td>4-Up Chart, Descriptive Stats, I-Chart, Run Chart, Histogram, Box Plot, Probability Plot, Capability</td></tr>
             <tr><td><span class="phase analyze">Analyze</span></td><td>Analyze root causes</td><td>Pareto, ANOVA, Correlation, Fishbone, Value Stream Map, Swim Lane</td></tr>
@@ -4584,10 +4575,10 @@ Manager: Approve request</pre>
         
         <hr>
         <p style="text-align: center; color: #666;">
-        <strong>WATSON for Lean Six Sigma v1.3</strong><br>
-        © 2025 A Step in the Right Direction LLC<br>
+        <strong>CiviQual Stats v1.1.0</strong><br>
+        © 2026 A Step in the Right Direction LLC<br>
         www.qualityincourts.com<br>
-        <span style="font-size: 0.85em;">Not affiliated with IBM Corporation or IBM Watson.</span>
+        <span style="font-size: 0.85em;"></span>
         </p>
         
         </body>
@@ -4612,7 +4603,7 @@ Manager: Approve request</pre>
 def main():
     """Main entry point."""
     app = QApplication(sys.argv)
-    app.setApplicationName("WATSON")
+    app.setApplicationName("CiviQual Stats")
     app.setOrganizationName("A Step in the Right Direction LLC")
     app.setApplicationVersion(VERSION)
     

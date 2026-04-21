@@ -1,7 +1,7 @@
 CiviQual Fonts Directory
-========================
+======================
 
-CiviQual v1.0.0 uses the Arial font family for all user interface elements.
+CiviQual v1.1.0 uses the Arial font family for all user interface elements.
 Arial is pre-installed on all major operating systems (Windows, macOS, Linux).
 No additional font installation is required.
 

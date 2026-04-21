@@ -1,37 +1,53 @@
-# CiviQual
+# CiviQual Stats
 
-**Quality Analytics for Public Service**
+**Statistical Process Control for Public-Sector Quality Management**
 
-Version 1.0.0 - Initial Public Release
+Version 1.2.0 - CiviQual Stats Pro Release
 
 ---
 
 ## Overview
 
-CiviQual is a statistical analysis tool designed for Lean Six Sigma practitioners in government and public service organizations. It provides the analytical capabilities needed to complete DMAIC projects, replicating the methods taught in Lean Six Sigma Green Belt and Black Belt training.
+CiviQual Stats is a statistical analysis tool designed for Lean Six Sigma practitioners in government and public service organizations. It is the first product in the **CiviQual Suite** family of quality management tools.
 
-### About CiviQual
+CiviQual Stats provides the analytical capabilities needed to complete DMAIC projects, replicating the methods taught in Lean Six Sigma Green Belt and Black Belt training.
 
-CiviQual (pronounced "SIV-i-qual") combines "Civic" and "Quality" to emphasize its focus on quality improvement in public service. The methodology is based on the exploratory data analysis approach developed by Dr. Gregory H. Watson.
+### Product Tiers
 
-**Free for government, courts, and nonprofit organizations.**
+| Tier | Description |
+|------|-------------|
+| **CiviQual Stats** (Free) | Yellow Belt statistical tools for basic SPC and data analysis |
+| **CiviQual Stats Pro** (Paid) | Green Belt + Black Belt tools including DOE, MSA, hypothesis testing, and advanced capability analysis |
+
+### CiviQual Suite Family
+
+CiviQual Stats is the flagship product in the CiviQual Suite:
+
+- **CiviQual Stats** - Statistical process control (this product)
+- **CiviQual Tier** - G1:2026 maturity assessment (in development)
+- **CiviQual Risk** - Enterprise risk management platform (planned)
 
 ---
 
-## What's New in Version 1.0.0
+## What's New in Version 1.2.0
 
-This initial release includes:
+This release introduces the **CiviQual Stats Pro** tier with advanced statistical tools, and rebrands the product from "CiviQual" to "CiviQual Stats" as part of the CiviQual Suite family.
 
-- **Full Windows dark mode support** - Automatic system theme detection
-- **Section 508 accessibility compliance**
-- **CPI Process Diagram tools**
-- **Colorblind-friendly visualizations**
-- **Enhanced I-Chart with Western Electric rule filtering**
-- **Improved capability analysis with normality checking**
+### CiviQual Stats Pro Features
 
-### Dark Mode Support
-
-CiviQual automatically detects your Windows theme setting and adapts the interface accordingly. All UI elements, charts, and text areas support both light and dark modes.
+- **Measurement System Analysis (MSA)** - Gage R&R with ANOVA method
+- **Design of Experiments (DOE)** - 2-4 factor full factorial designs
+- **Hypothesis Testing** - Chi-Square, Mann-Whitney, Kruskal-Wallis, Wilcoxon
+- **Sample Size & Power** - Sample size calculators with power curves
+- **Advanced Capability** - Pp/Ppk, Cpm, Box-Cox, non-normal capability
+- **Multiple Regression** - Up to 5 predictors with VIF analysis
+- **Advanced Control Charts** - CUSUM and EWMA
+- **Lean Calculators** - Process Sigma, DPMO, RTY, Takt Time, COPQ
+- **Root Cause Tools** - Fishbone diagrams, 5 Whys
+- **Solution Tools** - Pugh Matrix, Impact/Effort Matrix
+- **Planning Tools** - FMEA worksheet, Control Plan template
+- **Data Tools** - Outlier detection, missing data analysis
+- **Chart Editor** - Reference lines, annotations, export to PNG/SVG/PDF
 
 ### Colorblind-Friendly Color Scheme
 
@@ -43,30 +59,37 @@ All charts use the Wong colorblind-safe palette (Wong, B. *Nature Methods* 8, 44
 - **Purple (#CC79A7)** - Additional series
 - **Sky Blue (#56B4E9)** - Light accents
 
-### CiviQual 4-Up Chart
+### CiviQual Stats 4-Up Chart
 
-The signature 4-Up Chart displays four complementary views of your data:
+The signature 4-Up Chart displays four complementary views:
 1. **Statistical Summary** - Histogram with normal curve overlay
 2. **Probability Plot** - Normal probability plot with R² value
 3. **I-Chart** - Individuals control chart with Western Electric rules
 4. **Capability Analysis** - Process capability with spec limits
 
-### Enhanced I-Chart Features
+### Accessibility Improvements
 
-- **Rule Filtering** - Select which Western Electric tests to apply (Tests 1-4)
-- **Point Labels** - Flagged points show which test(s) triggered them (e.g., "T1", "T1,2")
-- **Detailed Reports** - Analysis output lists each flagged point with its test failures
+| Feature | Description |
+|---------|-------------|
+| **Enhanced Focus Indicators** | Blue outline on buttons, light blue background on focused inputs |
+| **Accessible Names** | All interactive controls have programmatic names for screen readers |
+| **Accessible Descriptions** | Detailed descriptions explain control purpose and keyboard shortcuts |
+| **Label Associations** | Form labels properly associated with controls using setBuddy() |
+| **Tooltips** | All input fields include helpful tooltips |
+| **Keyboard Shortcuts Dialog** | Help → Keyboard Shortcuts shows all available shortcuts |
+| **Accessibility Info Dialog** | Help → Accessibility Information explains all features |
+| **Screen Reader Support** | Compatible with NVDA, JAWS, and Windows Narrator |
 
-### Capability Analysis Improvements
+### Process Diagram Tools (CPI Project Tools)
 
-- **Normality Warning** - Anderson-Darling test alerts when data is non-normal
-- **LSL Clamping** - For all-positive data, natural LSL is clamped to 0 when appropriate
-- **Axis Constraints** - Charts don't show negative values for positive-only data
-- **Cpk Display** - All capability indices (Cp, Cpk, Cpu, Cpl) prominently displayed
-
-### Chart Export Fix
-
-Charts can now be exported properly via File → Export Chart (Ctrl+E). Supports PNG and JPEG formats.
+| Diagram | DMAIC Phase | Description |
+|---------|-------------|-------------|
+| **SIPOC Diagram** | Define | Suppliers → Inputs → Process → Outputs → Customers |
+| **Process Map** | Define | Flowchart with Start/End [S], Decision [D], and process steps |
+| **RACI Matrix** | Define | Responsible, Accountable, Consulted, Informed roles matrix |
+| **Swim Lane Diagram** | Analyze | Process flow across roles/departments showing handoffs |
+| **Value Stream Map** | Analyze | Process flow with cycle time, wait time, and efficiency |
+| **Fishbone Diagram** | Analyze | Cause-and-effect with CPI-specific categories |
 
 ---
 
@@ -76,110 +99,254 @@ Charts can now be exported properly via File → Export Chart (Ctrl+E). Supports
 
 | Feature | DMAIC Phase | Description |
 |---------|-------------|-------------|
-| CiviQual 4-Up Chart | Measure | Four-quadrant exploratory data analysis |
-| Descriptive Statistics | Measure | Mean, median, std dev, skewness, kurtosis |
-| Control Charts | Measure/Control | I-Chart, MR Chart, I-MR Chart |
-| Capability Analysis | Analyze | Cp, Cpk, Pp, Ppk, PPM calculations |
-| Probability Plot | Analyze | Normal probability with confidence bands |
-| ANOVA | Analyze | One-way analysis of variance |
-| Correlation Analysis | Analyze | Scatter plot with regression |
-| Run Chart | Control | Time series with centerline |
-| Histogram | Measure | Distribution visualization |
-| Box Plot | Analyze | Outlier detection and comparison |
-| Pareto Analysis | Analyze | 80/20 rule visualization |
+| **CiviQual Stats 4-Up Chart** | Measure | Four complementary views: Statistical Summary, Probability Plot, I-Chart, Capability Analysis |
+| **Descriptive Statistics** | Measure | Mean, median, mode, std dev, variance, quartiles, skewness, kurtosis, Anderson-Darling test |
+| **Control Charts** | Measure/Control | I-Chart and I-MR Chart with all 4 Western Electric rules |
+| **Capability Analysis** | Measure/Analyze | Cp, Cpk, Cpu, Cpl indices with capability chart visualization |
+| **Probability Plot** | Measure | Multi-series normality assessment (X=value, Y=percentage) with Anderson-Darling test |
+| **ANOVA with Box Plots** | Analyze | One-way ANOVA with F-statistic, p-value, eta-squared, grouped box plots |
+| **Correlation Analysis** | Analyze | Pearson r, R-squared, p-value, scatter plot with regression line |
+| **Run Chart** | Measure/Analyze | Sequential plot with median line, runs analysis for non-random patterns |
+| **Histogram** | Measure | Distribution visualization with normal curve overlay, skewness, kurtosis |
+| **Box Plot** | Measure | Quartile visualization with outlier detection, IQR calculation |
+| **Pareto Analysis** | Analyze | 80/20 rule identifying vital few vs trivial many |
+| **Pre/Post Analysis** | Control | Two-sample t-test, Cohen's d effect size |
 
-### Process Diagram Tools (CPI)
-
-| Diagram | DMAIC Phase | Description |
-|---------|-------------|-------------|
-| SIPOC Diagram | Define | Suppliers → Inputs → Process → Outputs → Customers |
-| Process Map | Define | Flowchart with decision points |
-| RACI Matrix | Define | Responsibility assignment matrix |
-| Swim Lane Diagram | Analyze | Cross-functional process flow |
-| Value Stream Map | Analyze | Process efficiency analysis |
-| Fishbone Diagram | Analyze | Cause-and-effect analysis |
-
-### Other Tools
+### Utility Tools
 
 | Feature | Description |
 |---------|-------------|
-| ROI Calculator | Return on investment for improvement projects |
-| Data Sampling | Random sampling with seed control |
-| Split Worksheet | Divide data by category |
+| **Data Sampling** | Random sample selection (configurable, default 30 points) |
+| **Split Worksheet** | Split data by categorical factor/rational subgroup |
+| **ROI Calculator** | Calculate project ROI with multi-year projections |
+| **Report Generation** | Export analysis to Word (.docx) or HTML |
+| **Chart Export** | Export all charts to PNG files |
+| **User Guide** | Downloadable comprehensive documentation |
 
 ---
 
-## Accessibility (Section 508)
+## New in v1.3: Statistical Tools Details
 
-CiviQual meets Section 508 of the Rehabilitation Act:
+### Correlation Analysis
+Examines the relationship between two numeric variables:
+- Pearson correlation coefficient (r)
+- R-squared (coefficient of determination)
+- P-value for significance testing
+- Scatter plot with optional regression line
+- 95% prediction band
+- Interpretation of correlation strength (negligible/weak/moderate/strong/very strong)
 
-- Keyboard navigation for all functions
-- Screen reader compatible (NVDA, JAWS, Windows Narrator)
-- High contrast support
-- Focus indicators on all controls
-- Accessible names and descriptions
+**Important**: Correlation does not prove causation. Use as a clue for further investigation.
 
-**Help → Accessibility Information** provides full details.
+### Run Chart
+Sequential data plot for initial stability assessment (simpler than I-Chart):
+- Data plotted in time sequence
+- Median line (center line)
+- Runs analysis test for non-random patterns
+- Color-coded points above/below median
+- P-value for randomness test
+
+**Use Case**: Quick check for trends or shifts before formal SPC analysis.
+
+### Histogram
+Distribution visualization with comprehensive statistics:
+- Configurable number of bins (or automatic)
+- Optional normal distribution curve overlay
+- Mean and median lines
+- Skewness and kurtosis values
+- Full descriptive statistics panel
+
+### Box Plot (Standalone)
+Quartile-based distribution summary:
+- Median, Q1, Q3, IQR
+- Whiskers showing data range
+- Outlier detection (1.5 × IQR rule)
+- Optional jittered data points
+- Mean marker
 
 ---
 
-## Keyboard Shortcuts
+## System Requirements
 
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+O | Open data file |
-| Ctrl+G | Generate CiviQual 4-Up Chart |
-| Ctrl+E | Export current chart |
-| Ctrl+S | Save report |
-| Ctrl+Q | Quit application |
-| Alt+1-9 | Switch to tab 1-9 |
-| F1 | User guide |
+- Windows 10 or later (64-bit)
+- 4 GB RAM minimum (8 GB recommended)
+- 200 MB available disk space
+- 1280x800 minimum display resolution
 
 ---
 
 ## Installation
 
-### Requirements
+### Using the Installer (Recommended)
 
-- Windows 10/11 (64-bit)
-- 4 GB RAM minimum
-- 200 MB disk space
+1. Download `CiviQualStats_Setup_1.2.0.exe`
+2. Run the installer
+3. Follow the installation wizard
+4. Launch CiviQual Stats from the Start Menu or Desktop shortcut
 
-### Running from Source
+### Enterprise Deployment (MSI)
 
-```bash
-pip install -r requirements.txt
-python main.py
+CiviQual Stats provides an MSI installer for both individual users and enterprise deployment:
+
+**Interactive Installation (Individual Users):**
+- Double-click `CiviQualStats_1.2.0.msi` to launch the installation wizard
+- Standard Windows installer with Add/Remove Programs integration
+
+**Silent Installation (Enterprise):**
+```powershell
+msiexec /i CiviQualStats_1.2.0.msi /qn
 ```
 
-### Building Installer
+**With Logging:**
+```powershell
+msiexec /i CiviQualStats_1.2.0.msi /qn /l*v C:\Logs\civiqual.log
+```
 
-See `installer/` directory for build instructions.
+**Supported Deployment Methods:**
+- Group Policy (GPO)
+- Microsoft Endpoint Configuration Manager (SCCM/MECM)
+- Microsoft Intune
+- Any MSI-compatible deployment tool
+
+See `installer/msi/MSI_DEPLOYMENT_GUIDE.md` for complete deployment instructions.
+
+### From Source
+
+1. Ensure Python 3.9 or higher is installed
+2. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Run CiviQual Stats:
+   ```
+   python main.py
+   ```
 
 ---
 
-## Data Formats
+## Keyboard Shortcuts
 
-CiviQual supports:
-- CSV files (.csv)
-- Excel files (.xlsx, .xls)
+### File Operations
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+O | Open data file |
+| Ctrl+S | Save report |
+| Ctrl+E | Export chart |
+| Ctrl+Q | Quit application |
 
-Sample data files are included in the `samples/` directory.
+### Navigation
+| Shortcut | Action |
+|----------|--------|
+| Tab | Move to next control |
+| Shift+Tab | Move to previous control |
+| Ctrl+Tab | Switch to next tab |
+| Alt+1 to Alt+9 | Jump to tab 1-9 |
+
+### Analysis
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+G | Generate 4-Up Chart |
+| Ctrl+D | Descriptive Statistics |
+| Ctrl+I | Generate I-Chart |
+| Ctrl+P | Pareto Chart |
+
+### Help
+| Shortcut | Action |
+|----------|--------|
+| F1 | Quick Reference |
+| Ctrl+? | Keyboard Shortcuts |
+| Ctrl+Shift+F1 | Accessibility Information |
+
+---
+
+## Process Diagram Usage
+
+### SIPOC Diagram
+Enter suppliers, inputs, process steps (3-5), outputs, and customers in separate fields. Click Generate to create the diagram.
+
+### Process Map
+Enter process steps (one per line):
+- `[S] Start` or `[S] End` for Start/End ovals
+- `[D] Question?` for Decision diamonds
+- Plain text for process rectangles
+
+### RACI Matrix
+1. Enter roles separated by commas
+2. Enter tasks with assignments: `Task Name | R,A,C,I`
+   - R = Responsible (does the work)
+   - A = Accountable (final authority)
+   - C = Consulted (provides input)
+   - I = Informed (kept updated)
+
+### Swim Lane Diagram
+Format: `Lane Name | Step Description`
+- Use `[S]` prefix for Start/End
+- Use `[D]` prefix for Decision
+
+### Value Stream Map
+Format: `Step Name, Cycle Time, Wait Time`
+- Times in minutes
+- Calculates: Lead Time, Process Efficiency
+
+### Fishbone Diagram
+1. Enter the effect/problem
+2. Add causes under each CPI category:
+   - Policy/Standards
+   - Materials
+   - Process/Procedures
+   - Physical Environment
+   - People
+   - IT Systems/Equipment
+
+---
+
+## Accessibility
+
+CiviQual Stats 1.2.0 meets **Section 508** and **WCAG 2.0 Level AA** accessibility standards.
+
+### Screen Reader Compatibility
+- NVDA (recommended)
+- Windows Narrator
+- JAWS
+
+### Visual Accessibility
+- High-contrast focus indicators
+- 4.5:1 minimum contrast ratio for all text
+- Compatible with Windows High Contrast themes
+- Supports display scaling up to 200%
+
+### Motor Accessibility
+- Full keyboard navigation
+- No time limits on operations
+- Large click targets (44x44 pixels minimum)
+
+For accessibility feedback: accessibility@qualityincourts.com
 
 ---
 
 ## License
 
-Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.
+CiviQual Stats is provided **FREE** for:
+- Government agencies (federal, state, local, tribal)
+- Courts and judicial organizations
+- Public educational institutions
+- 501(c)(3) nonprofit organizations
 
-Free for use by government agencies, courts, and nonprofit organizations.
+**Commercial use requires a separate license.**
+
+Contact: www.qualityincourts.com
 
 ---
 
-## Acknowledgments
+## Version History
 
-CiviQual is based on the exploratory data analysis methodology developed by Dr. Gregory H. Watson, a leading international quality expert who has contributed significantly to the advancement of Lean Six Sigma practices worldwide.
+| Version | Date | Description |
+|---------|------|-------------|
+| 1.3.0 | December 2025 | Section 508 Accessibility + CPI Process Diagrams |
+| 1.2.0 | November 2025 | Windows installer, license acceptance dialog |
+| 1.2.0 | April 2026 | CiviQual Stats 4-Up, Pro features Chart, brand identity |
+| 1.0.0 | September 2025 | Initial release |
 
 ---
 
-*CiviQual - Quality Analytics for Public Service*
+*Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.*

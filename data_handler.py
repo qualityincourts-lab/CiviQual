@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-CiviQual Data Handler
+CiviQual Stats Data Handler
 
 Handles loading and processing of data files.
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 """
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 class DataHandler:
-    """Data handling for CiviQual."""
+    """Data handling for CiviQual Stats."""
     
     def __init__(self):
         """Initialize the data handler."""

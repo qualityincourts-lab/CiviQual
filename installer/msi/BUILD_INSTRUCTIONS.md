@@ -1,6 +1,6 @@
 # CiviQual MSI Build Instructions
 
-**Version 1.3.0** | Step-by-step guide to building the CiviQual MSI installer
+**Version 1.1.0** | Step-by-step guide to building the CiviQual MSI installer
 
 ---
 
@@ -51,10 +51,10 @@ pip install pyinstaller
 
 ## Step 1: Prepare the Source Files
 
-Ensure you have the complete CiviQual v1.3 source package with this structure:
+Ensure you have the complete CiviQual source package with this structure:
 
 ```
-CiviQual_v1.3/
+CiviQual/
 ├── main.py
 ├── statistics_engine.py
 ├── visualizations.py
@@ -79,7 +79,7 @@ CiviQual_v1.3/
 ## Step 2: Install Python Dependencies
 
 ```powershell
-cd CiviQual_v1.3
+cd CiviQual
 pip install -r requirements.txt
 ```
 
@@ -170,13 +170,13 @@ cd installer\msi
 
 ```powershell
 cd installer\msi
-wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
+wix build CiviQual.wxs -o CiviQual_1.1.0.msi -ext WixToolset.UI.wixext
 ```
 
 ### Expected Output
 
 ```
-CiviQual_1.3.0.msi created successfully
+CiviQual_1.1.0.msi created successfully
 ```
 
 ---
@@ -186,13 +186,13 @@ CiviQual_1.3.0.msi created successfully
 ### Test Interactive Installation
 
 ```powershell
-msiexec /i CiviQual_1.3.0.msi
+msiexec /i CiviQual_1.1.0.msi
 ```
 
 ### Test Silent Installation
 
 ```powershell
-msiexec /i CiviQual_1.3.0.msi /qn /l*v install_test.log
+msiexec /i CiviQual_1.1.0.msi /qn /l*v install_test.log
 ```
 
 ### Verify Installation
@@ -211,7 +211,7 @@ dir "${env:APPDATA}\Microsoft\Windows\Start Menu\Programs\CiviQual"
 ### Test Uninstall
 
 ```powershell
-msiexec /x CiviQual_1.3.0.msi /qn
+msiexec /x CiviQual_1.1.0.msi /qn
 ```
 
 ---
@@ -222,7 +222,7 @@ Save this as `Build-All.ps1` for a one-command build process:
 
 ```powershell
 # Build-All.ps1 - Complete CiviQual MSI Build Script
-# Run from CiviQual_v1.3 root directory
+# Run from CiviQual root directory
 
 $ErrorActionPreference = "Stop"
 
@@ -274,14 +274,14 @@ if (-not (Test-Path "$filesDir\civiqual_icon.png")) {
 Write-Host "`n[5/5] Building MSI installer..." -ForegroundColor Yellow
 Push-Location $msiDir
 try {
-    wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
+    wix build CiviQual.wxs -o CiviQual_1.1.0.msi -ext WixToolset.UI.wixext
     
-    if (Test-Path "CiviQual_1.3.0.msi") {
-        $size = (Get-Item "CiviQual_1.3.0.msi").Length / 1MB
+    if (Test-Path "CiviQual_1.1.0.msi") {
+        $size = (Get-Item "CiviQual_1.1.0.msi").Length / 1MB
         Write-Host "`n========================================" -ForegroundColor Green
         Write-Host "  BUILD SUCCESSFUL!" -ForegroundColor Green
         Write-Host "========================================" -ForegroundColor Green
-        Write-Host "  Output: $msiDir\CiviQual_1.3.0.msi" -ForegroundColor White
+        Write-Host "  Output: $msiDir\CiviQual_1.1.0.msi" -ForegroundColor White
         Write-Host "  Size: $([math]::Round($size, 2)) MB" -ForegroundColor White
     }
 } finally {
@@ -319,7 +319,7 @@ dir installer\msi\Files\
 
 These are usually warnings and can often be ignored. To suppress:
 ```powershell
-wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext -sice:ICE61
+wix build CiviQual.wxs -o CiviQual_1.1.0.msi -ext WixToolset.UI.wixext -sice:ICE61
 ```
 
 ### PyInstaller antivirus false positives
@@ -334,7 +334,7 @@ Some antivirus software flags PyInstaller executables. Options:
 ## Summary of Commands
 
 ```powershell
-# From CiviQual_v1.3 root directory:
+# From CiviQual root directory:
 
 # 1. Install dependencies
 pip install -r requirements.txt
@@ -352,10 +352,10 @@ copy ..\..\LICENSE Files\
 copy ..\..\SECTION_508_COMPLIANCE.md Files\
 
 # 4. Build MSI (ensure civiqual_icon.ico and civiqual_icon.png exist)
-wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
+wix build CiviQual.wxs -o CiviQual_1.1.0.msi -ext WixToolset.UI.wixext
 
 # 5. Test
-msiexec /i CiviQual_1.3.0.msi
+msiexec /i CiviQual_1.1.0.msi
 ```
 
 ---
@@ -366,14 +366,14 @@ After successful build, you will have:
 
 | File | Description |
 |------|-------------|
-| `CiviQual_1.3.0.msi` | Windows Installer package for distribution |
+| `CiviQual_1.1.0.msi` | Windows Installer package for distribution |
 
 This MSI can be used for:
 - Individual installation (double-click)
-- Silent deployment (`msiexec /i CiviQual_1.3.0.msi /qn`)
+- Silent deployment (`msiexec /i CiviQual_1.1.0.msi /qn`)
 - Group Policy distribution
 - SCCM/Intune deployment
 
 ---
 
-*Copyright © 2025 A Step in the Right Direction LLC. All Rights Reserved.*
+*Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.*

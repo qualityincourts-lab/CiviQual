@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-CiviQual Installer Build Script
+CiviQual Stats Installer Build Script
 
-This script builds the CiviQual application and creates a Windows installer.
+This script builds the CiviQual Stats application and creates a Windows installer.
 
 Requirements:
 - Python 3.9+
@@ -27,8 +27,8 @@ import shutil
 from pathlib import Path
 
 
-class CiviQualInstallerBuilder:
-    """Builds CiviQual executable and Windows installer."""
+class CiviQualStatsInstallerBuilder:
+    """Builds CiviQual Stats executable and Windows installer."""
     
     def __init__(self):
         self.root_dir = Path(__file__).parent
@@ -38,8 +38,8 @@ class CiviQualInstallerBuilder:
         self.output_dir = self.installer_dir / "output"
         
         # Application info
-        self.app_name = "CiviQual"
-        self.app_version = "1.0.0"
+        self.app_name = "CiviQualStats"
+        self.app_version = "1.2.0"
         
     def clean(self):
         """Clean previous build artifacts."""
@@ -101,7 +101,7 @@ class CiviQualInstallerBuilder:
             print("  Install with: pip install pillow")
     
     def _generate_icon_png(self, output_path):
-        """Generate CiviQual icon PNG file."""
+        """Generate CiviQual Stats icon PNG file."""
         try:
             import matplotlib.pyplot as plt
             import matplotlib.patches as patches
@@ -261,7 +261,7 @@ class CiviQualInstallerBuilder:
             print("Please install Inno Setup from: https://jrsoftware.org/isinfo.php")
             print("\nAlternatively, compile manually:")
             print(f"  1. Open Inno Setup Compiler")
-            print(f"  2. Open: {self.installer_dir / 'CiviQual_Setup.iss'}")
+            print(f"  2. Open: {self.installer_dir / 'CiviQualStats_Setup.iss'}")
             print(f"  3. Click Build > Compile")
             return False
         
@@ -273,7 +273,7 @@ class CiviQualInstallerBuilder:
         if ico_src.exists():
             shutil.copy2(ico_src, ico_dst)
         
-        iss_path = self.installer_dir / "CiviQual_Setup.iss"
+        iss_path = self.installer_dir / "CiviQualStats_Setup.iss"
         
         cmd = [str(iscc_path), str(iss_path)]
         print(f"  Command: {' '.join(cmd)}")
@@ -284,7 +284,7 @@ class CiviQualInstallerBuilder:
             print("ERROR: Installer build failed!")
             return False
         
-        for file in self.output_dir.glob("CiviQual_Setup_*.exe"):
+        for file in self.output_dir.glob("CiviQualStats_Setup_*.exe"):
             size_mb = file.stat().st_size / (1024 * 1024)
             print(f"\nInstaller created: {file}")
             print(f"Size: {size_mb:.1f} MB")
@@ -304,10 +304,10 @@ class CiviQualInstallerBuilder:
         
         import zipfile
         
-        zip_path = self.dist_dir / f"CiviQual_Portable_{self.app_version}.zip"
+        zip_path = self.dist_dir / f"CiviQualStats_Portable_{self.app_version}.zip"
         
         files_to_include = [
-            (exe_path, "CiviQual.exe"),
+            (exe_path, "CiviQualStats.exe"),
             (self.root_dir / "civiqual_icon.png", "civiqual_icon.png"),
             (self.root_dir / "LICENSE", "LICENSE"),
             (self.root_dir / "README.md", "README.md"),
@@ -329,7 +329,7 @@ class CiviQualInstallerBuilder:
     def build_all(self):
         """Build everything."""
         print("=" * 60)
-        print(f"CiviQual {self.app_version} - Complete Build")
+        print(f"CiviQual Stats {self.app_version} - Complete Build")
         print("=" * 60)
         
         self.clean()
@@ -354,7 +354,7 @@ class CiviQualInstallerBuilder:
 
 def main():
     """Main entry point."""
-    builder = CiviQualInstallerBuilder()
+    builder = CiviQualStatsInstallerBuilder()
     
     if len(sys.argv) < 2:
         print("Usage: python build_installer.py <command>")

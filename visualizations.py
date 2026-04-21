@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-WATSON Visualization Engine
+CiviQual Stats Visualization Engine
 
 Provides chart generation capabilities for Lean Six Sigma analysis.
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 """
 
@@ -23,7 +23,7 @@ from statistics_engine import StatisticsEngine
 
 
 class VisualizationEngine:
-    """Visualization engine for Watson charts."""
+    """Visualization engine for CiviQual Stats charts."""
     
     # ==========================================================================
     # Brand Colors (Quality in Courts)
@@ -87,7 +87,7 @@ class VisualizationEngine:
     
     def generate_four_up(self, data, column_name, lsl=None, usl=None, target=None, percentile=80):
         """
-        Generate Watson 4-Up Chart.
+        Generate CiviQual Stats 4-Up Chart.
         
         The 4-Up Chart provides four complementary views:
         1. Statistical Summary (histogram with statistics)
@@ -114,7 +114,7 @@ class VisualizationEngine:
         
         # Create figure with 2x2 grid
         fig = plt.figure(figsize=(14, 10))
-        fig.suptitle(f'Watson 4-Up Chart: {column_name}', fontsize=14, fontweight='bold',
+        fig.suptitle(f'CiviQual Stats 4-Up Chart: {column_name}', fontsize=14, fontweight='bold',
                     color=self.BRAND_BURGUNDY)
         
         gs = GridSpec(2, 2, figure=fig, hspace=0.3, wspace=0.25)
@@ -258,12 +258,12 @@ class VisualizationEngine:
         ax.scatter(sorted_data, theoretical_quantiles, color=self.BLUE, s=25, alpha=0.8,
                   edgecolors='white', linewidth=0.5, zorder=3)
         
-        # Add 80% horizontal line (always shown on 4-Up)
+        # Add 80% line (horizontal at z=0.8416, vertical at x_80)
         z_80 = stats.norm.ppf(0.80)
         x_80 = mean + std * z_80
-        ax.axhline(z_80, color=self.BRAND_BURGUNDY, linewidth=1.5, linestyle='--', alpha=0.7)
-        ax.axvline(x_80, color=self.BRAND_BURGUNDY, linewidth=1.5, linestyle='--', alpha=0.7,
-                  label=f'80% = {x_80:.2f}')
+        ax.axhline(z_80, color=self.BRAND_BURGUNDY, linewidth=1.5, linestyle='--', 
+                  alpha=0.8, label=f'80%: {x_80:.2f}', zorder=4)
+        ax.axvline(x_80, color=self.BRAND_BURGUNDY, linewidth=1, linestyle=':', alpha=0.6, zorder=2)
         
         # Anderson-Darling test for normality
         ad_result = stats.anderson(data, dist='norm')
@@ -291,8 +291,8 @@ class VisualizationEngine:
         ax.set_yticklabels([f'{p:.1f}' if p < 1 or p > 99 else f'{int(p)}' for p in prob_ticks])
         ax.set_ylim(stats.norm.ppf(0.001), stats.norm.ppf(0.999))
         
-        # Statistics box
-        stats_text = f'Mean: {mean:.2f}\nStDev: {std:.2f}\nN: {n}\nAD: {ad_stat:.3f}\n{p_text}\n80%: {x_80:.2f}'
+        # Statistics box with 80% value
+        stats_text = f'Mean: {mean:.2f}\nStDev: {std:.2f}\n80%: {x_80:.2f}\nN: {n}\nAD: {ad_stat:.3f}\n{p_text}'
         ax.text(0.98, 0.02, stats_text, transform=ax.transAxes, fontsize=8,
                verticalalignment='bottom', horizontalalignment='right',
                fontfamily='monospace',
@@ -305,10 +305,11 @@ class VisualizationEngine:
         ax.legend(loc='upper left', fontsize=8)
     
     def _plot_ichart(self, ax, data, column_name):
-        """Plot I-Chart (Individuals Control Chart) - 4-Up version uses only Test 1."""
+        """Plot I-Chart (Individuals Control Chart) - uses only Test 1 for 4-Up."""
         limits = self.stats_engine.control_chart_limits(data)
-        # 4-Up I-Chart only uses Test 1 (beyond 3 sigma)
-        flagged = self.stats_engine.detect_special_causes(data, rules={'rule1': True, 'rule2': False, 'rule3': False, 'rule4': False, 'rule5': False, 'rule6': False})
+        # Use only Test 1 (points beyond 3 sigma) for 4-Up exploratory analysis
+        rules = {'rule1': True, 'rule2': False, 'rule3': False, 'rule4': False, 'rule5': False, 'rule6': False}
+        flagged = self.stats_engine.detect_special_causes(data, rules)
         
         x = np.arange(1, len(data) + 1)
         
@@ -344,12 +345,12 @@ class VisualizationEngine:
         
         # Add stability note
         n_flagged = len(flagged['all'])
-        stability_text = f'Test 1 Flags: {n_flagged}'
+        stability_text = f'Flagged Points: {n_flagged}'
         if n_flagged == 0:
             stability_text += '\nProcess appears STABLE'
             text_color = self.TEAL
         else:
-            stability_text += '\nPoints beyond 3σ detected'
+            stability_text += '\nSpecial causes detected'
             text_color = self.BRAND_BURGUNDY
         
         ax.text(0.02, 0.02, stability_text, transform=ax.transAxes, fontsize=9,
@@ -407,83 +408,6 @@ class VisualizationEngine:
         ax.set_ylabel('Density')
         ax.legend(loc='upper left', fontsize=7)
     
-    def _plot_standalone_ichart(self, ax, data, column_name, rules=None):
-        """Plot I-Chart with configurable Western Electric rules."""
-        if rules is None:
-            rules = {'rule1': True, 'rule2': True, 'rule3': True, 'rule4': True, 'rule5': True, 'rule6': True}
-        
-        limits = self.stats_engine.control_chart_limits(data)
-        flagged = self.stats_engine.detect_special_causes(data, rules)
-        
-        x = np.arange(1, len(data) + 1)
-        
-        # Plot data points
-        ax.plot(x, data, color=self.BLUE, marker='o', markersize=6,
-               linewidth=1, markerfacecolor=self.BLUE, markeredgecolor='white')
-        
-        # Highlight flagged points with test labels
-        if flagged['all']:
-            flagged_x = [i + 1 for i in flagged['all']]
-            flagged_y = [data[i] for i in flagged['all']]
-            ax.scatter(flagged_x, flagged_y, color=self.BRAND_BURGUNDY, s=60, zorder=5,
-                      marker='o', edgecolors='#4a0919', linewidth=2)
-            
-            # Add test labels above flagged points
-            for idx in flagged['all']:
-                tests = []
-                if idx in flagged['rule1']:
-                    tests.append('T1')
-                if idx in flagged['rule2']:
-                    tests.append('T2')
-                if idx in flagged['rule3']:
-                    tests.append('T3')
-                if idx in flagged['rule4']:
-                    tests.append('T4')
-                if idx in flagged.get('rule5', []):
-                    tests.append('T5')
-                if idx in flagged.get('rule6', []):
-                    tests.append('T6')
-                
-                if tests:
-                    label = ','.join(tests)
-                    y_pos = data[idx]
-                    offset = (limits['ucl'] - limits['lcl']) * 0.05
-                    ax.annotate(label, (idx + 1, y_pos + offset), fontsize=7, 
-                               ha='center', color=self.BRAND_BURGUNDY, fontweight='bold')
-        
-        # Control limits
-        ax.axhline(limits['center'], color=self.BLACK, linewidth=2, 
-                  label=f'Center: {limits["center"]:.2f}')
-        ax.axhline(limits['ucl'], color=self.TEAL, linewidth=1.5, linestyle='--',
-                  label=f'UCL: {limits["ucl"]:.2f}')
-        ax.axhline(limits['lcl'], color=self.TEAL, linewidth=1.5, linestyle='--',
-                  label=f'LCL: {limits["lcl"]:.2f}')
-        
-        # Zone lines
-        ax.axhline(limits['zone_a_upper'], color=self.GRAY, linewidth=0.5, linestyle=':')
-        ax.axhline(limits['zone_a_lower'], color=self.GRAY, linewidth=0.5, linestyle=':')
-        ax.axhline(limits['zone_b_upper'], color=self.GRAY, linewidth=0.5, linestyle=':')
-        ax.axhline(limits['zone_b_lower'], color=self.GRAY, linewidth=0.5, linestyle=':')
-        
-        ax.set_xlabel('Observation')
-        ax.set_ylabel('Value')
-        ax.legend(loc='upper right', fontsize=8)
-        
-        # Stability note
-        n_flagged = len(flagged['all'])
-        active_tests = [k for k, v in rules.items() if v]
-        stability_text = f'Flagged: {n_flagged} | Tests: {len(active_tests)}'
-        if n_flagged == 0:
-            stability_text += '\nProcess appears STABLE'
-            text_color = self.TEAL
-        else:
-            stability_text += '\nSpecial causes detected'
-            text_color = self.BRAND_BURGUNDY
-        
-        ax.text(0.02, 0.02, stability_text, transform=ax.transAxes, fontsize=9,
-               verticalalignment='bottom', color=text_color,
-               bbox=dict(boxstyle='round', facecolor='white', edgecolor=self.GRAY, alpha=0.9))
-    
     def generate_ichart(self, data, column_name, rules=None):
         """
         Generate standalone I-Chart.
@@ -506,7 +430,7 @@ class VisualizationEngine:
         fig.suptitle(f'I-Chart: {column_name}', fontsize=14, fontweight='bold',
                     color=self.BRAND_BURGUNDY)
         
-        self._plot_standalone_ichart(ax, data, column_name, rules)
+        self._plot_ichart(ax, data, column_name)
         
         output_path = self.temp_dir / 'ichart.png'
         fig.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white')
@@ -536,8 +460,8 @@ class VisualizationEngine:
         fig.suptitle(f'I-MR Chart: {column_name}', fontsize=14, fontweight='bold',
                     color=self.BRAND_BURGUNDY)
         
-        # I-Chart on top - use standalone version with rules
-        self._plot_standalone_ichart(ax1, data, column_name, rules)
+        # I-Chart on top
+        self._plot_ichart(ax1, data, column_name)
         ax1.set_title('Individuals Chart', fontweight='bold', color=self.BRAND_BURGUNDY)
         
         # MR Chart on bottom
@@ -775,110 +699,9 @@ class VisualizationEngine:
         
         return str(output_path)
     
-    def generate_multi_probability_plot(self, datasets, labels, title="Probability Plot Comparison"):
+    def generate_multi_probability_plot(self, datasets, labels, title="Probability Plot Comparison", show_80_line=False):
         """
         Generate probability plot with multiple data series.
-        Uses probability scale on Y-axis with 95% confidence bands.
-        
-        Args:
-            datasets: List of data arrays to compare
-            labels: List of labels for each dataset
-            title: Chart title
-            
-        Returns:
-            str: Path to generated chart image
-        """
-        fig, ax = plt.subplots(figsize=(12, 8))
-        
-        colors = self.COLOR_CYCLE
-        markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p']
-        
-        # Statistics table data
-        stats_rows = []
-        
-        for i, (data, label) in enumerate(zip(datasets, labels)):
-            data = np.array(data)
-            data = data[~np.isnan(data)]
-            
-            if len(data) < 2:
-                continue
-            
-            sorted_data = np.sort(data)
-            n = len(data)
-            mean = np.mean(data)
-            std = np.std(data, ddof=1)
-            
-            # Calculate plotting positions (Blom's formula)
-            plotting_positions = (np.arange(1, n + 1) - 0.375) / (n + 0.25)
-            theoretical_quantiles = stats.norm.ppf(plotting_positions)
-            
-            color = colors[i % len(colors)]
-            marker = markers[i % len(markers)]
-            
-            # Plot the fitted normal line
-            z_range = np.linspace(-3.2, 3.2, 100)
-            x_fit = mean + std * z_range
-            ax.plot(x_fit, z_range, color=color, linewidth=1.5, linestyle='--', alpha=0.7)
-            
-            # Calculate 95% confidence band
-            expected_values = mean + std * theoretical_quantiles
-            se_multiplier = 1.0 / stats.norm.pdf(theoretical_quantiles)
-            se = std * np.sqrt(plotting_positions * (1 - plotting_positions) / n) * se_multiplier
-            se = np.clip(se, 0, 3 * std)
-            
-            lower_bound = expected_values - 1.96 * se
-            upper_bound = expected_values + 1.96 * se
-            
-            # Fill confidence band (lighter for multiple series)
-            ax.fill_betweenx(theoretical_quantiles, lower_bound, upper_bound, 
-                            color=color, alpha=0.08, zorder=1)
-            
-            # Plot data points
-            ax.scatter(sorted_data, theoretical_quantiles, color=color, s=35, alpha=0.8,
-                      marker=marker, edgecolors='white', linewidth=0.5, zorder=3,
-                      label=f'{label} (n={n})')
-            
-            # Anderson-Darling test
-            ad_result = stats.anderson(data, dist='norm')
-            ad_stat = ad_result.statistic
-            crit_values = ad_result.critical_values
-            if ad_stat < crit_values[2]:
-                p_text = ">0.05"
-            else:
-                p_text = "<0.05"
-            
-            stats_rows.append(f'{label}: Mean={mean:.2f}, StDev={std:.2f}, AD={ad_stat:.3f}, p{p_text}')
-        
-        # Set probability scale ticks on Y-axis
-        prob_ticks = [0.1, 1, 5, 10, 20, 30, 50, 70, 80, 90, 95, 99, 99.9]
-        z_ticks = [stats.norm.ppf(p/100) for p in prob_ticks]
-        ax.set_yticks(z_ticks)
-        ax.set_yticklabels([f'{p:.1f}' if p < 1 or p > 99 else f'{int(p)}' for p in prob_ticks])
-        ax.set_ylim(stats.norm.ppf(0.001), stats.norm.ppf(0.999))
-        
-        ax.set_title(f'{title}\nNormal - 95% CI', fontsize=14, fontweight='bold', color=self.BRAND_BURGUNDY)
-        ax.set_xlabel('Value', fontsize=11)
-        ax.set_ylabel('Percent', fontsize=11)
-        ax.legend(loc='lower right', fontsize=9)
-        ax.grid(True, alpha=0.3)
-        
-        # Statistics summary in corner
-        stats_text = '\n'.join(stats_rows)
-        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=8, 
-               ha='left', va='top', fontfamily='monospace',
-               bbox=dict(boxstyle='round', facecolor='white', edgecolor=self.GRAY, alpha=0.9))
-        
-        plt.tight_layout()
-        
-        output_path = self.temp_dir / 'multi_probability_plot.png'
-        fig.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white')
-        plt.close(fig)
-        
-        return str(output_path)
-    
-    def generate_multi_probability_plot_with_80(self, datasets, labels, title="Probability Plot Comparison", show_80_line=False):
-        """
-        Generate probability plot with multiple data series and optional 80% line.
         Uses probability scale on Y-axis with 95% confidence bands.
         
         Args:

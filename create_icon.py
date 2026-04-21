@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Generate CiviQual icon files (ICO and PNG).
+Generate CiviQual Stats icon files (ICO and PNG).
 
-This script creates the CiviQual application icon in multiple formats
+This script creates the CiviQual Stats application icon in multiple formats
 and sizes for use in Windows installers and application shortcuts.
 
 Requirements:
@@ -22,9 +22,9 @@ from PIL import Image, ImageDraw
 from pathlib import Path
 
 
-def create_civiqual_icon(output_dir: Path = None):
+def create_watson_icon(output_dir: Path = None):
     """
-    Create CiviQual icon at multiple sizes for ICO file.
+    Create CiviQual Stats icon at multiple sizes for ICO file.
     
     Args:
         output_dir: Directory to save icon files (default: current directory)
@@ -198,4 +198,4 @@ def create_civiqual_icon(output_dir: Path = None):
 
 
 if __name__ == '__main__':
-    create_civiqual_icon()
+    create_watson_icon()

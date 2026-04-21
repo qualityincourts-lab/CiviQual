@@ -1,16 +1,16 @@
 @echo off
 REM =====================================================
-REM CIVIQUAL EXE Installer Build Script
-REM Copyright (c) 2025 A Step in the Right Direction LLC
+REM CiviQual Stats EXE Installer Build Script
+REM Copyright (c) 2026 A Step in the Right Direction LLC
 REM =====================================================
 REM
-REM This script builds the complete CiviQual EXE installer
+REM This script builds the complete CiviQual Stats EXE installer
 REM from source using Inno Setup.
 REM
 REM Prerequisites:
 REM   1. Python 3.9+ with pip
 REM   2. Inno Setup 6.x installed
-REM   3. All CiviQual source files in parent directory
+REM   3. All CiviQual Stats source files in parent directory
 REM
 REM Usage:
 REM   Build-EXE.bat
@@ -20,13 +20,13 @@ REM =====================================================
 setlocal enabledelayedexpansion
 
 REM Configuration
-set VERSION=1.3.0
+set VERSION=1.2.0
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
 
 echo.
 echo =====================================================
-echo   CIVIQUAL EXE Installer Build Script
+echo   CiviQual Stats EXE Installer Build Script
 echo   Version: %VERSION%
 echo =====================================================
 echo.
@@ -138,10 +138,10 @@ cd /d "%PROJECT_ROOT%"
 REM Clean previous builds
 if exist "dist" rmdir /s /q "dist"
 if exist "build" rmdir /s /q "build"
-if exist "CiviQual.spec" del "CiviQual.spec"
+if exist "CiviQualStats.spec" del "CiviQualStats.spec"
 
 REM Build executable
-pyinstaller --name CiviQual --windowed --icon=civiqual_icon.ico ^
+pyinstaller --name CiviQualStats --windowed --icon=civiqual_icon.ico ^
     --add-data "samples;samples" ^
     --noconfirm ^
     main.py
@@ -151,11 +151,11 @@ if errorlevel 1 (
     goto :error
 )
 
-if not exist "dist\CiviQual\CiviQual.exe" (
-    echo ERROR: CiviQual.exe was not created
+if not exist "dist\CiviQualStats\CiviQualStats.exe" (
+    echo ERROR: CiviQualStats.exe was not created
     goto :error
 )
-echo   [OK] CiviQual.exe built successfully
+echo   [OK] CiviQualStats.exe built successfully
 echo.
 
 REM =====================================================
@@ -175,10 +175,10 @@ if errorlevel 1 (
     goto :error
 )
 
-set OUTPUT_FILE=Output\CiviQual_Setup_%VERSION%.exe
+set OUTPUT_FILE=Output\CiviQualStats_Setup_%VERSION%.exe
 if not exist "%OUTPUT_FILE%" (
     REM Try alternate naming
-    set OUTPUT_FILE=Output\CiviQual_Setup_1.3.0.exe
+    set OUTPUT_FILE=Output\CiviQualStats_Setup_1.2.0.exe
 )
 
 if not exist "%OUTPUT_FILE%" (
@@ -199,13 +199,13 @@ echo   Output:   %SCRIPT_DIR%%OUTPUT_FILE%
 echo   Size:     ~%EXE_SIZE_MB% MB
 echo.
 echo   The installer will:
-echo     - Install CiviQual to Program Files
+echo     - Install CiviQual Stats to Program Files
 echo     - Create Start Menu shortcuts
 echo     - Create desktop shortcut (optional)
 echo     - Register uninstaller
 echo.
 echo   Silent installation:
-echo     CiviQual_Setup_%VERSION%.exe /VERYSILENT /NORESTART
+echo     CiviQualStats_Setup_%VERSION%.exe /VERYSILENT /NORESTART
 echo.
 echo =====================================================
 goto :end

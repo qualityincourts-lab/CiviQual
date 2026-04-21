@@ -1,17 +1,17 @@
-; CIVIQUAL Installer Script for Inno Setup
-; Version 1.3.0 - Section 508 Accessibility Release
-; Copyright (c) 2025 A Step in the Right Direction LLC
+; CiviQual Stats Installer Script for Inno Setup
+; Version 1.2.0 - CiviQual Stats Pro Release
+; Copyright (c) 2026 A Step in the Right Direction LLC
 ; All Rights Reserved.
 ;
-; This script creates a professional Windows installer for CIVIQUAL
+; This script creates a professional Windows installer for CiviQual Stats
 ; Download Inno Setup from: https://jrsoftware.org/isinfo.php
 
-#define MyAppName "CIVIQUAL"
-#define MyAppVersion "1.3.0"
+#define MyAppName "CiviQual Stats"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "A Step in the Right Direction LLC"
 #define MyAppURL "https://www.qualityincourts.com"
-#define MyAppExeName "CiviQual.exe"
-#define MyAppDescription "Workbench for Analysis, Testing, Statistics, Optimization & Navigation"
+#define MyAppExeName "CiviQualStats.exe"
+#define MyAppDescription "Statistical Process Control for Public-Sector Quality Management"
 
 [Setup]
 ; Application information
@@ -23,10 +23,10 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-AppCopyright=Copyright (c) 2025 A Step in the Right Direction LLC
+AppCopyright=Copyright (c) 2026 A Step in the Right Direction LLC
 
 ; Installation directories
-DefaultDirName={autopf}\CiviQual
+DefaultDirName={autopf}\CiviQual Stats
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 
@@ -35,9 +35,9 @@ LicenseFile=LICENSE.rtf
 
 ; Output settings
 OutputDir=output
-OutputBaseFilename=CiviQual_Setup_{#MyAppVersion}
+OutputBaseFilename=CiviQualStats_Setup_{#MyAppVersion}
 SetupIconFile=..\civiqual_icon.ico
-UninstallDisplayIcon={app}\CiviQual.exe
+UninstallDisplayIcon={app}\CiviQualStats.exe
 
 ; Compression
 Compression=lzma2/ultra64
@@ -69,14 +69,14 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 ; Main application (PyInstaller output - entire folder)
-Source: "..\dist\CiviQual\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\CiviQualStats\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Icon files (may already be in dist, but ensure they are present)
 Source: "..\civiqual_icon.png"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\civiqual_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Documentation
-Source: "..\CIVIQUAL_User_Guide.docx"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\CiviQualStats_User_Guide.docx"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SECTION_508_COMPLIANCE.md"; DestDir: "{app}"; Flags: ignoreversion
@@ -113,12 +113,12 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Registry]
 ; Application registration
-Root: HKLM; Subkey: "Software\A Step in the Right Direction LLC\CIVIQUAL"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\A Step in the Right Direction LLC\CIVIQUAL"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"
+Root: HKLM; Subkey: "Software\A Step in the Right Direction LLC\CiviQualStats"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\A Step in the Right Direction LLC\CiviQualStats"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"
 
 [UninstallDelete]
 ; Clean up configuration files on uninstall (optional - user data)
-Type: filesandordirs; Name: "{localappdata}\CIVIQUAL"
+Type: filesandordirs; Name: "{localappdata}\CiviQualStats"
 
 [Code]
 // Custom initialization code
@@ -132,9 +132,9 @@ end;
 procedure InitializeWizard();
 begin
   WizardForm.WelcomeLabel2.Caption := 
-    'This will install CIVIQUAL (Workbench for Analysis, Testing, Statistics, Optimization & Navigation) on your computer.' + #13#10 + #13#10 +
-    'CIVIQUAL is a statistical analysis tool designed for Lean Six Sigma practitioners in service industries, including public sector organizations.' + #13#10 + #13#10 +
-    'Version 1.3.0 includes Section 508 accessibility improvements for users with disabilities.' + #13#10 + #13#10 +
-    'This software is FREE for government agencies and nonprofit organizations. Commercial use requires a separate license from A Step in the Right Direction LLC.' + #13#10 + #13#10 +
+    'This will install CiviQual Stats (Statistical Process Control for Public-Sector Quality Management) on your computer.' + #13#10 + #13#10 +
+    'CiviQual Stats is the first product in the CiviQual Suite family of quality management tools, designed for Lean Six Sigma practitioners in government and public service organizations.' + #13#10 + #13#10 +
+    'Version 1.2.0 includes CiviQual Stats Pro features for Green Belt and Black Belt practitioners.' + #13#10 + #13#10 +
+    'The base application is FREE for government agencies and nonprofit organizations. CiviQual Stats Pro features require a separate license.' + #13#10 + #13#10 +
     'Click Next to continue, or Cancel to exit Setup.';
 end;

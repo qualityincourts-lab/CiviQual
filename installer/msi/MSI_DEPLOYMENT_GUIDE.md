@@ -1,12 +1,12 @@
-# CIVIQUAL MSI Deployment Guide
+# CiviQual Stats MSI Deployment Guide
 
-**Version 1.3.0** | Copyright © 2025 A Step in the Right Direction LLC
+**Version 1.1.0** | Copyright © 2026 A Step in the Right Direction LLC
 
 ---
 
 ## Overview
 
-This guide provides instructions for building and deploying CIVIQUAL using Windows Installer (MSI) technology. MSI deployment supports both individual users and enterprise environments:
+This guide provides instructions for building and deploying CiviQual Stats using Windows Installer (MSI) technology. MSI deployment supports both individual users and enterprise environments:
 
 **For Individual Users:**
 - Standard Windows installer wizard (double-click to install)
@@ -28,7 +28,7 @@ This guide provides instructions for building and deploying CIVIQUAL using Windo
 
 ### Interactive Installation (Recommended for Individual Users)
 
-Simply double-click `CiviQual_1.3.0.msi` to launch the installation wizard:
+Simply double-click `CiviQualStats_1.2.0.msi` to launch the installation wizard:
 
 1. **Welcome Screen** - Click Next
 2. **License Agreement** - Review and accept the license terms
@@ -40,25 +40,25 @@ Simply double-click `CiviQual_1.3.0.msi` to launch the installation wizard:
 ### Interactive Installation via Command Line
 
 ```powershell
-msiexec /i CiviQual_1.3.0.msi
+msiexec /i CiviQualStats_1.2.0.msi
 ```
 
 ### Modify Installation
 
 To change or repair the installation:
 ```powershell
-msiexec /f CiviQual_1.3.0.msi
+msiexec /f CiviQualStats_1.2.0.msi
 ```
 
-Or use **Settings → Apps → Installed Apps → CIVIQUAL → Modify**
+Or use **Settings → Apps → Installed Apps → CiviQual Stats → Modify**
 
 ### Uninstall
 
-**Option 1:** Settings → Apps → Installed Apps → CIVIQUAL → Uninstall
+**Option 1:** Settings → Apps → Installed Apps → CiviQual Stats → Uninstall
 
 **Option 2:** Command line:
 ```powershell
-msiexec /x CiviQual_1.3.0.msi
+msiexec /x CiviQualStats_1.2.0.msi
 ```
 
 ---
@@ -123,13 +123,13 @@ cd CiviQual_MSI
 
 **Manual Build with WiX v4:**
 ```powershell
-wix build CiviQual.wxs -o CiviQual_1.3.0.msi -ext WixToolset.UI.wixext
+wix build CiviQual.wxs -o CiviQualStats_1.2.0.msi -ext WixToolset.UI.wixext
 ```
 
 **Manual Build with WiX v3 (Legacy):**
 ```powershell
 candle.exe CiviQual.wxs -ext WixUIExtension
-light.exe CiviQual.wixobj -ext WixUIExtension -o CiviQual_1.3.0.msi
+light.exe CiviQual.wixobj -ext WixUIExtension -o CiviQualStats_1.2.0.msi
 ```
 
 ---
@@ -138,32 +138,32 @@ light.exe CiviQual.wixobj -ext WixUIExtension -o CiviQual_1.3.0.msi
 
 ### Interactive Installation
 ```powershell
-msiexec /i CiviQual_1.3.0.msi
+msiexec /i CiviQualStats_1.2.0.msi
 ```
 
 ### Silent Installation
 ```powershell
-msiexec /i CiviQual_1.3.0.msi /qn
+msiexec /i CiviQualStats_1.2.0.msi /qn
 ```
 
 ### Silent with Logging
 ```powershell
-msiexec /i CiviQual_1.3.0.msi /qn /l*v C:\Logs\civiqual_install.log
+msiexec /i CiviQualStats_1.2.0.msi /qn /l*v C:\Logs\civiqual_install.log
 ```
 
 ### Custom Installation Path
 ```powershell
-msiexec /i CiviQual_1.3.0.msi /qn INSTALLFOLDER="D:\Apps\CiviQual"
+msiexec /i CiviQualStats_1.2.0.msi /qn INSTALLFOLDER="D:\Apps\CiviQual"
 ```
 
 ### Repair Installation
 ```powershell
-msiexec /f CiviQual_1.3.0.msi
+msiexec /f CiviQualStats_1.2.0.msi
 ```
 
 ### Silent Uninstall
 ```powershell
-msiexec /x CiviQual_1.3.0.msi /qn
+msiexec /x CiviQualStats_1.2.0.msi /qn
 ```
 
 ### Uninstall by Product Code
@@ -179,7 +179,7 @@ msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn
 
 1. **Copy MSI to Network Share**
    ```
-   \\server\share\Software\CiviQual\CiviQual_1.3.0.msi
+   \\server\share\Software\CiviQual\CiviQualStats_1.2.0.msi
    ```
    Ensure the share has read permissions for target computers.
 
@@ -188,12 +188,12 @@ msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn
 
 3. **Create or Edit GPO**
    - Right-click the target OU → **Create a GPO in this domain**
-   - Name: "CiviQual 1.3.0 Deployment"
+   - Name: "CiviQual 1.1.0 Deployment"
 
 4. **Configure Software Installation**
    - Navigate to: `Computer Configuration → Policies → Software Settings → Software Installation`
    - Right-click → **New → Package**
-   - Browse to the network share and select `CiviQual_1.3.0.msi`
+   - Browse to the network share and select `CiviQualStats_1.2.0.msi`
    - Select **Assigned** for automatic installation
 
 5. **Configure Options (Optional)**
@@ -221,14 +221,14 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 1. **Navigate to**: Software Library → Application Management → Applications
 2. **Create Application** → Windows Installer (*.msi)
-3. **Browse** to `CiviQual_1.3.0.msi`
+3. **Browse** to `CiviQualStats_1.2.0.msi`
 4. **Detection Method**: MSI Product Code `{E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B}`
 
 ### Deployment Type Settings
 
 | Setting | Value |
 |---------|-------|
-| Installation Program | `msiexec /i "CiviQual_1.3.0.msi" /qn` |
+| Installation Program | `msiexec /i "CiviQualStats_1.2.0.msi" /qn` |
 | Uninstall Program | `msiexec /x {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} /qn` |
 | Installation Behavior | Install for system |
 | Logon Requirement | Whether or not a user is logged on |
@@ -249,9 +249,9 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 1. **Navigate to**: Microsoft Endpoint Manager admin center → Apps → All apps
 2. **Add** → App type: **Line-of-business app**
-3. **Select** the `CiviQual_1.3.0.msi` file
+3. **Select** the `CiviQualStats_1.2.0.msi` file
 4. **Configure App Information**:
-   - Name: CIVIQUAL
+   - Name: CiviQual
    - Description: Statistical Analysis Tool for Lean Six Sigma
    - Publisher: A Step in the Right Direction LLC
    - App Version: 1.3.0
@@ -275,7 +275,7 @@ Get-WinEvent -LogName "Application" | Where-Object {$_.ProviderName -eq "MsiInst
 
 | Property | Value |
 |----------|-------|
-| Product Name | CIVIQUAL |
+| Product Name | CiviQual |
 | Product Version | 1.3.0.0 |
 | Product Code | {E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B} |
 | Upgrade Code | E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B |
@@ -314,8 +314,8 @@ After installation, the following registry keys are created:
 
 | Shortcut | Location |
 |----------|----------|
-| CIVIQUAL | Start Menu\Programs\CIVIQUAL\ |
-| CIVIQUAL | Desktop |
+| CiviQual | Start Menu\Programs\CiviQual\ |
+| CiviQual | Desktop |
 
 ---
 
@@ -326,7 +326,7 @@ After installation, the following registry keys are created:
 **Installation Fails Silently**
 ```powershell
 # Check MSI log
-msiexec /i CiviQual_1.3.0.msi /l*v install.log
+msiexec /i CiviQualStats_1.2.0.msi /l*v install.log
 # Review install.log for errors
 ```
 
@@ -345,7 +345,7 @@ net start msiserver
 
 **Check if installed:**
 ```powershell
-Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "*CIVIQUAL*"}
+Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "*CiviQual*"}
 ```
 
 **Check registry:**
@@ -367,4 +367,4 @@ Test-Path "${env:ProgramFiles}\CiviQual\CiviQual.exe"
 
 ---
 
-*Copyright © 2025 A Step in the Right Direction LLC. All Rights Reserved.*
+*Copyright © 2026 A Step in the Right Direction LLC. All Rights Reserved.*

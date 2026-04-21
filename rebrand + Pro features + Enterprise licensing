@@ -1,0 +1,73 @@
+warning: in the working copy of 'INSTALLATION.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'SECTION_508_COMPLIANCE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'build_installer.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'civiqual_logo.svg', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'civiqual_logo_horizontal.svg', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'create_icon.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'data_handler.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'fonts/OFL.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'fonts/README.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/Build-EXE.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/CiviQual_Setup.iss', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/EXE_BUILD_INSTRUCTIONS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/InfoBefore.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/LICENSE.rtf', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/BUILD_INSTRUCTIONS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/Build-MSI.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/Build-MSI.ps1', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/CiviQual.wxs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/LICENSE.rtf', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/MSI_DEPLOYMENT_GUIDE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'installer/msi/PREREQUISITES.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'process_diagrams.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'report_generator.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'requirements.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_311_services.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_benefits.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_citizen_services.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_court_cases.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_court_clerk.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_data.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_inspections.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_mail_processing.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_permits.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_public_health.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'samples/sample_public_records.csv', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'statistics_engine.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'visualizations.py', LF will be replaced by CRLF the next time Git touches it
+ CHANGELOG_v1.0.0.md                   | 141 [31m-------------[m
+ INSTALLATION.md                       |  42 [32m++[m[31m--[m
+ README.md                             | 359 [32m+++++++++++++++++++++++++[m[31m---------[m
+ SECTION_508_COMPLIANCE.md             |  30 [32m+[m[31m--[m
+ build_installer.py                    |  28 [32m+[m[31m--[m
+ civiqual_icon.ico                     | Bin [31m14936[m -> [32m15372[m bytes
+ civiqual_icon.png                     | Bin [31m1775[m -> [32m1825[m bytes
+ create_icon.py                        |  10 [32m+[m[31m-[m
+ data_handler.py                       |   6 [32m+[m[31m-[m
+ fonts/README.txt                      |   4 [32m+[m[31m-[m
+ installer/Build-EXE.bat               |  30 [32m+[m[31m--[m
+ installer/CiviQual_Setup.iss          |  42 [32m++[m[31m--[m
+ installer/EXE_BUILD_INSTRUCTIONS.md   |  16 [32m+[m[31m-[m
+ installer/InfoBefore.txt              | 135 [32m++++++[m[31m-------[m
+ installer/LICENSE.rtf                 |   4 [32m+[m[31m-[m
+ installer/msi/BUILD_INSTRUCTIONS.md   |  42 [32m++[m[31m--[m
+ installer/msi/Build-MSI.bat           |  43 [32m++[m[31m--[m
+ installer/msi/Build-MSI.ps1           |   8 [32m+[m[31m-[m
+ installer/msi/CiviQual.wxs            |  44 [32m++[m[31m---[m
+ installer/msi/LICENSE.rtf             |   4 [32m+[m[31m-[m
+ installer/msi/MSI_DEPLOYMENT_GUIDE.md |  60 [32m+++[m[31m---[m
+ installer/msi/PREREQUISITES.md        |  20 [32m+[m[31m-[m
+ main.py                               | 325 [32m+++++++++++++++[m[31m---------------[m
+ process_diagrams.py                   |   6 [32m+[m[31m-[m
+ report_generator.py                   |  42 [32m++[m[31m--[m
+ requirements.txt                      |   5 [32m+[m[31m-[m
+ samples/sample_court_cases.csv        |  22 [32m+[m[31m--[m
+ samples/sample_court_clerk.csv        |  24 [32m+[m[31m--[m
+ samples/sample_data.csv               |  24 [32m+[m[31m--[m
+ samples/sample_permits.csv            |  24 [32m+[m[31m--[m
+ statistics_engine.py                  |  24 [32m+[m[31m--[m
+ visualizations.py                     | 219 [32m++[m[31m-------------------[m
+ 32 files changed, 801 insertions(+), 982 deletions(-)

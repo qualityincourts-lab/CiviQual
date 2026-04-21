@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-WATSON Statistics Engine
+CiviQual Stats Statistics Engine
 
 Provides statistical analysis capabilities for Lean Six Sigma practitioners.
 
-Copyright (c) 2025 A Step in the Right Direction LLC
+Copyright (c) 2026 A Step in the Right Direction LLC
 All Rights Reserved.
 """
 
@@ -14,7 +14,7 @@ from scipy import stats
 
 
 class StatisticsEngine:
-    """Statistical analysis engine for Watson."""
+    """Statistical analysis engine for CiviQual Stats."""
     
     def __init__(self):
         """Initialize the statistics engine."""
@@ -301,9 +301,7 @@ class StatisticsEngine:
         if rules.get('rule5', True):
             for i in range(5, n):
                 window = data[i-5:i+1]
-                # Check for strictly increasing
                 increasing = all(window[j] < window[j+1] for j in range(5))
-                # Check for strictly decreasing
                 decreasing = all(window[j] > window[j+1] for j in range(5))
                 
                 if increasing or decreasing:
@@ -314,27 +312,26 @@ class StatisticsEngine:
         if rules.get('rule6', True):
             for i in range(13, n):
                 window = data[i-13:i+1]
-                # Check alternating pattern
                 alternating = True
                 for j in range(13):
-                    if j % 2 == 0:  # Even index: should go up
+                    if j % 2 == 0:
                         if window[j] >= window[j+1]:
                             alternating = False
                             break
-                    else:  # Odd index: should go down
+                    else:
                         if window[j] <= window[j+1]:
                             alternating = False
                             break
                 
                 if not alternating:
-                    # Try opposite pattern (down first)
+                    # Try the opposite pattern
                     alternating = True
                     for j in range(13):
-                        if j % 2 == 0:  # Even index: should go down
+                        if j % 2 == 0:
                             if window[j] <= window[j+1]:
                                 alternating = False
                                 break
-                        else:  # Odd index: should go up
+                        else:
                             if window[j] >= window[j+1]:
                                 alternating = False
                                 break
@@ -436,13 +433,13 @@ class StatisticsEngine:
             dict: ANOVA results
         """
         groups = []
-        valid_group_names = []  # Track only groups with data
+        valid_group_names = []  # Track only groups that have data
         
         for name in data[factor_col].unique():
             group_data = data[data[factor_col] == name][response_col].dropna()
             if len(group_data) > 0:
                 groups.append(group_data.values)
-                valid_group_names.append(name)
+                valid_group_names.append(name)  # Only add if group has data
         
         if len(groups) < 2:
             return {
@@ -558,7 +555,6 @@ class StatisticsEngine:
                 q_stat = mean_diff / se if se > 0 else 0
                 
                 # Calculate p-value using studentized range distribution
-                # df = df_within, k = n_groups
                 try:
                     p_value = 1 - studentized_range.cdf(q_stat, n_groups, df_within)
                 except:

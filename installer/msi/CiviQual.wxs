@@ -2,23 +2,23 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
-    <Package Name="CIVIQUAL"
-             Version="1.3.0.0"
+    <Package Name="CiviQual Stats"
+             Version="1.2.0.0"
              Manufacturer="A Step in the Right Direction LLC"
              UpgradeCode="{E8F9A1B2-C3D4-5E6F-7A8B-9C0D1E2F3A4B}"
              Scope="perMachine"
              InstallerVersion="500">
 
-        <SummaryInformation Description="CIVIQUAL Statistical Analysis Tool"
+        <SummaryInformation Description="CiviQual Stats - Statistical Process Control for Public-Sector Quality Management"
                            Manufacturer="A Step in the Right Direction LLC" />
 
-        <MajorUpgrade DowngradeErrorMessage="A newer version of CIVIQUAL is already installed."
+        <MajorUpgrade DowngradeErrorMessage="A newer version of CiviQual Stats is already installed."
                       AllowSameVersionUpgrades="yes" />
 
         <MediaTemplate EmbedCab="yes" />
 
-        <Icon Id="CiviQualIcon.ico" SourceFile="civiqual_icon.ico" />
-        <Property Id="ARPPRODUCTICON" Value="CiviQualIcon.ico" />
+        <Icon Id="CiviQualStatsIcon.ico" SourceFile="civiqual_icon.ico" />
+        <Property Id="ARPPRODUCTICON" Value="CiviQualStatsIcon.ico" />
         <Property Id="ARPHELPLINK" Value="https://www.qualityincourts.com" />
         <Property Id="ARPURLINFOABOUT" Value="https://www.qualityincourts.com" />
 
@@ -27,13 +27,13 @@
         <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
 
         <StandardDirectory Id="ProgramFiles64Folder">
-            <Directory Id="INSTALLFOLDER" Name="CiviQual">
+            <Directory Id="INSTALLFOLDER" Name="CiviQual Stats">
                 <Directory Id="SamplesFolder" Name="samples" />
             </Directory>
         </StandardDirectory>
 
         <StandardDirectory Id="ProgramMenuFolder">
-            <Directory Id="CiviQualStartMenuFolder" Name="CIVIQUAL" />
+            <Directory Id="CiviQualStatsStartMenuFolder" Name="CiviQual Stats" />
         </StandardDirectory>
 
         <StandardDirectory Id="DesktopFolder" />
@@ -41,26 +41,26 @@
         <ComponentGroup Id="MainComponents" Directory="INSTALLFOLDER">
             
             <Component Id="MainExecutable" Guid="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}">
-                <File Id="CiviQualExe" Source="Files\CiviQual.exe" KeyPath="yes">
+                <File Id="CiviQualStatsExe" Source="Files\CiviQualStats.exe" KeyPath="yes">
                     <Shortcut Id="StartMenuShortcut"
-                              Directory="CiviQualStartMenuFolder"
-                              Name="CIVIQUAL"
-                              Description="Statistical Analysis Tool for Lean Six Sigma"
+                              Directory="CiviQualStatsStartMenuFolder"
+                              Name="CiviQual Stats"
+                              Description="Statistical Process Control for Public-Sector Quality Management"
                               WorkingDirectory="INSTALLFOLDER"
-                              Icon="CiviQualIcon.ico"
+                              Icon="CiviQualStatsIcon.ico"
                               Advertise="yes" />
                     <Shortcut Id="DesktopShortcut"
                               Directory="DesktopFolder"
-                              Name="CIVIQUAL"
-                              Description="Statistical Analysis Tool for Lean Six Sigma"
+                              Name="CiviQual Stats"
+                              Description="Statistical Process Control for Public-Sector Quality Management"
                               WorkingDirectory="INSTALLFOLDER"
-                              Icon="CiviQualIcon.ico"
+                              Icon="CiviQualStatsIcon.ico"
                               Advertise="yes" />
                 </File>
             </Component>
 
             <Component Id="IconFile" Guid="{B2C3D4E5-F6A7-8901-BCDE-F12345678901}">
-                <File Id="CiviQualIconPng" Source="Files\civiqual_icon.png" KeyPath="yes" />
+                <File Id="CiviQualStatsIconPng" Source="Files\civiqual_icon.png" KeyPath="yes" />
             </Component>
 
             <Component Id="ReadmeFile" Guid="{E5F6A7B8-C9D0-1234-EF01-23456789ABCD}">
@@ -76,9 +76,9 @@
             </Component>
 
             <Component Id="RegistryEntries" Guid="{D4E5F6A7-B8C9-0123-DEF0-123456789ABC}">
-                <RegistryKey Root="HKCU" Key="Software\AStepInTheRightDirection\CiviQual">
+                <RegistryKey Root="HKCU" Key="Software\AStepInTheRightDirection\CiviQualStats">
                     <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
-                    <RegistryValue Type="string" Name="Version" Value="1.3.0" />
+                    <RegistryValue Type="string" Name="Version" Value="1.2.0" />
                 </RegistryKey>
             </Component>
 
@@ -120,18 +120,18 @@
             </Component>
         </ComponentGroup>
 
-        <ComponentGroup Id="StartMenuCleanup" Directory="CiviQualStartMenuFolder">
+        <ComponentGroup Id="StartMenuCleanup" Directory="CiviQualStatsStartMenuFolder">
             <Component Id="StartMenuFolderRemoval" Guid="{B8C9D0E1-F2A3-4567-1234-56789ABCDEF0}">
                 <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" />
                 <RegistryValue Root="HKCU" 
-                              Key="Software\AStepInTheRightDirection\CiviQual\StartMenu" 
+                              Key="Software\AStepInTheRightDirection\CiviQualStats\StartMenu" 
                               Type="string" 
                               Value="" 
                               KeyPath="yes" />
             </Component>
         </ComponentGroup>
 
-        <Feature Id="MainFeature" Title="CIVIQUAL Application" Level="1" ConfigurableDirectory="INSTALLFOLDER">
+        <Feature Id="MainFeature" Title="CiviQual Stats Application" Level="1" ConfigurableDirectory="INSTALLFOLDER">
             <ComponentGroupRef Id="MainComponents" />
             <ComponentGroupRef Id="SampleDataComponents" />
             <ComponentGroupRef Id="StartMenuCleanup" />

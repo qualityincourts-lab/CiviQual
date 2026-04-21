@@ -1,5 +1,5 @@
-# CIVIQUAL MSI Build Script
-# Copyright (c) 2025 A Step in the Right Direction LLC
+# CiviQual MSI Build Script
+# Copyright (c) 2026 A Step in the Right Direction LLC
 # 
 # This script builds the CiviQual MSI installer using WiX Toolset v4
 #
@@ -19,7 +19,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "=============================================" -ForegroundColor Cyan
-Write-Host "  CIVIQUAL MSI Installer Build Script" -ForegroundColor Cyan
+Write-Host "  CiviQual MSI Installer Build Script" -ForegroundColor Cyan
 Write-Host "  Version: $Version" -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host ""
@@ -99,7 +99,7 @@ try {
         Write-Host "Deployment Commands:" -ForegroundColor Cyan
         Write-Host "  Interactive:    msiexec /i $outputFile" -ForegroundColor White
         Write-Host "  Silent:         msiexec /i $outputFile /qn" -ForegroundColor White
-        Write-Host "  With Log:       msiexec /i $outputFile /qn /l*v civiqual_install.log" -ForegroundColor White
+        Write-Host "  With Log:       msiexec /i $outputFile /qn /l*v watson_install.log" -ForegroundColor White
         Write-Host "  Uninstall:      msiexec /x $outputFile /qn" -ForegroundColor White
     } else {
         Write-Host "ERROR: MSI file was not created." -ForegroundColor Red

@@ -1,14 +1,14 @@
 @echo off
 REM =====================================================
-REM CIVIQUAL MSI Build Script (WiX v6 Required)
+REM CiviQual Stats MSI Build Script (WiX v4 Required)
 REM Copyright (c) 2026 A Step in the Right Direction LLC
 REM =====================================================
 REM
 REM Prerequisites:
 REM   1. Python 3.9+ with pip
 REM   2. .NET SDK 6.0+
-REM   3. WiX v6: dotnet tool install --global wix
-REM   4. WiX UI: wix extension add WixToolset.UI.wixext/6.0.0
+REM   3. WiX v4: dotnet tool install --global wix
+REM   4. WiX UI: wix extension add WixToolset.UI.wixext
 REM
 REM Usage:
 REM   cd installer\msi
@@ -18,14 +18,14 @@ REM =====================================================
 
 setlocal enabledelayedexpansion
 
-set VERSION=1.0.0
+set VERSION=1.2.0
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..\..
-set OUTPUT_FILE=CiviQual_%VERSION%.msi
+set OUTPUT_FILE=CiviQualStats_%VERSION%.msi
 
 echo.
 echo =====================================================
-echo   CIVIQUAL MSI Build Script
+echo   CiviQual Stats MSI Build Script
 echo   Version: %VERSION%
 echo =====================================================
 echo.
@@ -43,33 +43,30 @@ if errorlevel 1 (
 )
 echo   [OK] Python found
 
-REM Check WiX
+REM Check WiX v4
 where wix >nul 2>&1
 if errorlevel 1 (
     echo.
-    echo   ERROR: WiX Toolset not found.
+    echo   ERROR: WiX Toolset v4 not found.
     echo.
-    echo   Install WiX:
+    echo   Install WiX v4:
     echo     1. Install .NET SDK from https://dotnet.microsoft.com/download
     echo     2. Run: dotnet tool install --global wix
-    echo     3. Run: wix extension add WixToolset.UI.wixext/6.0.0
+    echo     3. Run: wix extension add WixToolset.UI.wixext
     echo     4. Restart this command prompt
     echo.
     goto :error
 )
-
-REM Get WiX version
-for /f "tokens=1 delims=+" %%v in ('wix --version 2^>nul') do set WIX_VER=%%v
-echo   [OK] WiX %WIX_VER% found
+echo   [OK] WiX v4 found
 
 REM Check WiX UI extension
 wix extension list 2>&1 | findstr /i "WixToolset.UI.wixext" >nul
 if errorlevel 1 (
-    echo   Installing WixToolset.UI.wixext for WiX 6...
-    wix extension add WixToolset.UI.wixext/6.0.0
+    echo   Installing WixToolset.UI.wixext...
+    wix extension add WixToolset.UI.wixext
     if errorlevel 1 (
         echo   ERROR: Failed to install UI extension.
-        echo   Run manually: wix extension add WixToolset.UI.wixext/6.0.0
+        echo   Run manually: wix extension add WixToolset.UI.wixext
         goto :error
     )
 )
@@ -116,20 +113,20 @@ echo.
 REM =====================================================
 REM Build Executable
 REM =====================================================
-echo [4/6] Building CiviQual.exe with PyInstaller...
+echo [4/6] Building CiviQualStats.exe with PyInstaller...
 echo   This takes 2-5 minutes...
 
 cd /d "%PROJECT_ROOT%"
 if exist "dist" rmdir /s /q "dist"
 if exist "build" rmdir /s /q "build"
 
-pyinstaller --name CiviQual --onefile --windowed --icon=civiqual_icon.ico --add-data "samples;samples" --noconfirm main.py
+pyinstaller --name CiviQualStats --onefile --windowed --icon=civiqual_icon.ico --add-data "samples;samples" --noconfirm main.py
 
-if not exist "dist\CiviQual.exe" (
-    echo   ERROR: PyInstaller failed to create CiviQual.exe
+if not exist "dist\CiviQualStats.exe" (
+    echo   ERROR: PyInstaller failed to create CiviQualStats.exe
     goto :error
 )
-echo   [OK] CiviQual.exe created
+echo   [OK] CiviQualStats.exe created
 echo.
 
 REM =====================================================
@@ -142,7 +139,7 @@ if exist "Files" rmdir /s /q "Files"
 mkdir "Files"
 mkdir "Files\samples"
 
-copy "%PROJECT_ROOT%\dist\CiviQual.exe" "Files\" >nul
+copy "%PROJECT_ROOT%\dist\CiviQualStats.exe" "Files\" >nul
 copy "%PROJECT_ROOT%\civiqual_icon.png" "Files\" >nul
 copy "%PROJECT_ROOT%\civiqual_icon.ico" "Files\" >nul
 copy "%PROJECT_ROOT%\README.md" "Files\" >nul
