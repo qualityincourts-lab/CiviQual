@@ -28,13 +28,13 @@ from typing import Optional, Dict, Any, List
 # Public key for license verification (RSA 2048-bit)
 # This key is used to verify license signatures - it cannot create them
 PUBLIC_KEY_PEM = """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjUqq/SdTPnSG5D7ctHGj
-xvsOze9OneUQvwUD+W0ECSi7cE0XgNjrMAJLiXGWRJkejV1pTU1uyHe+tUu2LY/0
-2aB6/GzW54g7cRiPbcxrtkpP1imr/MZmxcvn6pA5EUCPo8a5au5Uum6C+/SENk5k
-mWAnMtMCIf41ptAa6vAE3gvPzaH9aJQQuLmkG00QV8ni3SnxWz3jjv5wfxAsUHT7
-ojRwWbPBWwX2OviY7B+iP0kbslmHFzrDZZWrKS7KaxJTz3QDFGuS1Ao2r0PtIU7a
-eCi9ohx3xSDtTsPYU7n/3PFsUgUXbXz0AWDh5+akZffkyTNzH9m1zwlsHsNwqej3
-4wIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsMqJ2aNbnmX6rUVgFTvS
+KvTqpMMiwtcq14sX8wkf2Ufsx6JZ3mB4+Iu0gFzRonrZH49/ow94a9VaDwfPBMfM
+ZxfC783xANoNlP+2Mci/c1y8/0upB9EBNOGNyc4uvlvKvL3SCzoFDQJrFuqkob6D
+T0FxDFuN+PKLeKOcy0BMdRzBjJlWPgO2xC+1OF44g3flsEqwwGBUGsKJCFiDOKHY
+Cbs5gN8H8NYJuT/X1hc/uZMxBbaepweaSbFG1wZQgclmMCVsu7vJmzYimxUbUCps
+qlzjVSsx9plXcxHGqSrw+O1gmZRG0UUTpQ1EzfpNmoSOB52i1NI8aOt/Nqc64Gf1
+jwIDAQAB
 -----END PUBLIC KEY-----"""
 
 
