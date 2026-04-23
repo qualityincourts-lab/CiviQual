@@ -3,9 +3,11 @@
 #
 # This script:
 #   1. Builds the standalone .exe with PyInstaller
-#   2. Builds the MSI installer from committed WiX files
+#   2. Signs the .exe with your Certum certificate
+#      (must happen before MSI packaging so SmartScreen trusts the launched binary)
+#   3. Builds the MSI installer from committed WiX files
 #      (CiviQualStats_Build.wxs + HarvestedFiles.wxs using WiX 5 <Files>)
-#   3. Signs the MSI with your Certum certificate
+#   4. Signs the MSI with your Certum certificate
 
 param(
     [switch]$SkipPyInstaller,
@@ -150,7 +152,38 @@ if (-not $SkipPyInstaller) {
 }
 
 # ============================================================
-# STEP 3: Build MSI
+# STEP 3: Sign executable
+# ============================================================
+if (-not $SkipSign) {
+    Write-Step "Signing executable with Certum certificate"
+
+    $exePath = "dist\CiviQualStats\CiviQualStats.exe"
+    Write-Host "Running: signtool sign $exePath"
+    & $signtool sign `
+        /sha1 $Thumbprint `
+        /fd SHA256 `
+        /tr $TimestampUrl `
+        /td SHA256 `
+        /d "CiviQual Stats $Version" `
+        $exePath
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Executable signing failed"
+        exit 1
+    }
+
+    $exeSig = Get-AuthenticodeSignature $exePath
+    if ($exeSig.Status -eq "Valid") {
+        Write-Success "Executable signature valid"
+    } else {
+        Write-Warn "Executable signature status: $($exeSig.Status)"
+    }
+} else {
+    Write-Step "Skipping executable signing"
+}
+
+# ============================================================
+# STEP 4: Build MSI
 # ============================================================
 Write-Step "Building MSI installer"
 
@@ -181,7 +214,7 @@ if (Test-Path $msiName) {
 }
 
 # ============================================================
-# STEP 4: Sign MSI
+# STEP 5: Sign MSI
 # ============================================================
 if (-not $SkipSign) {
     Write-Step "Signing MSI with Certum certificate"
