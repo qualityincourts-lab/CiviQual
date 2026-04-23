@@ -80,23 +80,10 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        # Exclude unnecessary modules to reduce size
-        'tkinter',
-        'unittest',
-        'email',
-        'html',
-        'http',
-        'xml',
-        'pydoc',
-        'doctest',
-        'argparse',
-        'difflib',
-        'inspect',
-        'calendar',
-        'pdb',
-        'profile',
-        'pstats',
-        'test',
+        # Intentionally empty. Scientific deps (numpy/pandas/matplotlib/scipy/
+        # statsmodels) lazy-import many stdlib modules — excluding them to
+        # shave MB off the bundle causes "No module named X" at runtime.
+        # Size savings aren't worth the release risk.
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,

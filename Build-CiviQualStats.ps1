@@ -15,7 +15,12 @@ param(
     [switch]$Clean
 )
 
-$ErrorActionPreference = "Stop"
+# Native commands (pyinstaller, wix, signtool) write INFO to stderr. With
+# $ErrorActionPreference="Stop" in PowerShell 5.1 that gets wrapped as a
+# terminating NativeCommandError, aborting the script on its first log line.
+# Each step already checks $LASTEXITCODE explicitly, so we keep the default
+# "Continue" behavior here.
+$ErrorActionPreference = "Continue"
 
 # Configuration
 $RepoPath = "C:\Users\jbper\OneDrive\Documents\GitHub\CiviQual"
