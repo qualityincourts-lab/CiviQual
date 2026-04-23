@@ -197,6 +197,7 @@ if (Test-Path $msiName) {
 # Build with both WiX files
 Write-Host "Running: wix build CiviQualStats_Build.wxs HarvestedFiles.wxs ..."
 wix build CiviQualStats_Build.wxs HarvestedFiles.wxs `
+    -arch x64 `
     -d DistDir="dist\CiviQualStats" `
     -o $msiName
 

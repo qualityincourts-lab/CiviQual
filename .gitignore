@@ -3,6 +3,10 @@ build/
 dist/
 *.msi
 *.wixpdb
+*.log
+
+# Claude Code local project state
+.claude/
 
 # Python
 __pycache__/

@@ -33,16 +33,20 @@
             DowngradeErrorMessage="A newer version of CiviQual Stats is already installed."
             Schedule="afterInstallInitialize" />
 
-        <Icon Id="CiviQualIcon" SourceFile="civiqual_icon.ico" />
-        <Property Id="ARPPRODUCTICON" Value="CiviQualIcon" />
+        <Icon Id="CiviQualIcon.ico" SourceFile="civiqual_icon.ico" />
+        <Property Id="ARPPRODUCTICON" Value="CiviQualIcon.ico" />
         <Property Id="ARPHELPLINK" Value="https://qualityincourts.com/docs" />
         <Property Id="ARPURLINFOABOUT" Value="https://qualityincourts.com" />
+
+        <!-- Populate ARP InstallLocation at install time (INSTALLFOLDER only resolves at runtime). -->
+        <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLFOLDER]" After="CostFinalize" />
 
         <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
         <Feature Id="MainApplication" Title="CiviQual Stats" Level="1">
             <ComponentGroupRef Id="HarvestedComponents" />
             <ComponentGroupRef Id="Shortcuts" />
+            <ComponentGroupRef Id="CleanupComponents" />
         </Feature>
 
         <StandardDirectory Id="LocalAppDataFolder">
@@ -62,7 +66,7 @@
                     Description="Statistical Process Control for Public-Sector Quality Management"
                     Target="[INSTALLFOLDER]CiviQualStats.exe"
                     WorkingDirectory="INSTALLFOLDER"
-                    Icon="CiviQualIcon" />
+                    Icon="CiviQualIcon.ico" />
                 <RemoveFolder Id="CleanupStartMenu" On="uninstall" />
                 <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
             </Component>
@@ -73,7 +77,7 @@
                     Description="Statistical Process Control for Public-Sector Quality Management"
                     Target="[INSTALLFOLDER]CiviQualStats.exe"
                     WorkingDirectory="INSTALLFOLDER"
-                    Icon="CiviQualIcon" />
+                    Icon="CiviQualIcon.ico" />
                 <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
             </Component>
 
@@ -84,6 +88,15 @@
                     Target="[System64Folder]msiexec.exe"
                     Arguments="/x [ProductCode]" />
                 <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="UninstallShortcut" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </ComponentGroup>
+
+        <!-- Ensure INSTALLFOLDER itself is removed on uninstall (the harvested <Files>
+             components take care of subdirectories but not the root install folder). -->
+        <ComponentGroup Id="CleanupComponents" Directory="INSTALLFOLDER">
+            <Component Id="RemoveInstallFolder" Guid="F1B2C3D4-E5F6-7890-ABCD-EF1234567305">
+                <RemoveFolder Id="RemoveInstallFolder" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="InstallFolder" Type="integer" Value="1" KeyPath="yes" />
             </Component>
         </ComponentGroup>
 
