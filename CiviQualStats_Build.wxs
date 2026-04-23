@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    CiviQual Stats v2.0.0 - WiX 5 installer (PyInstaller build)
+
+    Prerequisites:
+        pyinstaller CiviQualStats.spec
+        (produces dist\CiviQualStats\CiviQualStats.exe + _internal\)
+
+    Build:
+        wix build CiviQualStats_Build.wxs HarvestedFiles.wxs ^
+            -d DistDir=dist\CiviQualStats -o CiviQual_2.0.0.msi
+
+    Sign:
+        signtool sign /sha1 E6830B627AF1AD8980FADDF221D27FAE361A166D ^
+            /fd SHA256 /tr http://time.certum.pl /td SHA256 ^
+            /d "CiviQual Stats 2.0.0" CiviQual_2.0.0.msi
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+    <Package
+        Name="CiviQual Stats"
+        Version="2.0.0"
+        Manufacturer="A Step in the Right Direction LLC"
+        UpgradeCode="7B8F4E2A-1C3D-4E5F-A6B7-8C9D0E1F2A3B"
+        Scope="perUser">
+
+        <SummaryInformation
+            Description="CiviQual Stats - Statistical Process Control for Public-Sector Quality Management"
+            Manufacturer="A Step in the Right Direction LLC"
+            Keywords="statistics, quality, lean, six sigma, SPC, courts, government" />
+
+        <MajorUpgrade
+            DowngradeErrorMessage="A newer version of CiviQual Stats is already installed."
+            Schedule="afterInstallInitialize" />
+
+        <Icon Id="CiviQualIcon" SourceFile="civiqual_icon.ico" />
+        <Property Id="ARPPRODUCTICON" Value="CiviQualIcon" />
+        <Property Id="ARPHELPLINK" Value="https://qualityincourts.com/docs" />
+        <Property Id="ARPURLINFOABOUT" Value="https://qualityincourts.com" />
+
+        <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+        <Feature Id="MainApplication" Title="CiviQual Stats" Level="1">
+            <ComponentGroupRef Id="HarvestedComponents" />
+            <ComponentGroupRef Id="Shortcuts" />
+        </Feature>
+
+        <StandardDirectory Id="LocalAppDataFolder">
+            <Directory Id="INSTALLFOLDER" Name="CiviQualStats" />
+        </StandardDirectory>
+
+        <StandardDirectory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="CiviQual Stats" />
+        </StandardDirectory>
+
+        <StandardDirectory Id="DesktopFolder" />
+
+        <ComponentGroup Id="Shortcuts" Directory="ApplicationProgramsFolder">
+            <Component Id="StartMenuShortcut" Guid="F1B2C3D4-E5F6-7890-ABCD-EF1234567301">
+                <Shortcut Id="StartMenuShortcut"
+                    Name="CiviQual Stats"
+                    Description="Statistical Process Control for Public-Sector Quality Management"
+                    Target="[INSTALLFOLDER]CiviQualStats.exe"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="CiviQualIcon" />
+                <RemoveFolder Id="CleanupStartMenu" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+
+            <Component Id="DesktopShortcut" Guid="F1B2C3D4-E5F6-7890-ABCD-EF1234567302" Directory="DesktopFolder">
+                <Shortcut Id="DesktopShortcut"
+                    Name="CiviQual Stats"
+                    Description="Statistical Process Control for Public-Sector Quality Management"
+                    Target="[INSTALLFOLDER]CiviQualStats.exe"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="CiviQualIcon" />
+                <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+
+            <Component Id="UninstallShortcut" Guid="F1B2C3D4-E5F6-7890-ABCD-EF1234567304">
+                <Shortcut Id="UninstallShortcut"
+                    Name="Uninstall CiviQual Stats"
+                    Description="Uninstall CiviQual Stats"
+                    Target="[System64Folder]msiexec.exe"
+                    Arguments="/x [ProductCode]" />
+                <RegistryValue Root="HKCU" Key="Software\CiviQualStats" Name="UninstallShortcut" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </ComponentGroup>
+
+    </Package>
+</Wix>

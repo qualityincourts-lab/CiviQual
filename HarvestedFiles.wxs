@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Auto-harvested file tree for dist\CiviQualStats\.
+
+    Uses the WiX 5 <Files> element (replaces the deprecated `wix heat` tool).
+    Components and File ids are generated from file paths; stable across builds
+    as long as PyInstaller output paths do not change.
+
+    DistDir must be passed at build time:
+        wix build CiviQualStats_Build.wxs HarvestedFiles.wxs -d DistDir=dist\CiviQualStats -o CiviQual_2.0.0.msi
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Fragment>
+        <ComponentGroup Id="HarvestedComponents" Directory="INSTALLFOLDER">
+            <Files Include="$(var.DistDir)\**" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>
