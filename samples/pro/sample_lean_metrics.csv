@@ -1,0 +1,13 @@
+Process_Step,Units_Processed,Defects,Opportunities_Per_Unit,Cycle_Time_Min,Available_Time_Min,Downtime_Min,Ideal_Cycle_Time,Quality_Rate
+Filing_Receipt,1250,15,4,2.5,480,45,2.0,0.988
+Initial_Review,1235,22,6,4.2,480,30,3.5,0.982
+Document_Check,1213,18,5,3.8,480,25,3.2,0.985
+Assignment,1195,8,3,1.5,480,15,1.2,0.993
+Scheduling,1187,12,4,2.8,480,20,2.3,0.990
+Hearing_Prep,1175,25,7,5.5,480,40,4.8,0.979
+Hearing,1150,10,5,15.0,480,35,12.0,0.991
+Decision_Draft,1140,28,8,8.2,480,50,7.0,0.975
+Review,1112,15,6,4.5,480,25,3.8,0.987
+Final_Order,1097,5,3,2.0,480,10,1.5,0.995
+Distribution,1092,3,2,1.2,480,5,1.0,0.997
+Closing,1089,2,2,0.8,480,5,0.6,0.998

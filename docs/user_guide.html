@@ -1,238 +1,440 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>CiviQual Stats — User Guide</title>
-<style>
-  :root {
-    --burgundy: #6d132a;
-    --gold: #dcad73;
-    --ink: #1f1f1f;
-    --muted: #6d6d6d;
-    --rule: #e6dccd;
-    --bg: #fbf8f3;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    color: var(--ink);
-    background: var(--bg);
-    line-height: 1.55;
-  }
-  header {
-    background: var(--burgundy);
-    color: #fff;
-    padding: 36px 8vw 28px;
-    border-bottom: 5px solid var(--gold);
-  }
-  header h1 { margin: 0 0 4px; font-size: 2rem; letter-spacing: 0.5px; }
-  header .sub { color: var(--gold); font-style: italic; }
-  nav {
-    background: #fff;
-    padding: 12px 8vw;
-    border-bottom: 1px solid var(--rule);
-    font-size: 0.92rem;
-  }
-  nav a {
-    color: var(--burgundy);
-    margin-right: 18px;
-    text-decoration: none;
-  }
-  nav a:hover { text-decoration: underline; }
-  main { max-width: 900px; margin: 0 auto; padding: 32px 8vw 64px; }
-  h2 {
-    color: var(--burgundy);
-    border-bottom: 2px solid var(--gold);
-    padding-bottom: 4px;
-    margin-top: 2.4em;
-  }
-  h3 { color: var(--burgundy); margin-top: 1.6em; }
-  code, kbd {
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.93em;
-    background: #fff;
-    border: 1px solid var(--rule);
-    padding: 1px 5px;
-    border-radius: 3px;
-  }
-  pre {
-    background: #fff; border: 1px solid var(--rule);
-    padding: 12px 14px; overflow-x: auto;
-  }
-  .pill {
-    display: inline-block; padding: 2px 8px; border-radius: 999px;
-    background: var(--gold); color: var(--ink);
-    font-size: 0.78rem; letter-spacing: 0.5px; margin-left: 8px;
-    vertical-align: middle;
-  }
-  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
-  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--rule); }
-  th { background: var(--burgundy); color: #fff; }
-  .callout {
-    background: #fff;
-    border-left: 4px solid var(--gold);
-    padding: 14px 18px; margin: 1.5em 0;
-  }
-  footer {
-    text-align: center; padding: 28px; color: var(--muted);
-    border-top: 1px solid var(--rule); font-size: 0.9rem;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CiviQual Stats User Guide</title>
+    <style>
+        :root {
+            --burgundy: #6d132a;
+            --burgundy-dark: #4a0919;
+            --gold: #dcad73;
+            --gray-light: #f5f5f5;
+            --gray: #666;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        
+        header {
+            border-bottom: 3px solid var(--burgundy);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--burgundy);
+            margin: 0 0 10px 0;
+            font-size: 2.2em;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1em;
+            margin: 0;
+        }
+        
+        .version {
+            color: var(--gray);
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        
+        h2 {
+            color: var(--burgundy);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 8px;
+            margin-top: 40px;
+        }
+        
+        h3 {
+            color: var(--burgundy-dark);
+            margin-top: 25px;
+        }
+        
+        .phase-section {
+            background: var(--gray-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--burgundy);
+        }
+        
+        .phase-section h3 {
+            margin-top: 0;
+            color: var(--burgundy);
+        }
+        
+        .phase-section.pro {
+            border-left-color: var(--gold);
+        }
+        
+        .tool-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .tool-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        
+        .tool-item strong {
+            color: var(--burgundy-dark);
+        }
+        
+        .tool-item.pro strong {
+            color: var(--gold);
+        }
+        
+        .tool-item.pro::before {
+            content: "★ ";
+            color: var(--gold);
+        }
+        
+        .shortcut {
+            display: inline-block;
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin: 2px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: var(--burgundy);
+            color: white;
+        }
+        
+        tr:hover {
+            background: var(--gray-light);
+        }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        
+        .note::before {
+            content: "💡 ";
+        }
+        
+        .pro-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: var(--gray);
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        a {
+            color: var(--burgundy);
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
 </head>
 <body>
-
-<header>
-  <h1>CiviQual Stats — User Guide</h1>
-  <div class="sub">v2.0.0 &nbsp;·&nbsp; DMAIC Edition</div>
-</header>
-
-<nav>
-  <a href="#intro">Introduction</a>
-  <a href="#start">Getting Started</a>
-  <a href="#define">Define</a>
-  <a href="#measure">Measure</a>
-  <a href="#analyze">Analyze</a>
-  <a href="#improve">Improve</a>
-  <a href="#control">Control</a>
-  <a href="#license">Pro License</a>
-  <a href="#troubleshoot">Troubleshooting</a>
-</nav>
-
-<main>
-
-<section id="intro">
-<h2>Introduction</h2>
-<p>CiviQual Stats is a free, open-source statistical process control and Lean
-Six Sigma analytics application designed for public-sector organizations. It
-organizes its tools around the DMAIC improvement cycle, providing a
-structured workflow for quality management activities. A separately licensed
-Pro edition unlocks the Green Belt and Black Belt toolkit.</p>
-</section>
-
-<section id="start">
-<h2>Getting Started</h2>
-<h3>Loading data</h3>
-<p>From the <b>File</b> menu choose <b>Open Data…</b> and select a CSV, TSV,
-or Excel file. The first row is treated as column headers. After a file
-loads, a status line at the bottom shows the active dataset.</p>
-
-<h3>Navigating the DMAIC workspace</h3>
-<p>The main window uses top-level tabs for each DMAIC phase. Within each
-phase, left-side sub-tabs list the available tools. Free tools are always
-available; Pro tools appear only when a valid Pro license is installed.</p>
-
-<h3>Running analyses</h3>
-<p>Each tool panel follows the same pattern: inputs on the left, a chart in
-the upper right, and a results pane at the bottom. Click
-<b>Run Analysis</b> to execute the current tool.</p>
-</section>
-
-<section id="define">
-<h2>Define Phase</h2>
-<p>Define tools help scope a project and document processes.</p>
-<ul>
-  <li><b>SIPOC</b> — Suppliers, Inputs, Process, Outputs, Customers.</li>
-  <li><b>Process Map</b> — High-level linear process diagram.</li>
-  <li><b>RACI</b> — Responsibility assignment matrix.</li>
-  <li><b>Data Sampling</b> — Random, systematic, or range-based sampling.</li>
-  <li><b>Split Worksheet</b> — Export subsets by a grouping column.</li>
-</ul>
-</section>
-
-<section id="measure">
-<h2>Measure Phase</h2>
-<p>Measure tools establish baselines and evaluate current performance.</p>
-<ul>
-  <li><b>4-Up Chart</b> — Histogram, run chart, X-chart, and probability plot.</li>
-  <li><b>Descriptive Stats</b> — Summary statistics and Anderson-Darling
-    normality test.</li>
-  <li><b>Control Charts (XmR)</b> — Individuals and moving range chart with
-    Western Electric rule detection.</li>
-  <li><b>Capability</b> — Cp, Cpk, Pp, Ppk and PPM projections.</li>
-  <li><b>Probability Plot</b> — Normal probability plot.</li>
-  <li><b>Histogram</b> — Frequency distribution with normal overlay.</li>
-  <li><b>Box Plot</b> — Quartile distribution view.</li>
-  <li><b>Run Chart</b> — Time series with runs test and Mann-Kendall trend.</li>
-  <li><span class="pill">Pro</span> <b>MSA (Gage R&amp;R)</b>, <b>Sample Size</b>,
-    <b>Advanced Capability</b> (Box-Cox).</li>
-</ul>
-<div class="callout">
-  Western Electric Rules detect: (1) points beyond 3σ, (2) 9 points on one
-  side, (3) 6 trending, (4) 14 alternating, (5) 2 of 3 beyond 2σ,
-  (6) 4 of 5 beyond 1σ, (7) 15 within 1σ (stratification), and
-  (8) 8 beyond 1σ (mixture).
-</div>
-</section>
-
-<section id="analyze">
-<h2>Analyze Phase</h2>
-<ul>
-  <li><b>ANOVA</b> — One-way ANOVA with Tukey HSD post-hoc comparisons.</li>
-  <li><b>Correlation</b> — Pearson and Spearman correlation.</li>
-  <li><b>Pareto</b> — Vital few analysis with cumulative percentage.</li>
-  <li><b>Swim Lane</b>, <b>VSM</b>, <b>Fishbone</b> — Process and cause
-    mapping diagrams.</li>
-  <li><span class="pill">Pro</span> <b>Hypothesis Tests</b>, <b>DOE</b>
-    (2^k factorial), <b>Multiple Regression</b>, <b>Root Cause</b> (5 Whys,
-    Is/Is-Not), <b>Data Tools</b> (outlier detection and transforms).</li>
-</ul>
-</section>
-
-<section id="improve">
-<h2>Improve Phase</h2>
-<ul>
-  <li><b>ROI Calculator</b> — Cumulative net benefit projection.</li>
-  <li><span class="pill">Pro</span> <b>Solution Tools</b> (PICK chart) and
-    <b>Lean Calculators</b> (Takt, OEE, PCE, Little's Law).</li>
-</ul>
-</section>
-
-<section id="control">
-<h2>Control Phase</h2>
-<ul>
-  <li><b>Control Chart Review</b> — Rule-based review of a recent window.</li>
-  <li><span class="pill">Pro</span> <b>CUSUM / EWMA</b>, <b>Planning Tools</b>
-    (FMEA and Control Plan), <b>Chart Editor</b>.</li>
-</ul>
-</section>
-
-<section id="license">
-<h2>Pro License</h2>
-<p>A Pro license is a signed JSON file. To install:</p>
-<ol>
-  <li>Open the <b>License</b> menu and choose <b>Install License File…</b>.</li>
-  <li>Select the license file provided by the publisher.</li>
-  <li>Restart CiviQual Stats. Pro sub-tabs appear in each phase.</li>
-</ol>
-<p>The application uses RSA-PSS signature verification to authenticate the
-license. If the signature is invalid, expired, or missing the
-<code>cryptography</code> package, the application runs in Free mode and
-displays a diagnostic in the <b>License Status</b> dialog.</p>
-</section>
-
-<section id="troubleshoot">
-<h2>Troubleshooting</h2>
-<h3>Pro tools do not appear after installing a license</h3>
-<p>Restart the application. The license file is read only at startup.</p>
-
-<h3>The application fails to launch</h3>
-<p>Open a command prompt, activate the Python environment, and run
-<code>python main.py</code> to see the error trace. Confirm that every
-dependency in <code>requirements.txt</code> is installed.</p>
-
-<h3>Plots look small or misaligned on a high-DPI display</h3>
-<p>Launch from the MSI installer rather than a manually unpacked copy; the
-installer sets the high-DPI environment variable. When running from source,
-ensure <code>QT_AUTO_SCREEN_SCALE_FACTOR=1</code> is in the environment.</p>
-</section>
-
-</main>
-
-<footer>
-  © 2026 A Step in the Right Direction, LLC &nbsp;·&nbsp;
-  <a style="color: var(--burgundy)" href="https://qualityincourts.com">qualityincourts.com</a>
-</footer>
-
+    <header>
+        <h1>CiviQual Stats User Guide</h1>
+        <p class="subtitle">Statistical Process Control for Public-Sector Quality Management</p>
+        <p class="version">Version 2.0.0 — DMAIC Edition</p>
+    </header>
+    
+    <nav>
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#dmaic-phases">DMAIC Phases</a></li>
+            <li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+            <li><a href="#loading-data">Loading Data</a></li>
+            <li><a href="#tools-reference">Tools Reference</a></li>
+            <li><a href="#pro-features">Pro Features</a></li>
+            <li><a href="#accessibility">Accessibility</a></li>
+            <li><a href="#support">Support</a></li>
+        </ul>
+    </nav>
+    
+    <section id="getting-started">
+        <h2>Getting Started</h2>
+        <p>CiviQual Stats is a statistical analysis application designed for Lean Six Sigma practitioners in government agencies, courts, and public-sector organizations.</p>
+        
+        <h3>Quick Start</h3>
+        <ol>
+            <li><strong>Load your data</strong> — Click <span class="shortcut">Ctrl+O</span> or use File → Open Data File</li>
+            <li><strong>Select a column</strong> — Use the Column dropdown in the toolbar</li>
+            <li><strong>Choose a tool</strong> — Navigate to the appropriate DMAIC phase tab</li>
+            <li><strong>Run analysis</strong> — Press <span class="shortcut">F5</span> or click Run Analysis</li>
+            <li><strong>Export results</strong> — Use <span class="shortcut">Ctrl+E</span> to export charts</li>
+        </ol>
+    </section>
+    
+    <section id="dmaic-phases">
+        <h2>DMAIC Phases</h2>
+        <p>Tools are organized by DMAIC methodology phases. Use <span class="shortcut">Alt+D/M/A/I/C</span> to navigate between phases.</p>
+        
+        <div class="phase-section">
+            <h3>Define <span class="shortcut">Alt+D</span></h3>
+            <p>Define the problem and project scope.</p>
+            <div class="tool-list">
+                <div class="tool-item"><strong>SIPOC Diagram</strong><br>Suppliers, Inputs, Process, Outputs, Customers</div>
+                <div class="tool-item"><strong>Process Map</strong><br>Visual flowchart of process steps</div>
+                <div class="tool-item"><strong>RACI Matrix</strong><br>Responsibility assignment matrix</div>
+                <div class="tool-item"><strong>Data Sampling</strong><br>Extract random or stratified samples</div>
+                <div class="tool-item"><strong>Split Worksheet</strong><br>Split data by column values</div>
+            </div>
+        </div>
+        
+        <div class="phase-section">
+            <h3>Measure <span class="shortcut">Alt+M</span></h3>
+            <p>Measure current performance.</p>
+            <div class="tool-list">
+                <div class="tool-item"><strong>4-Up Chart</strong><br>Combined histogram, run chart, control chart, capability</div>
+                <div class="tool-item"><strong>Descriptive Statistics</strong><br>Mean, median, standard deviation, distribution</div>
+                <div class="tool-item"><strong>Control Charts</strong><br>I-Chart, MR-Chart with Western Electric rules</div>
+                <div class="tool-item"><strong>Capability Analysis</strong><br>Cp, Cpk, Pp, Ppk indices</div>
+                <div class="tool-item"><strong>Probability Plot</strong><br>Anderson-Darling normality test</div>
+                <div class="tool-item"><strong>Histogram</strong><br>Frequency distribution</div>
+                <div class="tool-item"><strong>Box Plot</strong><br>Box-and-whisker comparison</div>
+                <div class="tool-item"><strong>Run Chart</strong><br>Time-series with runs analysis</div>
+                <div class="tool-item pro"><strong>MSA (Gage R&R)</strong><br>Measurement System Analysis</div>
+                <div class="tool-item pro"><strong>Sample Size Calculator</strong><br>Power analysis and sample sizing</div>
+                <div class="tool-item pro"><strong>Advanced Capability</strong><br>Non-normal capability, Box-Cox</div>
+            </div>
+        </div>
+        
+        <div class="phase-section">
+            <h3>Analyze <span class="shortcut">Alt+A</span></h3>
+            <p>Analyze root causes.</p>
+            <div class="tool-list">
+                <div class="tool-item"><strong>ANOVA</strong><br>Analysis of variance with Tukey HSD</div>
+                <div class="tool-item"><strong>Correlation</strong><br>Pearson and Spearman correlation</div>
+                <div class="tool-item"><strong>Pareto Analysis</strong><br>Vital few vs. trivial many</div>
+                <div class="tool-item"><strong>Swim Lane Diagram</strong><br>Cross-functional process flow</div>
+                <div class="tool-item"><strong>Value Stream Map</strong><br>Lean value stream analysis</div>
+                <div class="tool-item"><strong>Fishbone Diagram</strong><br>Cause-and-effect (Ishikawa)</div>
+                <div class="tool-item pro"><strong>Hypothesis Tests</strong><br>t-tests, chi-square, non-parametric</div>
+                <div class="tool-item pro"><strong>Design of Experiments</strong><br>Factorial DOE analysis</div>
+                <div class="tool-item pro"><strong>Multiple Regression</strong><br>Multi-factor regression modeling</div>
+                <div class="tool-item pro"><strong>Root Cause Tools</strong><br>5 Whys, advanced fishbone</div>
+                <div class="tool-item pro"><strong>Data Tools</strong><br>Outlier detection, missing data</div>
+            </div>
+        </div>
+        
+        <div class="phase-section">
+            <h3>Improve <span class="shortcut">Alt+I</span></h3>
+            <p>Improve the process.</p>
+            <div class="tool-list">
+                <div class="tool-item"><strong>ROI Calculator</strong><br>Return on Investment for projects</div>
+                <div class="tool-item pro"><strong>Solution Tools</strong><br>Pugh Matrix, Impact-Effort Matrix</div>
+                <div class="tool-item pro"><strong>Lean Calculators</strong><br>DPMO, RTY, OEE, Takt Time</div>
+            </div>
+        </div>
+        
+        <div class="phase-section">
+            <h3>Control <span class="shortcut">Alt+C</span></h3>
+            <p>Control and sustain gains.</p>
+            <div class="tool-list">
+                <div class="tool-item"><strong>Control Chart Review</strong><br>Review charts with annotations for monitoring</div>
+                <div class="tool-item pro"><strong>CUSUM/EWMA Charts</strong><br>Advanced control charts</div>
+                <div class="tool-item pro"><strong>Planning Tools</strong><br>FMEA, Control Plan</div>
+                <div class="tool-item pro"><strong>Chart Editor</strong><br>Customize chart formatting</div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="keyboard-shortcuts">
+        <h2>Keyboard Shortcuts</h2>
+        <table>
+            <tr><th>Shortcut</th><th>Action</th></tr>
+            <tr><td><span class="shortcut">Ctrl+O</span></td><td>Open data file</td></tr>
+            <tr><td><span class="shortcut">Ctrl+S</span></td><td>Save project (Pro)</td></tr>
+            <tr><td><span class="shortcut">Ctrl+E</span></td><td>Export chart</td></tr>
+            <tr><td><span class="shortcut">F5</span></td><td>Run analysis</td></tr>
+            <tr><td><span class="shortcut">F1</span></td><td>Open user guide</td></tr>
+            <tr><td><span class="shortcut">F11</span></td><td>Toggle full screen</td></tr>
+            <tr><td><span class="shortcut">Alt+D</span></td><td>Go to Define phase</td></tr>
+            <tr><td><span class="shortcut">Alt+M</span></td><td>Go to Measure phase</td></tr>
+            <tr><td><span class="shortcut">Alt+A</span></td><td>Go to Analyze phase</td></tr>
+            <tr><td><span class="shortcut">Alt+I</span></td><td>Go to Improve phase</td></tr>
+            <tr><td><span class="shortcut">Alt+C</span></td><td>Go to Control phase</td></tr>
+            <tr><td><span class="shortcut">1-9</span></td><td>Select tool within current phase</td></tr>
+            <tr><td><span class="shortcut">Ctrl++</span></td><td>Zoom in</td></tr>
+            <tr><td><span class="shortcut">Ctrl+-</span></td><td>Zoom out</td></tr>
+            <tr><td><span class="shortcut">Ctrl+0</span></td><td>Reset zoom</td></tr>
+        </table>
+    </section>
+    
+    <section id="loading-data">
+        <h2>Loading Data</h2>
+        <h3>Supported Formats</h3>
+        <ul>
+            <li><strong>CSV</strong> — Comma-separated values (.csv)</li>
+            <li><strong>Excel</strong> — Microsoft Excel (.xlsx, .xls)</li>
+        </ul>
+        
+        <h3>Data Requirements</h3>
+        <ul>
+            <li>First row should contain column headers</li>
+            <li>Numeric columns are automatically detected for analysis</li>
+            <li>Date columns should be in standard formats (YYYY-MM-DD, MM/DD/YYYY)</li>
+        </ul>
+        
+        <h3>Sample Data</h3>
+        <p>CiviQual Stats includes sample data files for learning and testing. Access them via Help → Sample Data → Load Sample Data.</p>
+        
+        <p>Sample files cover public-sector scenarios including:</p>
+        <ul>
+            <li>Court case processing times</li>
+            <li>Document processing workflows</li>
+            <li>Permit and inspection data</li>
+            <li>Public records requests</li>
+            <li>Government services metrics</li>
+        </ul>
+    </section>
+    
+    <section id="tools-reference">
+        <h2>Tools Reference</h2>
+        
+        <h3>Control Charts</h3>
+        <p>Control charts detect process variation using statistical limits. CiviQual Stats supports:</p>
+        <ul>
+            <li><strong>I-Chart</strong> — Individual measurements</li>
+            <li><strong>MR-Chart</strong> — Moving range</li>
+            <li><strong>I-MR Chart</strong> — Combined view</li>
+        </ul>
+        
+        <p>Western Electric rules are automatically applied to detect out-of-control conditions:</p>
+        <ul>
+            <li>Rule 1: One point beyond 3σ</li>
+            <li>Rule 2: Two of three points beyond 2σ (same side)</li>
+            <li>Rule 3: Four of five points beyond 1σ (same side)</li>
+            <li>Rule 4: Eight consecutive points on same side of center</li>
+            <li>Rule 5: Six consecutive points increasing or decreasing</li>
+            <li>Rule 6: Fourteen consecutive points alternating up and down</li>
+        </ul>
+        
+        <h3>Capability Analysis</h3>
+        <p>Process capability indices measure how well your process meets specifications:</p>
+        <ul>
+            <li><strong>Cp</strong> — Potential capability (spread vs. specification width)</li>
+            <li><strong>Cpk</strong> — Actual capability (accounts for centering)</li>
+            <li><strong>Pp</strong> — Overall performance (long-term)</li>
+            <li><strong>Ppk</strong> — Overall performance with centering</li>
+        </ul>
+        
+        <div class="note">
+            A Cpk ≥ 1.33 is generally considered capable. For critical processes, Cpk ≥ 1.67 may be required.
+        </div>
+        
+        <h3>ANOVA</h3>
+        <p>Analysis of Variance tests whether group means are significantly different. Includes:</p>
+        <ul>
+            <li>One-way ANOVA with F-statistic and p-value</li>
+            <li>Tukey HSD post-hoc test for pairwise comparisons</li>
+            <li>Effect size (eta-squared)</li>
+        </ul>
+    </section>
+    
+    <section id="pro-features">
+        <h2>Pro Features</h2>
+        <p>CiviQual Stats Pro unlocks advanced Green Belt and Black Belt tools for comprehensive quality management analysis.</p>
+        
+        <h3>Pro Tools Include</h3>
+        <ul>
+            <li><strong>MSA (Gage R&R)</strong> — Measurement system analysis</li>
+            <li><strong>Design of Experiments</strong> — Factorial DOE</li>
+            <li><strong>Hypothesis Tests</strong> — t-tests, chi-square, non-parametric</li>
+            <li><strong>Advanced Capability</strong> — Non-normal distributions, Box-Cox</li>
+            <li><strong>Multiple Regression</strong> — Multi-factor modeling</li>
+            <li><strong>CUSUM/EWMA Charts</strong> — Advanced control charts</li>
+            <li><strong>Planning Tools</strong> — FMEA, Control Plan worksheets</li>
+            <li><strong>Project Sessions</strong> — Save and resume analysis projects</li>
+        </ul>
+        
+        <h3>Licensing</h3>
+        <p>To activate a Pro license:</p>
+        <ol>
+            <li>Go to Help → Pro License</li>
+            <li>Enter your email address and license key</li>
+            <li>Click Activate</li>
+        </ol>
+        
+        <p>Purchase licenses at <a href="https://qualityincourts.com/pro">qualityincourts.com/pro</a></p>
+    </section>
+    
+    <section id="accessibility">
+        <h2>Accessibility</h2>
+        <p>CiviQual Stats is designed with Section 508 accessibility in mind:</p>
+        <ul>
+            <li><strong>Keyboard navigation</strong> — All features accessible via keyboard</li>
+            <li><strong>Screen reader support</strong> — Accessible names and descriptions</li>
+            <li><strong>High contrast mode</strong> — View → High Contrast Mode</li>
+            <li><strong>Resizable interface</strong> — Zoom controls in View menu</li>
+        </ul>
+        
+        <p>For accessibility assistance, contact <a href="mailto:support@qualityincourts.com">support@qualityincourts.com</a></p>
+    </section>
+    
+    <section id="support">
+        <h2>Support</h2>
+        <p><strong>Documentation:</strong> <a href="https://qualityincourts.com/docs">qualityincourts.com/docs</a></p>
+        <p><strong>Email:</strong> <a href="mailto:support@qualityincourts.com">support@qualityincourts.com</a></p>
+        <p><strong>Issues:</strong> <a href="https://github.com/qualityincourts-lab/CiviQual/issues">GitHub Issues</a></p>
+    </section>
+    
+    <footer>
+        <p>CiviQual Stats Version 2.0.0 — DMAIC Edition</p>
+        <p>© 2026 A Step in the Right Direction LLC. All Rights Reserved.</p>
+        <p>Part of the CiviQual Suite for Public-Sector Quality Management</p>
+    </footer>
 </body>
 </html>

@@ -1,9 +1,20 @@
-"""CiviQual Stats version information."""
+"""
+CiviQual Stats Version Information
+
+This file contains version constants used throughout the application.
+"""
 
 __version__ = "2.0.0"
-__release_date__ = "2026-04-21"
-__edition__ = "DMAIC Edition"
-__app_name__ = "CiviQual Stats"
-__publisher__ = "A Step in the Right Direction, LLC"
-__copyright__ = "Copyright (c) 2026 A Step in the Right Direction, LLC"
-__website__ = "https://qualityincourts.com"
+__version_name__ = "DMAIC Edition"
+__version_date__ = "April 2026"
+
+# Full version string
+VERSION_STRING = f"{__version__} ({__version_name__})"
+
+# Build information
+BUILD_DATE = "2026-04-21"
+BUILD_NUMBER = "2026.04.21.001"
+
+# Compatibility
+MIN_PYTHON_VERSION = (3, 9)
+MIN_PYSIDE_VERSION = "6.5.0"

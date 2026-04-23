@@ -1,0 +1,16 @@
+Defect_Category,Count,Department
+Missing Signature,145,Filing
+Incorrect Fee,98,Filing
+Wrong Form Used,87,Filing
+Missing Attachment,76,Filing
+Illegible Writing,52,Filing
+Date Error,48,Scheduling
+Double Booking,35,Scheduling
+Wrong Courtroom,28,Scheduling
+Missing Party Info,24,Records
+Duplicate Entry,18,Records
+Calculation Error,15,Finance
+Late Filing,12,Filing
+Address Error,10,Distribution
+Format Error,8,Records
+Other,5,Various

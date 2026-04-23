@@ -1,0 +1,16 @@
+Process_Step,Potential_Failure_Mode,Potential_Effect,Severity,Potential_Cause,Occurrence,Current_Controls,Detection,RPN,Recommended_Action,Responsibility,Target_Date
+Case Filing,Missing documents,Delayed processing,6,Incomplete submission,7,Checklist review,5,210,Implement digital validation,Clerk Supervisor,2026-06-01
+Case Filing,Incorrect fee,Payment rejection,5,Fee calculator error,4,Manual verification,6,120,Update fee calculator,IT Manager,2026-05-15
+Initial Review,Missed deadline,Case dismissal,9,Calendar oversight,3,Deadline tracking,4,108,Automated reminders,Systems Admin,2026-05-01
+Initial Review,Wrong case type,Incorrect routing,7,Classification error,5,Supervisor review,5,175,Training program,Training Coord,2026-06-15
+Document Processing,Lost documents,Case delay,8,Misfiling,3,Barcode tracking,4,96,RFID implementation,IT Manager,2026-07-01
+Document Processing,Data entry error,Incorrect record,6,Manual keying,6,Double entry,4,144,OCR automation,IT Manager,2026-06-01
+Scheduling,Double booking,Hearing conflict,7,Calendar sync fail,4,Visual review,6,168,Integrated calendar,Systems Admin,2026-05-15
+Scheduling,Incorrect notice,Missed hearing,8,Template error,3,Proofread,5,120,Template validation,Clerk Supervisor,2026-05-01
+Hearing,Recording failure,No transcript,9,Equipment malfunction,2,Pre-check,3,54,Backup recording,Court Reporter,2026-04-15
+Hearing,Late start,Schedule cascade,5,Prior case overrun,6,Time buffers,7,210,Buffer policy,Chief Judge,2026-06-01
+Order Entry,Typo in order,Appeal risk,8,Manual drafting,4,Judge review,3,96,Spell check,IT Manager,2026-04-30
+Order Entry,Wrong party name,Invalid order,9,Copy-paste error,3,Name verification,4,108,Auto-populate,Systems Admin,2026-05-15
+Distribution,Wrong recipient,Privacy breach,9,Address error,2,Verification step,4,72,Address validation,Clerk Supervisor,2026-05-01
+Distribution,Delayed mailing,Deadline miss,7,Mail backlog,4,Daily processing,5,140,Electronic service,IT Manager,2026-06-15
+Closing,Incomplete file,Audit finding,6,Missing checklist,5,Final review,4,120,Closure checklist,Clerk Supervisor,2026-05-01
