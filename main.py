@@ -34,7 +34,8 @@ from PySide6.QtWidgets import (
     QSplitter, QTextEdit, QCheckBox, QStatusBar, QMenuBar, QMenu,
     QDialog, QDialogButtonBox, QGridLayout, QRadioButton, QButtonGroup,
     QTextBrowser, QFrame, QListWidget, QAbstractItemView, QStackedWidget,
-    QToolBar, QSizePolicy, QProgressBar, QSlider, QInputDialog
+    QToolBar, QSizePolicy, QProgressBar, QSlider, QInputDialog,
+    QDockWidget, QHeaderView
 )
 from PySide6.QtCore import Qt, QSize, QStandardPaths, QTimer, Signal, QSettings
 from PySide6.QtGui import (
@@ -1891,7 +1892,85 @@ class CiviQualStatsMainWindow(QMainWindow):
         
         layout.addWidget(self.phase_tabs)
         self.setCentralWidget(central)
-    
+
+        # Data preview dock (shows loaded CSV contents at a glance).
+        self.data_preview = QTableWidget()
+        self.data_preview.setAlternatingRowColors(True)
+        self.data_preview.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.data_preview.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.data_preview.setAccessibleName("Loaded dataset preview")
+        self.data_preview_dock = QDockWidget("Data Preview", self)
+        self.data_preview_dock.setWidget(self.data_preview)
+        self.data_preview_dock.setAllowedAreas(
+            Qt.DockWidgetArea.BottomDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
+        )
+        self.data_preview_dock.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
+            | QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.data_preview_dock)
+        self._show_empty_data_preview()
+
+    def _show_empty_data_preview(self):
+        """Reset the data preview table to the 'no data' state."""
+        self.data_preview.clear()
+        self.data_preview.setRowCount(1)
+        self.data_preview.setColumnCount(1)
+        self.data_preview.setHorizontalHeaderLabels([""])
+        item = QTableWidgetItem("No data loaded — use File > Open Data File…")
+        item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+        self.data_preview.setItem(0, 0, item)
+        self.data_preview.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+
+    def _populate_data_preview(self, df: pd.DataFrame, max_rows: int = 200):
+        """Fill the data preview table with the first max_rows of df."""
+        self.data_preview.clear()
+        if df is None or df.empty:
+            self._show_empty_data_preview()
+            return
+        rows = min(len(df), max_rows)
+        cols = len(df.columns)
+        self.data_preview.setRowCount(rows)
+        self.data_preview.setColumnCount(cols)
+        self.data_preview.setHorizontalHeaderLabels([str(c) for c in df.columns])
+        for r in range(rows):
+            for c in range(cols):
+                val = df.iat[r, c]
+                item = QTableWidgetItem("" if pd.isna(val) else str(val))
+                self.data_preview.setItem(r, c, item)
+        self.data_preview.resizeColumnsToContents()
+        self.data_preview.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Interactive
+        )
+        truncated = " (first 200 shown)" if len(df) > max_rows else ""
+        self.data_preview_dock.setWindowTitle(
+            f"Data Preview — {len(df):,} rows × {cols} cols{truncated}"
+        )
+
+    def _refresh_all_panels(self):
+        """Refresh per-panel column combos after a data change.
+
+        Panels populate their combos from self._panel_data.dataframe() in
+        __init__. That call happens during app startup when current_data is
+        still None, so combos start empty. Re-run each panel's _refresh()
+        after a data load so the user doesn't have to hit every tool's
+        'Refresh columns' button manually.
+        """
+        for phase_widget in self.phase_widgets.values():
+            for i in range(phase_widget.tool_tabs.count()):
+                w = phase_widget.tool_tabs.widget(i)
+                if isinstance(w, ProGatedWidget):
+                    w = w.actual_widget
+                refresh = getattr(w, "_refresh", None)
+                if callable(refresh):
+                    try:
+                        refresh()
+                    except Exception:
+                        pass
+
     def _populate_phase_tools(self, phase_name: str, phase_widget: DMaicPhaseWidget):
         """Populate a phase widget with its tools."""
         config = DMAIC_PHASES[phase_name]
@@ -2113,10 +2192,14 @@ class CiviQualStatsMainWindow(QMainWindow):
             self.data_status_label.setText(
                 f"{os.path.basename(file_path)} | {len(df)} rows × {len(df.columns)} cols"
             )
-            
+
+            # Refresh per-panel column combos and the data preview dock.
+            self._refresh_all_panels()
+            self._populate_data_preview(df)
+
             # Add to recent files
             self._add_recent_file(file_path)
-            
+
             self.statusbar.showMessage(f"Loaded: {file_path}", 3000)
             
         except Exception as e:
@@ -2504,18 +2587,39 @@ class CiviQualStatsMainWindow(QMainWindow):
         self.statusbar.showMessage(f"Tool: {tool_name}", 2000)
     
     def _run_analysis(self):
-        """Run current analysis."""
+        """Run the analysis for the currently-selected tool tab.
+
+        Delegates to the active ToolPanel's Run button so the toolbar
+        'Run Analysis' action and the per-panel button behave identically.
+        """
         if self.current_data is None:
             QMessageBox.warning(self, "No Data", "Please load data before running analysis.")
             return
-        
-        column = self.column_combo.currentText()
-        if not column:
-            QMessageBox.warning(self, "No Column", "Please select a column for analysis.")
+
+        phase_idx = self.phase_tabs.currentIndex()
+        if phase_idx < 0:
             return
-        
-        # TODO: Run actual analysis based on current tool
-        self.statusbar.showMessage("Analysis complete", 3000)
+        phase_name = list(DMAIC_PHASES.keys())[phase_idx]
+        phase_widget = self.phase_widgets.get(phase_name)
+        if phase_widget is None:
+            return
+
+        tool_widget = phase_widget.tool_tabs.currentWidget()
+        if isinstance(tool_widget, ProGatedWidget):
+            # Gated; locked view is showing. Let that UI drive license entry.
+            if not self.license_manager.is_pro:
+                tool_widget._request_license()
+                return
+            tool_widget = tool_widget.actual_widget
+
+        run_btn = getattr(tool_widget, "_run_button", None)
+        if run_btn is not None:
+            run_btn.click()
+            self.statusbar.showMessage("Analysis run", 2000)
+        else:
+            self.statusbar.showMessage(
+                "This tool has no runnable analysis (use its own controls).", 4000
+            )
     
     def _clear_results(self):
         """Clear analysis results."""
