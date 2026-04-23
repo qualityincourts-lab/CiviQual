@@ -68,6 +68,9 @@ from planning_tools import FMEA, ControlPlan
 from data_tools import OutlierDetection, MissingDataAnalysis
 from chart_editor import ChartEditor
 
+# Free-tier tool panels (all concrete QWidget subclasses of ui_common.ToolPanel)
+import free_tools
+
 
 # =============================================================================
 # Version Information
@@ -1378,6 +1381,68 @@ class ProGatedWidget(QWidget):
 
 
 # =============================================================================
+# Free-tool Panel Dispatch
+# =============================================================================
+# Maps DMAIC_PHASES tool names → concrete Panel classes in free_tools.py.
+# _create_tool_content uses this to instantiate the right widget for each tab.
+FREE_TOOL_PANELS = {
+    # Define
+    "SIPOC Diagram":          free_tools.SIPOCPanel,
+    "Process Map":            free_tools.ProcessMapPanel,
+    "RACI Matrix":            free_tools.RACIPanel,
+    "Data Sampling":          free_tools.DataSamplingPanel,
+    "Split Worksheet":        free_tools.SplitWorksheetPanel,
+    # Measure
+    "4-Up Chart":             free_tools.FourUpPanel,
+    "Descriptive Statistics": free_tools.DescriptivePanel,
+    "Control Charts":         free_tools.ControlChartsPanel,
+    "Capability Analysis":    free_tools.CapabilityPanel,
+    "Probability Plot":       free_tools.ProbabilityPlotPanel,
+    "Histogram":              free_tools.HistogramPanel,
+    "Box Plot":               free_tools.BoxPlotPanel,
+    "Run Chart":              free_tools.RunChartPanel,
+    # Analyze
+    "ANOVA":                  free_tools.ANOVAPanel,
+    "Correlation":            free_tools.CorrelationPanel,
+    "Pareto Analysis":        free_tools.ParetoPanel,
+    "Swim Lane Diagram":      free_tools.SwimLanePanel,
+    "Value Stream Map":       free_tools.VSMPanel,
+    "Fishbone Diagram":       free_tools.FishbonePanel,
+    # Improve
+    "ROI Calculator":         free_tools.ROICalculatorPanel,
+    # Control
+    "Control Chart Review":   free_tools.ControlChartReviewPanel,
+}
+
+
+class _PanelDataAccessor:
+    """Thin adapter exposing .dataframe()/.set_dataframe() to free_tools Panels.
+
+    The Panel classes in free_tools.py were written against a stateful data
+    object. Our DataHandler is stateless (load/transform helpers only); the
+    main window keeps the current DataFrame in self.current_data. This adapter
+    bridges the two without changing DataHandler's public API.
+    """
+
+    def __init__(self, main_window):
+        self._main = main_window
+
+    def dataframe(self):
+        return self._main.current_data
+
+    def set_dataframe(self, df):
+        self._main.current_data = df
+        # Keep the main toolbar's column combo in sync (best-effort; the combo
+        # is created during _setup_toolbar which runs before any Panel can
+        # fire set_dataframe from user interaction).
+        combo = getattr(self._main, "column_combo", None)
+        if combo is not None and df is not None:
+            combo.clear()
+            numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+            combo.addItems(numeric_cols)
+
+
+# =============================================================================
 # Main Window
 # =============================================================================
 class CiviQualStatsMainWindow(QMainWindow):
@@ -1405,6 +1470,9 @@ class CiviQualStatsMainWindow(QMainWindow):
         # Data state
         self.current_data: Optional[pd.DataFrame] = None
         self.current_file_path: Optional[str] = None
+
+        # Adapter exposing current_data to free_tools Panels via .dataframe()
+        self._panel_data = _PanelDataAccessor(self)
         
         # Settings
         self.settings = QSettings(ORG_NAME, APP_NAME)
@@ -1934,19 +2002,23 @@ class CiviQualStatsMainWindow(QMainWindow):
         return descriptions.get(tool_name, "Statistical analysis tool.")
     
     def _create_tool_content(self, tool_name: str, is_pro: bool) -> QWidget:
-        """Create tool-specific content widget."""
-        # This would contain the actual analysis interface
-        # Simplified for this implementation
-        
+        """Create tool-specific content widget.
+
+        For free tools, instantiate the matching Panel from free_tools.py.
+        For pro tools (no UI yet) and any unmapped name, return a placeholder.
+        """
+        if not is_pro:
+            panel_cls = FREE_TOOL_PANELS.get(tool_name)
+            if panel_cls is not None:
+                return panel_cls(self._panel_data, self.license_manager)
+
+        # Fallback placeholder (pro tools without a UI yet, or unmapped names).
         content = QWidget()
         layout = QVBoxLayout(content)
-        
-        # Placeholder for data display / analysis controls
-        placeholder = QLabel(f"[{tool_name} analysis interface]")
+        placeholder = QLabel(f"[{tool_name} analysis interface — coming soon]")
         placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
         placeholder.setStyleSheet("color: #999; border: 1px dashed #ccc; padding: 40px;")
         layout.addWidget(placeholder)
-        
         return content
     
     def _setup_statusbar(self):
