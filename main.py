@@ -2155,13 +2155,28 @@ class CiviQualStatsMainWindow(QMainWindow):
     # =========================================================================
     
     def _open_file(self):
-        """Open a data file."""
+        """Open a data file. Defaults to the bundled samples directory."""
+        start_dir = self._samples_dir() or ""
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open Data File", "",
+            self, "Open Data File", str(start_dir),
             "CSV Files (*.csv);;Excel Files (*.xlsx *.xls);;All Files (*)"
         )
         if file_path:
             self._load_data_file(file_path)
+
+    def _samples_dir(self):
+        """Locate the bundled samples directory (works in dev and PyInstaller)."""
+        candidates = []
+        meipass = getattr(sys, "_MEIPASS", None)
+        if meipass:
+            candidates.append(Path(meipass) / "samples")
+        candidates.append(Path(__file__).parent / "samples")
+        candidates.append(Path(sys.executable).parent / "samples")
+        candidates.append(Path(sys.executable).parent / "_internal" / "samples")
+        for p in candidates:
+            if p.exists():
+                return p
+        return None
     
     def _load_data_file(self, file_path: str, confirm_replace: bool = True):
         """Load data from file."""
@@ -2668,27 +2683,17 @@ class CiviQualStatsMainWindow(QMainWindow):
     
     def _open_samples_folder(self):
         """Open samples folder in file browser."""
-        samples_dir = None
-        possible_paths = [
-            Path(__file__).parent / "samples",
-            Path(sys.executable).parent / "samples",
-            Path.cwd() / "samples"
-        ]
-        for path in possible_paths:
-            if path.exists():
-                samples_dir = path
-                break
-        
-        if samples_dir:
-            import subprocess
-            if sys.platform == "win32":
-                subprocess.run(["explorer", str(samples_dir)])
-            elif sys.platform == "darwin":
-                subprocess.run(["open", str(samples_dir)])
-            else:
-                subprocess.run(["xdg-open", str(samples_dir)])
-        else:
+        samples_dir = self._samples_dir()
+        if samples_dir is None:
             QMessageBox.warning(self, "Not Found", "Sample data folder not found.")
+            return
+        import subprocess
+        if sys.platform == "win32":
+            subprocess.run(["explorer", str(samples_dir)])
+        elif sys.platform == "darwin":
+            subprocess.run(["open", str(samples_dir)])
+        else:
+            subprocess.run(["xdg-open", str(samples_dir)])
     
     # =========================================================================
     # Help and Dialogs

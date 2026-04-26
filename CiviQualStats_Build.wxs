@@ -29,8 +29,14 @@
             Manufacturer="A Step in the Right Direction LLC"
             Keywords="statistics, quality, lean, six sigma, SPC, courts, government" />
 
+        <!-- AllowSameVersionUpgrades makes a re-install at the same version
+             actually replace the previous install instead of registering a
+             new ProductCode side-by-side. Without this, iterating on the
+             same version number (2.0.0 in our case) leaves stale ARP
+             entries and a stale exe on disk. -->
         <MajorUpgrade
             DowngradeErrorMessage="A newer version of CiviQual Stats is already installed."
+            AllowSameVersionUpgrades="yes"
             Schedule="afterInstallInitialize" />
 
         <Icon Id="CiviQualIcon.ico" SourceFile="civiqual_icon.ico" />
