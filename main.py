@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QGridLayout, QRadioButton, QButtonGroup,
     QTextBrowser, QFrame, QListWidget, QAbstractItemView, QStackedWidget,
     QToolBar, QSizePolicy, QProgressBar, QSlider, QInputDialog,
-    QDockWidget, QHeaderView
+    QHeaderView
 )
 from PySide6.QtCore import Qt, QSize, QStandardPaths, QTimer, Signal, QSettings
 from PySide6.QtGui import (
@@ -1879,37 +1879,25 @@ class CiviQualStatsMainWindow(QMainWindow):
             }}
         """)
         
-        # Create phase widgets
-        for phase_name, phase_config in DMAIC_PHASES.items():
-            phase_widget = DMaicPhaseWidget(phase_name, phase_config, self.license_manager)
-            phase_widget.tool_selected.connect(self._on_tool_selected)
-            self.phase_widgets[phase_name] = phase_widget
-            
-            # Add tools to phase
-            self._populate_phase_tools(phase_name, phase_widget)
-            
-            self.phase_tabs.addTab(phase_widget, phase_name)
-        
-        layout.addWidget(self.phase_tabs)
-        self.setCentralWidget(central)
-
-        # Data preview dock (shows loaded CSV contents at a glance).
+        # Data tab (first tab) — shows the loaded dataset before any analysis.
         self.data_preview = QTableWidget()
         self.data_preview.setAlternatingRowColors(True)
         self.data_preview.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.data_preview.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.data_preview.setAccessibleName("Loaded dataset preview")
-        self.data_preview_dock = QDockWidget("Data Preview", self)
-        self.data_preview_dock.setWidget(self.data_preview)
-        self.data_preview_dock.setAllowedAreas(
-            Qt.DockWidgetArea.BottomDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
-        )
-        self.data_preview_dock.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
-            | QDockWidget.DockWidgetFeature.DockWidgetClosable
-        )
-        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.data_preview_dock)
+        self.phase_tabs.addTab(self.data_preview, "Data")
+
+        # DMAIC phase tabs (one per phase, each containing its tools).
+        for phase_name, phase_config in DMAIC_PHASES.items():
+            phase_widget = DMaicPhaseWidget(phase_name, phase_config, self.license_manager)
+            phase_widget.tool_selected.connect(self._on_tool_selected)
+            self.phase_widgets[phase_name] = phase_widget
+            self._populate_phase_tools(phase_name, phase_widget)
+            self.phase_tabs.addTab(phase_widget, phase_name)
+
+        layout.addWidget(self.phase_tabs)
+        self.setCentralWidget(central)
+
         self._show_empty_data_preview()
 
     def _show_empty_data_preview(self):
@@ -1924,6 +1912,9 @@ class CiviQualStatsMainWindow(QMainWindow):
         self.data_preview.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
+        idx = self.phase_tabs.indexOf(self.data_preview) if hasattr(self, "phase_tabs") else -1
+        if idx >= 0:
+            self.phase_tabs.setTabText(idx, "Data")
 
     def _populate_data_preview(self, df: pd.DataFrame, max_rows: int = 200):
         """Fill the data preview table with the first max_rows of df."""
@@ -1945,10 +1936,10 @@ class CiviQualStatsMainWindow(QMainWindow):
         self.data_preview.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Interactive
         )
-        truncated = " (first 200 shown)" if len(df) > max_rows else ""
-        self.data_preview_dock.setWindowTitle(
-            f"Data Preview — {len(df):,} rows × {cols} cols{truncated}"
-        )
+        # Reflect the row/col count in the Data tab label.
+        idx = self.phase_tabs.indexOf(self.data_preview)
+        if idx >= 0:
+            self.phase_tabs.setTabText(idx, f"Data ({len(df):,} × {cols})")
 
     def _refresh_all_panels(self):
         """Refresh per-panel column combos after a data change.
@@ -1991,37 +1982,51 @@ class CiviQualStatsMainWindow(QMainWindow):
             phase_widget.add_tool_tab(clean_name, gated_widget, is_pro=True)
     
     def _create_tool_widget(self, tool_name: str, is_pro: bool) -> QWidget:
-        """Create the actual widget for a tool."""
-        # This is a factory method - returns appropriate widget for each tool
-        # For brevity, returning placeholder widgets here
-        # In full implementation, each would be a complete analysis interface
-        
+        """Create the widget that goes into a tool tab.
+
+        For free tools with a matching class in FREE_TOOL_PANELS, return the
+        Panel directly (no outer wrapper) so the toolbar 'Run Analysis' proxy
+        can reach its _run_button via phase_widget.tool_tabs.currentWidget().
+        For Pro tools and unmapped names, wrap a 'coming soon' placeholder
+        with a tool name header and description.
+        """
+        if not is_pro:
+            panel_cls = FREE_TOOL_PANELS.get(tool_name)
+            if panel_cls is not None:
+                return panel_cls(self._panel_data, self.license_manager)
+
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Tool header
+
         header = QLabel(tool_name)
         header.setFont(QFont("Arial", 16, QFont.Weight.Bold))
-        if is_pro:
-            header.setStyleSheet(f"color: {COLOR_GOLD};")
-        else:
-            header.setStyleSheet(f"color: {COLOR_BURGUNDY};")
+        header.setStyleSheet(f"color: {COLOR_GOLD if is_pro else COLOR_BURGUNDY};")
         layout.addWidget(header)
-        
+
         desc = QLabel(self._get_tool_description(tool_name))
         desc.setWordWrap(True)
         desc.setStyleSheet("color: #666;")
         layout.addWidget(desc)
-        
+
         layout.addSpacing(16)
-        
-        # Tool-specific content area
-        content = self._create_tool_content(tool_name, is_pro)
-        layout.addWidget(content)
-        
+
+        placeholder = QLabel(f"[{tool_name} analysis interface — coming soon]")
+        placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        placeholder.setStyleSheet("color: #999; border: 1px dashed #ccc; padding: 40px;")
+        layout.addWidget(placeholder)
+
         layout.addStretch()
-        
         return widget
+
+    def _current_phase_name(self) -> Optional[str]:
+        """Return the DMAIC phase backing the currently-active tab, or None
+        if the user is on the Data tab (or anywhere else we don't track).
+        """
+        current = self.phase_tabs.currentWidget()
+        for name, pw in self.phase_widgets.items():
+            if pw is current:
+                return name
+        return None
     
     def _get_tool_description(self, tool_name: str) -> str:
         """Get description for a tool."""
@@ -2275,12 +2280,13 @@ class CiviQualStatsMainWindow(QMainWindow):
                 file_path += PROJECT_EXTENSION
         
         # Update session state
-        current_phase = list(DMAIC_PHASES.keys())[self.phase_tabs.currentIndex()]
-        self.session.active_phase = current_phase
-        phase_widget = self.phase_widgets.get(current_phase)
-        if phase_widget:
-            tool_name, _ = phase_widget.get_current_tool()
-            self.session.active_tool = tool_name
+        current_phase = self._current_phase_name()
+        self.session.active_phase = current_phase or ""
+        if current_phase:
+            phase_widget = self.phase_widgets.get(current_phase)
+            if phase_widget:
+                tool_name, _ = phase_widget.get_current_tool()
+                self.session.active_tool = tool_name
         
         # Save
         if self.session.save(file_path):
@@ -2332,10 +2338,12 @@ class CiviQualStatsMainWindow(QMainWindow):
         if session.data_file_path:
             self._load_data_file(session.data_file_path, confirm_replace=False)
         
-        # Restore UI state
-        phase_index = list(DMAIC_PHASES.keys()).index(session.active_phase) if session.active_phase in DMAIC_PHASES else 1
-        self.phase_tabs.setCurrentIndex(phase_index)
-        
+        # Restore UI state — jump to the saved phase tab (or Measure as default).
+        target_phase = session.active_phase if session.active_phase in DMAIC_PHASES else "Measure"
+        target_widget = self.phase_widgets.get(target_phase)
+        if target_widget is not None:
+            self.phase_tabs.setCurrentWidget(target_widget)
+
         if session.active_tool:
             phase_widget = self.phase_widgets.get(session.active_phase)
             if phase_widget:
@@ -2506,9 +2514,9 @@ class CiviQualStatsMainWindow(QMainWindow):
     
     def _goto_phase(self, phase_name: str):
         """Navigate to a DMAIC phase."""
-        if phase_name in DMAIC_PHASES:
-            index = list(DMAIC_PHASES.keys()).index(phase_name)
-            self.phase_tabs.setCurrentIndex(index)
+        target = self.phase_widgets.get(phase_name)
+        if target is not None:
+            self.phase_tabs.setCurrentWidget(target)
     
     def _goto_tool(self, phase_name: str, tool_name: str):
         """Navigate to a specific tool."""
@@ -2531,7 +2539,9 @@ class CiviQualStatsMainWindow(QMainWindow):
     
     def _select_tool_by_index(self, index: int):
         """Select tool by number key (1-9)."""
-        current_phase = list(DMAIC_PHASES.keys())[self.phase_tabs.currentIndex()]
+        current_phase = self._current_phase_name()
+        if current_phase is None:
+            return  # Data tab or unknown — no tools to select.
         phase_widget = self.phase_widgets.get(current_phase)
         if phase_widget and index < phase_widget.tool_tabs.count():
             phase_widget.tool_tabs.setCurrentIndex(index)
@@ -2596,10 +2606,14 @@ class CiviQualStatsMainWindow(QMainWindow):
             QMessageBox.warning(self, "No Data", "Please load data before running analysis.")
             return
 
-        phase_idx = self.phase_tabs.currentIndex()
-        if phase_idx < 0:
+        phase_name = self._current_phase_name()
+        if phase_name is None:
+            QMessageBox.information(
+                self, "Select a Tool",
+                "Switch to a DMAIC phase tab (Define / Measure / Analyze / Improve / Control) "
+                "and pick a tool before running an analysis."
+            )
             return
-        phase_name = list(DMAIC_PHASES.keys())[phase_idx]
         phase_widget = self.phase_widgets.get(phase_name)
         if phase_widget is None:
             return
