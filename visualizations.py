@@ -1616,51 +1616,150 @@ def draw_probability_plot(figure, arr, title="", percentile=None):
     figure.tight_layout()
 
 
+_ENGINE_SINGLETON = None
+
+
+def _engine():
+    """Return a cached VisualizationEngine instance for delegating to its
+    _plot_* helpers. Cached because __init__ touches plt.rcParams globally."""
+    global _ENGINE_SINGLETON
+    if _ENGINE_SINGLETON is None:
+        _ENGINE_SINGLETON = VisualizationEngine()
+    return _ENGINE_SINGLETON
+
+
 def draw_four_up(figure, arr, title=""):
+    """4-Up chart: Statistical Summary, Probability Plot, I-Chart, Capability
+    (Cp=1.0 natural tolerance). Delegates to VisualizationEngine helpers so
+    the layout matches the reference implementation."""
     a = np.asarray(arr, dtype=float)
     a = a[~np.isnan(a)]
     figure.clear()
-    gs = figure.add_gridspec(2, 2, hspace=0.4, wspace=0.3)
-
-    # 1. Histogram
-    ax_h = figure.add_subplot(gs[0, 0])
-    ax_h.hist(a, bins=20, color=_GOLD, edgecolor=_BURGUNDY)
-    ax_h.set_title("Histogram", fontsize=10)
-    ax_h.grid(True, linestyle=":", alpha=0.4)
-
-    # 2. Run chart
-    ax_r = figure.add_subplot(gs[0, 1])
-    if a.size:
-        ax_r.plot(np.arange(1, a.size + 1), a, marker="o", color=_BURGUNDY, linewidth=1)
-        ax_r.axhline(float(np.median(a)), color=_GREEN, linewidth=1)
-    ax_r.set_title("Run chart", fontsize=10)
-    ax_r.grid(True, linestyle=":", alpha=0.4)
-
-    # 3. Individuals (X) chart
-    ax_x = figure.add_subplot(gs[1, 0])
-    if a.size:
-        mr = np.abs(np.diff(a))
-        center = float(a.mean())
-        sigma = float(mr.mean() / 1.128) if mr.size else 0.0
-        ax_x.plot(np.arange(1, a.size + 1), a, marker="o", color=_BURGUNDY, linewidth=1)
-        ax_x.axhline(center, color=_GREEN, linewidth=1)
-        ax_x.axhline(center + 3 * sigma, color=_RED, linestyle="--", linewidth=1)
-        ax_x.axhline(center - 3 * sigma, color=_RED, linestyle="--", linewidth=1)
-    ax_x.set_title("X chart", fontsize=10)
-    ax_x.grid(True, linestyle=":", alpha=0.4)
-
-    # 4. Probability plot
-    ax_p = figure.add_subplot(gs[1, 1])
-    if a.size > 2:
-        from scipy.stats import probplot as _probplot
-        _probplot(a, dist="norm", plot=ax_p)
-        line = ax_p.get_lines()
-        if len(line) >= 2:
-            line[0].set_color(_BURGUNDY); line[0].set_marker("o"); line[0].set_markersize(4)
-            line[1].set_color(_GOLD); line[1].set_linewidth(1.5)
-    ax_p.set_title("Probability plot", fontsize=10)
-    ax_p.grid(True, linestyle=":", alpha=0.4)
-
+    if a.size < 2:
+        ax = figure.add_subplot(1, 1, 1)
+        ax.text(0.5, 0.5, "Need at least 2 observations", ha="center", va="center")
+        ax.set_axis_off()
+        return
+    eng = _engine()
+    stats_dict = eng.stats_engine.descriptive_stats(a)
+    gs = figure.add_gridspec(2, 2, hspace=0.35, wspace=0.28)
+    ax1 = figure.add_subplot(gs[0, 0])
+    eng._plot_statistical_summary(ax1, a, stats_dict)
+    ax2 = figure.add_subplot(gs[0, 1])
+    eng._plot_probability(ax2, a, 80)
+    ax3 = figure.add_subplot(gs[1, 0])
+    eng._plot_ichart(ax3, a, title or "Series")
+    ax4 = figure.add_subplot(gs[1, 1])
+    eng._plot_capability(ax4, a, title or "Series")
     if title:
-        figure.suptitle(title, fontsize=12, color=_BURGUNDY, fontweight="bold")
+        figure.suptitle(f"4-Up Chart: {title}", fontsize=13, fontweight="bold",
+                        color=eng.BRAND_BURGUNDY)
+    figure.tight_layout()
+
+
+def draw_i_chart(figure, result, label=""):
+    """Individuals (I) chart only — uses XmR result for limits but no MR subplot."""
+    figure.clear()
+    a = result.data
+    n = a.size
+    ax = figure.add_subplot(1, 1, 1)
+    if n == 0:
+        ax.text(0.5, 0.5, "No data", ha="center", va="center")
+        return
+    idx = np.arange(1, n + 1)
+    ax.plot(idx, a, marker="o", color=_BURGUNDY, linewidth=1.4)
+    ax.axhline(result.x_center, color=_GREEN, linewidth=1.2,
+               label=f"X̄={result.x_center:.3f}")
+    ax.axhline(result.x_ucl, color=_RED, linewidth=1, linestyle="--",
+               label=f"UCL={result.x_ucl:.3f}")
+    ax.axhline(result.x_lcl, color=_RED, linewidth=1, linestyle="--",
+               label=f"LCL={result.x_lcl:.3f}")
+    for s in result.signals:
+        i = s["index"]
+        ax.plot(i + 1, a[i], marker="o", color=_RED, markersize=10,
+                fillstyle="none", markeredgewidth=2)
+    ax.set_title(f"I-Chart — {label}" if label else "I-Chart")
+    ax.set_xlabel("Observation")
+    ax.set_ylabel("Value")
+    ax.grid(True, linestyle=":", alpha=0.4)
+    ax.legend(loc="best", fontsize=8)
+    figure.tight_layout()
+
+
+def draw_mr_only(figure, result, label=""):
+    """Moving Range chart only."""
+    figure.clear()
+    ax = figure.add_subplot(1, 1, 1)
+    if result.mr.size == 0:
+        ax.text(0.5, 0.5, "Need at least 2 observations for MR", ha="center", va="center")
+        ax.set_axis_off()
+        return
+    n = result.mr.size + 1
+    ax.plot(np.arange(2, n + 1), result.mr, marker="s", color=_BURGUNDY, linewidth=1.4)
+    ax.axhline(result.mr_center, color=_GREEN, linewidth=1.2,
+               label=f"MR̄={result.mr_center:.3f}")
+    ax.axhline(result.mr_ucl, color=_RED, linewidth=1, linestyle="--",
+               label=f"UCL={result.mr_ucl:.3f}")
+    ax.set_title(f"MR Chart — {label}" if label else "MR Chart")
+    ax.set_xlabel("Observation")
+    ax.set_ylabel("Moving Range")
+    ax.grid(True, linestyle=":", alpha=0.4)
+    ax.legend(loc="best", fontsize=8)
+    figure.tight_layout()
+
+
+def draw_xbar_r(figure, result, label=""):
+    """X-bar / R chart for subgrouped data. Expects a result object with
+    subgroup_means, subgroup_ranges, x_double_bar, r_bar, x_ucl, x_lcl,
+    r_ucl, r_lcl, signals, subgroup_size."""
+    figure.clear()
+    means = result.subgroup_means
+    ranges = result.subgroup_ranges
+    if means.size == 0:
+        ax = figure.add_subplot(1, 1, 1)
+        ax.text(0.5, 0.5, f"Need at least {result.subgroup_size * 2} observations",
+                ha="center", va="center")
+        ax.set_axis_off()
+        return
+    gs = figure.add_gridspec(2, 1, height_ratios=[2, 1], hspace=0.35)
+    ax_x = figure.add_subplot(gs[0])
+    ax_r = figure.add_subplot(gs[1])
+    idx = np.arange(1, means.size + 1)
+    # X-bar
+    ax_x.plot(idx, means, marker="o", color=_BURGUNDY, linewidth=1.4)
+    ax_x.axhline(result.x_double_bar, color=_GREEN, linewidth=1.2,
+                 label=f"X̄̄={result.x_double_bar:.3f}")
+    ax_x.axhline(result.x_ucl, color=_RED, linewidth=1, linestyle="--",
+                 label=f"UCL={result.x_ucl:.3f}")
+    ax_x.axhline(result.x_lcl, color=_RED, linewidth=1, linestyle="--",
+                 label=f"LCL={result.x_lcl:.3f}")
+    for s in result.signals:
+        if s.get("chart") == "x":
+            i = s["index"]
+            ax_x.plot(i + 1, means[i], marker="o", color=_RED, markersize=10,
+                      fillstyle="none", markeredgewidth=2)
+    ax_x.set_title(f"X̄ chart (n={result.subgroup_size}) — {label}"
+                   if label else f"X̄ chart (n={result.subgroup_size})")
+    ax_x.set_ylabel("Subgroup mean")
+    ax_x.grid(True, linestyle=":", alpha=0.4)
+    ax_x.legend(loc="best", fontsize=7)
+    # R chart
+    ax_r.plot(idx, ranges, marker="s", color=_BURGUNDY, linewidth=1.4)
+    ax_r.axhline(result.r_bar, color=_GREEN, linewidth=1.2,
+                 label=f"R̄={result.r_bar:.3f}")
+    ax_r.axhline(result.r_ucl, color=_RED, linewidth=1, linestyle="--",
+                 label=f"UCL={result.r_ucl:.3f}")
+    if result.r_lcl > 0:
+        ax_r.axhline(result.r_lcl, color=_RED, linewidth=1, linestyle="--",
+                     label=f"LCL={result.r_lcl:.3f}")
+    for s in result.signals:
+        if s.get("chart") == "r":
+            i = s["index"]
+            ax_r.plot(i + 1, ranges[i], marker="s", color=_RED, markersize=10,
+                      fillstyle="none", markeredgewidth=2)
+    ax_r.set_title("R chart (subgroup range)")
+    ax_r.set_xlabel("Subgroup")
+    ax_r.set_ylabel("Range")
+    ax_r.grid(True, linestyle=":", alpha=0.4)
+    ax_r.legend(loc="best", fontsize=7)
     figure.tight_layout()

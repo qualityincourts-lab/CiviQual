@@ -318,21 +318,68 @@ class DescriptivePanel(_SingleColumnPanel):
 class ControlChartsPanel(_SingleColumnPanel):
     def __init__(self, data_handler, license_manager, parent=None):
         super().__init__(data_handler, license_manager,
-                         "Control Charts (XmR)",
-                         "Individuals and moving range chart with Western Electric rules.",
+                         "Control Charts",
+                         "Individuals (I), I-MR, MR-only, or X-bar/R chart with limits.",
                          parent)
+        self.chart_type = QComboBox()
+        self.chart_type.addItems([
+            "I-MR Chart (default)",
+            "I-Chart only",
+            "MR-Chart only",
+            "X-bar / R Chart",
+        ])
+        self.add_control("Chart type", self.chart_type)
+        self.subgroup_size = make_int_spin(5, 2, 25)
+        self.add_control("Subgroup size (X-R)", self.subgroup_size)
         self.set_run_handler(self._run)
 
     def _run(self) -> None:
         arr = self._arr()
         if arr is None:
             return
+        ct = self.chart_type.currentText()
+        label = self.col.currentText()
+
+        if ct == "X-bar / R Chart":
+            xr = se.xbar_r_chart(arr, self.subgroup_size.value())
+            viz.draw_xbar_r(self.figure, xr, label=label)
+            self.canvas.draw()
+            if xr.subgroup_means.size == 0:
+                self.results_text.setHtml(
+                    f"<p>Need at least {xr.subgroup_size * 2} observations "
+                    f"for X-bar/R with subgroup size {xr.subgroup_size}.</p>"
+                )
+                return
+            html = (
+                f"<p>X̄̄ = {xr.x_double_bar:.4f} · R̄ = {xr.r_bar:.4f} · "
+                f"n = {xr.subgroup_size} · k = {xr.subgroup_means.size}</p>"
+                f"<p>X UCL = {xr.x_ucl:.4f} · X LCL = {xr.x_lcl:.4f}</p>"
+                f"<p>R UCL = {xr.r_ucl:.4f} · R LCL = {xr.r_lcl:.4f}</p>"
+            )
+            if xr.signals:
+                html += "<h3>Out-of-control points</h3><ul>"
+                for s in xr.signals:
+                    html += (f"<li>Subgroup {s['index']+1} ({s['chart'].upper()}): "
+                             f"{s['description']}</li>")
+                html += "</ul>"
+            else:
+                html += "<p>No out-of-control signals detected.</p>"
+            self.results_text.setHtml(html)
+            return
+
+        # All other types use the XmR result.
         result = se.xmr_chart(arr)
-        viz.draw_xmr(self.figure, result, label=self.col.currentText())
+        if ct == "I-Chart only":
+            viz.draw_i_chart(self.figure, result, label=label)
+        elif ct == "MR-Chart only":
+            viz.draw_mr_only(self.figure, result, label=label)
+        else:
+            viz.draw_xmr(self.figure, result, label=label)
         self.canvas.draw()
         html = f"<p>X̄ = {result.x_center:.4f} · σ̂ = {result.sigma_hat:.4f}</p>"
         html += f"<p>X-UCL = {result.x_ucl:.4f} · X-LCL = {result.x_lcl:.4f}</p>"
-        html += f"<p>MR̄ = {result.mr_center:.4f} · MR-UCL = {result.mr_ucl:.4f}</p>"
+        if ct != "I-Chart only":
+            html += f"<p>MR̄ = {result.mr_center:.4f} · MR-UCL = {result.mr_ucl:.4f}</p>"
         if result.signals:
             html += "<h3>Rule signals</h3><ul>"
             for s in result.signals:
@@ -365,16 +412,28 @@ class CapabilityPanel(_SingleColumnPanel):
         lsl = self.lsl.value() if self.use_lsl.isChecked() else None
         usl = self.usl.value() if self.use_usl.isChecked() else None
         cap = se.capability(arr, lsl=lsl, usl=usl)
-        viz.draw_histogram(self.figure, arr, lsl=lsl, usl=usl,
-                           title=f"Capability — {self.col.currentText()}")
+        # Use whichever limits actually drove the calculation (user's, or the
+        # mean ± 3σ natural-tolerance defaults filled in by se.capability).
+        chart_lsl = cap.lsl_used if not np.isnan(cap.lsl_used) else lsl
+        chart_usl = cap.usl_used if not np.isnan(cap.usl_used) else usl
+        title = f"Capability — {self.col.currentText()}"
+        if cap.natural_tolerance:
+            title += " (Cp=1 natural tolerance baseline)"
+        viz.draw_histogram(self.figure, arr, lsl=chart_lsl, usl=chart_usl, title=title)
         self.canvas.draw()
-        html = (f"<p>Mean = {cap.mean:.4f} · σ within = {cap.sigma_within:.4f} · "
-                f"σ overall = {cap.sigma_overall:.4f}</p>"
-                f"<p>Cp = {cap.cp} · Cpk = {cap.cpk}<br>"
-                f"Pp = {cap.pp} · Ppk = {cap.ppk}</p>"
-                f"<p>PPM below LSL = {cap.ppm_below:.1f} · "
-                f"PPM above USL = {cap.ppm_above:.1f} · "
-                f"PPM total = {cap.ppm_total:.1f}</p>")
+        html = ""
+        if cap.natural_tolerance:
+            html += ("<p style='color:#6d132a'><b>Cp=1.0 natural tolerance baseline</b> — "
+                     "no spec limits set; using mean ± 3σ. Set LSL/USL above for a "
+                     "real capability assessment.</p>")
+        html += (f"<p>Mean = {cap.mean:.4f} · σ within = {cap.sigma_within:.4f} · "
+                 f"σ overall = {cap.sigma_overall:.4f}</p>"
+                 f"<p>LSL = {chart_lsl:.4f} · USL = {chart_usl:.4f}</p>"
+                 f"<p>Cp = {cap.cp} · Cpk = {cap.cpk}<br>"
+                 f"Pp = {cap.pp} · Ppk = {cap.ppk}</p>"
+                 f"<p>PPM below LSL = {cap.ppm_below:.1f} · "
+                 f"PPM above USL = {cap.ppm_above:.1f} · "
+                 f"PPM total = {cap.ppm_total:.1f}</p>")
         self.results_text.setHtml(html)
 
 

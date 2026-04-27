@@ -972,6 +972,9 @@ class CapabilityResult:
     ppm_below: float
     ppm_above: float
     ppm_total: float
+    lsl_used: float = float("nan")
+    usl_used: float = float("nan")
+    natural_tolerance: bool = False
 
 
 def _fmt_index(v) -> str:
@@ -992,6 +995,14 @@ def capability(arr, lsl=None, usl=None) -> CapabilityResult:
     sigma_overall = float(a.std(ddof=1)) if n > 1 else 0.0
     mr = np.abs(np.diff(a)) if n > 1 else np.array([])
     sigma_within = float(mr.mean() / 1.128) if mr.size else sigma_overall
+
+    # Default: when no spec limits are given, fall back to Cp=1.0 natural
+    # tolerance (mean ± 3σ_overall). Matches the engine's _plot_capability
+    # baseline so users always get a meaningful capability number.
+    natural = (lsl is None and usl is None)
+    if natural and sigma_overall > 0:
+        lsl = mean - 3 * sigma_overall
+        usl = mean + 3 * sigma_overall
 
     cp = cpk = pp = ppk = float("nan")
     if lsl is not None and usl is not None:
@@ -1027,6 +1038,9 @@ def capability(arr, lsl=None, usl=None) -> CapabilityResult:
         pp=_fmt_index(pp), ppk=_fmt_index(ppk),
         ppm_below=ppm_below, ppm_above=ppm_above,
         ppm_total=ppm_below + ppm_above,
+        lsl_used=float(lsl) if lsl is not None else float("nan"),
+        usl_used=float(usl) if usl is not None else float("nan"),
+        natural_tolerance=natural,
     )
 
 
@@ -1166,6 +1180,96 @@ def correlation(x, y) -> CorrelationResult:
     pr, pp = stats.pearsonr(xa, ya)
     sr, sp = stats.spearmanr(xa, ya)
     return CorrelationResult(n, float(pr), float(pp), float(sr), float(sp))
+
+
+# Shewhart constants for X-bar / R charts, indexed by subgroup size n (n>=2).
+_XBAR_R_CONSTANTS = {
+    2:  (1.880, 0.000, 3.267),
+    3:  (1.023, 0.000, 2.574),
+    4:  (0.729, 0.000, 2.282),
+    5:  (0.577, 0.000, 2.114),
+    6:  (0.483, 0.000, 2.004),
+    7:  (0.419, 0.076, 1.924),
+    8:  (0.373, 0.136, 1.864),
+    9:  (0.337, 0.184, 1.816),
+    10: (0.308, 0.223, 1.777),
+    11: (0.285, 0.256, 1.744),
+    12: (0.266, 0.283, 1.717),
+    13: (0.249, 0.307, 1.693),
+    14: (0.235, 0.328, 1.672),
+    15: (0.223, 0.347, 1.653),
+    16: (0.212, 0.363, 1.637),
+    17: (0.203, 0.378, 1.622),
+    18: (0.194, 0.391, 1.608),
+    19: (0.187, 0.403, 1.597),
+    20: (0.180, 0.415, 1.585),
+    21: (0.173, 0.425, 1.575),
+    22: (0.167, 0.434, 1.566),
+    23: (0.162, 0.443, 1.557),
+    24: (0.157, 0.451, 1.548),
+    25: (0.153, 0.459, 1.541),
+}
+
+
+@dataclass
+class XbarRResult:
+    subgroup_size: int
+    subgroup_means: np.ndarray
+    subgroup_ranges: np.ndarray
+    x_double_bar: float
+    r_bar: float
+    x_ucl: float
+    x_lcl: float
+    r_ucl: float
+    r_lcl: float
+    signals: List[Dict] = field(default_factory=list)
+
+
+def xbar_r_chart(arr, subgroup_size: int = 5) -> XbarRResult:
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    n = max(2, min(int(subgroup_size), 25))
+    n_groups = a.size // n
+    if n_groups < 2:
+        return XbarRResult(
+            subgroup_size=n,
+            subgroup_means=np.array([]), subgroup_ranges=np.array([]),
+            x_double_bar=0.0, r_bar=0.0,
+            x_ucl=0.0, x_lcl=0.0, r_ucl=0.0, r_lcl=0.0,
+        )
+    chunks = a[: n_groups * n].reshape(n_groups, n)
+    means = chunks.mean(axis=1)
+    ranges = chunks.max(axis=1) - chunks.min(axis=1)
+    x_dbar = float(means.mean())
+    r_bar = float(ranges.mean())
+    A2, D3, D4 = _XBAR_R_CONSTANTS[n]
+    x_ucl = x_dbar + A2 * r_bar
+    x_lcl = x_dbar - A2 * r_bar
+    r_ucl = D4 * r_bar
+    r_lcl = D3 * r_bar
+    signals: List[Dict] = []
+    for i, m in enumerate(means):
+        if m > x_ucl:
+            signals.append({"index": int(i), "chart": "x", "rule": 1,
+                            "description": f"X̄ above UCL ({m:.3f} > {x_ucl:.3f})"})
+        elif m < x_lcl:
+            signals.append({"index": int(i), "chart": "x", "rule": 1,
+                            "description": f"X̄ below LCL ({m:.3f} < {x_lcl:.3f})"})
+    for i, r in enumerate(ranges):
+        if r > r_ucl:
+            signals.append({"index": int(i), "chart": "r", "rule": 1,
+                            "description": f"R above UCL ({r:.3f} > {r_ucl:.3f})"})
+        elif r_lcl > 0 and r < r_lcl:
+            signals.append({"index": int(i), "chart": "r", "rule": 1,
+                            "description": f"R below LCL ({r:.3f} < {r_lcl:.3f})"})
+    return XbarRResult(
+        subgroup_size=n,
+        subgroup_means=means, subgroup_ranges=ranges,
+        x_double_bar=x_dbar, r_bar=r_bar,
+        x_ucl=float(x_ucl), x_lcl=float(x_lcl),
+        r_ucl=float(r_ucl), r_lcl=float(r_lcl),
+        signals=signals,
+    )
 
 
 def pareto_table(cat, cnt) -> pd.DataFrame:
