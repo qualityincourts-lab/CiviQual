@@ -939,5 +939,181 @@ if __name__ == "__main__":
         title="Root Cause Analysis: Processing Delays"
     )
     print(f"  Saved to: {fishbone_path}")
-    
+
     print("\nAll diagrams generated successfully!")
+
+
+# =============================================================================
+# Module-level diagram functions used by free_tools.py panels.
+# Each draws into a provided matplotlib Figure (no file output, no plt.show).
+# Simple block-and-arrow rendering — not the elaborate engine version.
+# =============================================================================
+
+def _new_axis(figure):
+    figure.clear()
+    ax = figure.add_subplot(1, 1, 1)
+    ax.set_axis_off()
+    return ax
+
+
+def _draw_box(ax, x, y, w, h, text, fill=BRAND_GOLD, edge=BRAND_BURGUNDY,
+              fontsize=9, color="black", weight="normal"):
+    rect = Rectangle((x, y), w, h, facecolor=fill, edgecolor=edge, linewidth=1.5)
+    ax.add_patch(rect)
+    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center",
+            fontsize=fontsize, color=color, fontweight=weight, wrap=True)
+
+
+def draw_sipoc(figure, suppliers, inputs, process_steps, outputs, customers):
+    """Render a SIPOC chart on the given figure."""
+    ax = _new_axis(figure)
+    ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+    headers = ["Suppliers", "Inputs", "Process", "Outputs", "Customers"]
+    cols = [suppliers, inputs, process_steps, outputs, customers]
+    width = 1.9
+    for i, (header, items) in enumerate(zip(headers, cols)):
+        x = i * width + 0.05
+        # header
+        _draw_box(ax, x, 8.5, width - 0.1, 1.0, header,
+                  fill=BRAND_BURGUNDY, color="white", weight="bold", fontsize=11)
+        # items
+        items = [str(it).strip() for it in items if str(it).strip()] or ["—"]
+        body_h = 8.0
+        per = body_h / max(len(items), 1)
+        for j, item in enumerate(items):
+            y = 8.0 - (j + 1) * per
+            _draw_box(ax, x, y, width - 0.1, per - 0.05, item, fontsize=9)
+    figure.tight_layout()
+
+
+def draw_process_map(figure, steps):
+    """Linear process map: one box per step, arrows between."""
+    ax = _new_axis(figure)
+    steps = [str(s).strip() for s in steps if str(s).strip()] or ["(no steps)"]
+    n = len(steps)
+    ax.set_xlim(0, max(n, 1) * 2 + 1); ax.set_ylim(0, 4)
+    for i, step in enumerate(steps):
+        x = 0.5 + i * 2
+        _draw_box(ax, x, 1.5, 1.6, 1.0, step, fontsize=9)
+        if i < n - 1:
+            ax.annotate("", xy=(x + 1.95, 2.0), xytext=(x + 1.6, 2.0),
+                        arrowprops=dict(arrowstyle="->", color=BRAND_BURGUNDY, lw=1.5))
+    figure.tight_layout()
+
+
+def draw_raci(figure, tasks, roles, matrix):
+    """RACI matrix as a colored grid."""
+    ax = _new_axis(figure)
+    rows = len(tasks); cols = len(roles)
+    ax.set_xlim(-0.1, cols + 1.1); ax.set_ylim(-0.5, rows + 1)
+    color_map = {"R": "#dcad73", "A": "#6d132a", "C": "#88CCEE", "I": "#cccccc"}
+    text_color = {"R": "black", "A": "white", "C": "black", "I": "black"}
+    # column headers
+    _draw_box(ax, 0, rows, 1.0, 0.9, "Task",
+              fill=BRAND_BURGUNDY, color="white", weight="bold", fontsize=10)
+    for j, role in enumerate(roles):
+        _draw_box(ax, j + 1, rows, 1.0, 0.9, str(role),
+                  fill=BRAND_BURGUNDY, color="white", weight="bold", fontsize=10)
+    # rows
+    for i, task in enumerate(tasks):
+        y = rows - 1 - i
+        _draw_box(ax, 0, y, 1.0, 0.9, str(task), fill="#f5f5f5", fontsize=9)
+        row = matrix[i] if i < len(matrix) else []
+        for j in range(cols):
+            val = (row[j] if j < len(row) else "").upper()
+            fill = color_map.get(val, "white")
+            tc = text_color.get(val, "black")
+            _draw_box(ax, j + 1, y, 1.0, 0.9, val or "",
+                      fill=fill, color=tc, weight="bold", fontsize=10)
+    figure.tight_layout()
+
+
+def draw_swim_lane(figure, lanes):
+    """Swim lane: dict of lane_name -> list of step names."""
+    ax = _new_axis(figure)
+    lane_names = list(lanes.keys())
+    n_lanes = len(lane_names)
+    max_steps = max((len(lanes[n]) for n in lane_names), default=1)
+    ax.set_xlim(-0.2, max_steps * 2 + 1.5); ax.set_ylim(-0.5, n_lanes + 0.5)
+    # lane labels
+    for i, name in enumerate(lane_names):
+        y = n_lanes - 1 - i
+        _draw_box(ax, 0, y + 0.05, 1.4, 0.9, str(name),
+                  fill=BRAND_BURGUNDY, color="white", weight="bold", fontsize=10)
+        # divider line
+        ax.plot([1.5, max_steps * 2 + 1.4], [y, y], color="#cccccc", linewidth=0.7)
+        steps = lanes[name]
+        for j, step in enumerate(steps):
+            x = 1.6 + j * 2
+            _draw_box(ax, x, y + 0.1, 1.7, 0.8, str(step), fontsize=8)
+            if j < len(steps) - 1:
+                ax.annotate("", xy=(x + 2.0, y + 0.5), xytext=(x + 1.7, y + 0.5),
+                            arrowprops=dict(arrowstyle="->", color=BRAND_BURGUNDY, lw=1.2))
+    figure.tight_layout()
+
+
+def draw_vsm(figure, steps):
+    """Value Stream Map: list of dicts {name, cycle_time, wait_time}."""
+    ax = _new_axis(figure)
+    n = len(steps)
+    ax.set_xlim(0, max(n, 1) * 2.2 + 1); ax.set_ylim(0, 6)
+    total_ct = 0.0; total_wt = 0.0
+    for i, step in enumerate(steps):
+        x = 0.5 + i * 2.2
+        ct = float(step.get("cycle_time", 0.0))
+        wt = float(step.get("wait_time", 0.0))
+        total_ct += ct; total_wt += wt
+        _draw_box(ax, x, 3.0, 1.8, 1.5, str(step.get("name", "")),
+                  fill=BRAND_GOLD, fontsize=9, weight="bold")
+        ax.text(x + 0.9, 2.6, f"CT: {ct:g}", ha="center", fontsize=8)
+        ax.text(x + 0.9, 2.2, f"WT: {wt:g}", ha="center", fontsize=8, color=BRAND_BURGUNDY)
+        if i < n - 1:
+            ax.annotate("", xy=(x + 2.18, 3.75), xytext=(x + 1.8, 3.75),
+                        arrowprops=dict(arrowstyle="->", color=BRAND_BURGUNDY, lw=1.5))
+    if n:
+        total = total_ct + total_wt
+        eff = (total_ct / total * 100.0) if total else 0.0
+        ax.text(0.5, 5.5, f"Total CT={total_ct:g}  ·  Total WT={total_wt:g}  ·  PCE={eff:.1f}%",
+                fontsize=10, color=BRAND_BURGUNDY, fontweight="bold")
+    figure.tight_layout()
+
+
+def draw_fishbone(figure, effect, causes):
+    """Fishbone (Ishikawa) diagram. causes: dict of category -> list of sub-causes."""
+    ax = _new_axis(figure)
+    ax.set_xlim(0, 12); ax.set_ylim(0, 8)
+    # Spine
+    ax.annotate("", xy=(10, 4), xytext=(1, 4),
+                arrowprops=dict(arrowstyle="->", color=BRAND_BURGUNDY, lw=2.5))
+    # Effect box
+    _draw_box(ax, 9.6, 3.4, 2.2, 1.2, str(effect),
+              fill=BRAND_BURGUNDY, color="white", weight="bold", fontsize=10)
+    cats = list(causes.keys())
+    n = len(cats)
+    if n == 0:
+        figure.tight_layout(); return
+    spacing = 9.0 / max(n, 1)
+    for i, cat in enumerate(cats):
+        x = 1.0 + spacing * (i + 0.5)
+        # alternate top/bottom
+        if i % 2 == 0:
+            y_end = 4; y_start = 6.5
+        else:
+            y_end = 4; y_start = 1.5
+        ax.annotate("", xy=(x + 0.7, y_end), xytext=(x - 0.7, y_start),
+                    arrowprops=dict(arrowstyle="-", color=BRAND_BURGUNDY, lw=1.5))
+        # category label at the start of the bone
+        ax.text(x - 0.7, y_start + (0.3 if y_start > 4 else -0.3),
+                str(cat), fontsize=10, fontweight="bold",
+                color=BRAND_BURGUNDY,
+                ha="left", va=("bottom" if y_start > 4 else "top"))
+        # sub-causes
+        subs = causes.get(cat, [])
+        for j, sub in enumerate(subs[:5]):
+            t = (j + 1) / 6.0  # avoid endpoints
+            sx = x - 0.7 + (1.4) * t
+            sy = y_start + (y_end - y_start) * t
+            ax.text(sx + 0.05, sy + (0.15 if y_start > 4 else -0.15),
+                    str(sub), fontsize=7, color="#444",
+                    ha="left", va=("bottom" if y_start > 4 else "top"))
+    figure.tight_layout()

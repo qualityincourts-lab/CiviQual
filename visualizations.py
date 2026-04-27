@@ -1436,5 +1436,231 @@ class VisualizationEngine:
         output_path = self.temp_dir / 'boxplot.png'
         fig.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white')
         plt.close(fig)
-        
+
         return str(output_path)
+
+
+# =============================================================================
+# Module-level drawing functions used by free_tools.py panels.
+# Each takes a matplotlib Figure to draw into (no plt.show, no file saves).
+# Brand colors: burgundy headers / center lines, gold fills, simple grids.
+# =============================================================================
+
+_BURGUNDY = "#6d132a"
+_GOLD = "#dcad73"
+_RED = "#c0392b"
+_GREEN = "#009E73"
+_GREY = "#999999"
+
+
+def _new_axis(figure):
+    figure.clear()
+    return figure.add_subplot(1, 1, 1)
+
+
+def draw_histogram(figure, arr, bins=20, title=None, lsl=None, usl=None, target=None):
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    ax = _new_axis(figure)
+    ax.hist(a, bins=bins, color=_GOLD, edgecolor=_BURGUNDY, alpha=0.85)
+    if a.size > 1:
+        mu = float(a.mean())
+        sd = float(a.std(ddof=1))
+        if sd > 0:
+            xs = np.linspace(a.min(), a.max(), 200)
+            from scipy.stats import norm as _norm
+            density = _norm.pdf(xs, mu, sd)
+            scale = a.size * (a.max() - a.min()) / max(bins, 1)
+            ax.plot(xs, density * scale, color=_BURGUNDY, linewidth=2, label="Normal fit")
+    if lsl is not None:
+        ax.axvline(lsl, color=_RED, linestyle="--", linewidth=1.5, label=f"LSL={lsl}")
+    if usl is not None:
+        ax.axvline(usl, color=_RED, linestyle="--", linewidth=1.5, label=f"USL={usl}")
+    if target is not None:
+        ax.axvline(target, color=_GREEN, linestyle="-", linewidth=1.5, label=f"Target={target}")
+    if title:
+        ax.set_title(title)
+    ax.set_xlabel("Value")
+    ax.set_ylabel("Frequency")
+    ax.grid(True, linestyle=":", alpha=0.4)
+    if lsl is not None or usl is not None or target is not None or a.size > 1:
+        try:
+            ax.legend(loc="best", fontsize=8)
+        except Exception:
+            pass
+    figure.tight_layout()
+
+
+def draw_xmr(figure, result, label=""):
+    figure.clear()
+    gs = figure.add_gridspec(2, 1, height_ratios=[2, 1], hspace=0.35)
+    ax_x = figure.add_subplot(gs[0])
+    ax_mr = figure.add_subplot(gs[1])
+    a = result.data
+    n = a.size
+    idx = np.arange(1, n + 1)
+    ax_x.plot(idx, a, marker="o", color=_BURGUNDY, linewidth=1.4)
+    ax_x.axhline(result.x_center, color=_GREEN, linewidth=1, label=f"X̄={result.x_center:.3f}")
+    ax_x.axhline(result.x_ucl, color=_RED, linewidth=1, linestyle="--", label=f"UCL={result.x_ucl:.3f}")
+    ax_x.axhline(result.x_lcl, color=_RED, linewidth=1, linestyle="--", label=f"LCL={result.x_lcl:.3f}")
+    for s in result.signals:
+        i = s["index"]
+        ax_x.plot(i + 1, a[i], marker="o", color=_RED, markersize=10, fillstyle="none", markeredgewidth=2)
+    ax_x.set_title(f"X chart — {label}" if label else "X chart")
+    ax_x.set_ylabel("Value")
+    ax_x.grid(True, linestyle=":", alpha=0.4)
+    ax_x.legend(loc="best", fontsize=7)
+    if result.mr.size:
+        ax_mr.plot(np.arange(2, n + 1), result.mr, marker="s", color=_BURGUNDY, linewidth=1.2)
+        ax_mr.axhline(result.mr_center, color=_GREEN, linewidth=1, label=f"MR̄={result.mr_center:.3f}")
+        ax_mr.axhline(result.mr_ucl, color=_RED, linewidth=1, linestyle="--", label=f"UCL={result.mr_ucl:.3f}")
+    ax_mr.set_title("Moving range")
+    ax_mr.set_xlabel("Observation")
+    ax_mr.set_ylabel("MR")
+    ax_mr.grid(True, linestyle=":", alpha=0.4)
+    ax_mr.legend(loc="best", fontsize=7)
+    figure.tight_layout()
+
+
+def draw_box(figure, arr, title=""):
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    ax = _new_axis(figure)
+    bp = ax.boxplot([a], vert=True, patch_artist=True, widths=0.5,
+                    boxprops=dict(facecolor=_GOLD, edgecolor=_BURGUNDY),
+                    medianprops=dict(color=_BURGUNDY, linewidth=2),
+                    whiskerprops=dict(color=_BURGUNDY),
+                    capprops=dict(color=_BURGUNDY),
+                    flierprops=dict(marker="o", markerfacecolor=_RED, markersize=5))
+    ax.set_xticklabels([title or "values"])
+    ax.set_ylabel("Value")
+    if title:
+        ax.set_title(f"Box plot — {title}")
+    ax.grid(True, linestyle=":", alpha=0.4, axis="y")
+    figure.tight_layout()
+
+
+def draw_run_chart(figure, r, title=""):
+    a = r.data
+    n = a.size
+    ax = _new_axis(figure)
+    ax.plot(np.arange(1, n + 1), a, marker="o", color=_BURGUNDY, linewidth=1.4)
+    ax.axhline(r.median, color=_GREEN, linewidth=1.2, label=f"Median={r.median:.3f}")
+    if title:
+        ax.set_title(f"Run chart — {title}")
+    ax.set_xlabel("Observation")
+    ax.set_ylabel("Value")
+    ax.grid(True, linestyle=":", alpha=0.4)
+    ax.legend(loc="best", fontsize=8)
+    figure.tight_layout()
+
+
+def draw_pareto(figure, table, title=""):
+    figure.clear()
+    ax = figure.add_subplot(1, 1, 1)
+    cats = table["Category"].astype(str).tolist()
+    counts = table["Count"].astype(float).tolist()
+    cum = table["Cumulative %"].astype(float).tolist()
+    x = np.arange(len(cats))
+    ax.bar(x, counts, color=_GOLD, edgecolor=_BURGUNDY)
+    ax.set_xticks(x)
+    ax.set_xticklabels(cats, rotation=30, ha="right")
+    ax.set_ylabel("Count")
+    if title:
+        ax.set_title(title)
+    ax2 = ax.twinx()
+    ax2.plot(x, cum, marker="o", color=_BURGUNDY, linewidth=2)
+    ax2.set_ylabel("Cumulative %")
+    ax2.set_ylim(0, 105)
+    ax2.axhline(80, color=_RED, linestyle="--", linewidth=1, alpha=0.7)
+    ax.grid(True, linestyle=":", alpha=0.4, axis="y")
+    figure.tight_layout()
+
+
+def draw_scatter(figure, x, y, xname, yname, title=""):
+    xa = np.asarray(x, dtype=float)
+    ya = np.asarray(y, dtype=float)
+    mask = ~(np.isnan(xa) | np.isnan(ya))
+    xa = xa[mask]; ya = ya[mask]
+    ax = _new_axis(figure)
+    ax.scatter(xa, ya, color=_BURGUNDY, alpha=0.7, edgecolor="white", s=40)
+    if xa.size > 1:
+        coeffs = np.polyfit(xa, ya, 1)
+        line_x = np.linspace(xa.min(), xa.max(), 100)
+        ax.plot(line_x, np.polyval(coeffs, line_x), color=_GOLD, linewidth=2, label="Linear fit")
+        ax.legend(loc="best", fontsize=8)
+    ax.set_xlabel(xname)
+    ax.set_ylabel(yname)
+    if title:
+        ax.set_title(title)
+    ax.grid(True, linestyle=":", alpha=0.4)
+    figure.tight_layout()
+
+
+def draw_probability_plot(figure, arr, title="", percentile=None):
+    from scipy.stats import probplot as _probplot
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    ax = _new_axis(figure)
+    _probplot(a, dist="norm", plot=ax)
+    line = ax.get_lines()
+    if len(line) >= 2:
+        line[0].set_color(_BURGUNDY)
+        line[0].set_marker("o")
+        line[0].set_markersize(5)
+        line[1].set_color(_GOLD)
+        line[1].set_linewidth(2)
+    if title:
+        ax.set_title(title)
+    ax.grid(True, linestyle=":", alpha=0.4)
+    figure.tight_layout()
+
+
+def draw_four_up(figure, arr, title=""):
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    figure.clear()
+    gs = figure.add_gridspec(2, 2, hspace=0.4, wspace=0.3)
+
+    # 1. Histogram
+    ax_h = figure.add_subplot(gs[0, 0])
+    ax_h.hist(a, bins=20, color=_GOLD, edgecolor=_BURGUNDY)
+    ax_h.set_title("Histogram", fontsize=10)
+    ax_h.grid(True, linestyle=":", alpha=0.4)
+
+    # 2. Run chart
+    ax_r = figure.add_subplot(gs[0, 1])
+    if a.size:
+        ax_r.plot(np.arange(1, a.size + 1), a, marker="o", color=_BURGUNDY, linewidth=1)
+        ax_r.axhline(float(np.median(a)), color=_GREEN, linewidth=1)
+    ax_r.set_title("Run chart", fontsize=10)
+    ax_r.grid(True, linestyle=":", alpha=0.4)
+
+    # 3. Individuals (X) chart
+    ax_x = figure.add_subplot(gs[1, 0])
+    if a.size:
+        mr = np.abs(np.diff(a))
+        center = float(a.mean())
+        sigma = float(mr.mean() / 1.128) if mr.size else 0.0
+        ax_x.plot(np.arange(1, a.size + 1), a, marker="o", color=_BURGUNDY, linewidth=1)
+        ax_x.axhline(center, color=_GREEN, linewidth=1)
+        ax_x.axhline(center + 3 * sigma, color=_RED, linestyle="--", linewidth=1)
+        ax_x.axhline(center - 3 * sigma, color=_RED, linestyle="--", linewidth=1)
+    ax_x.set_title("X chart", fontsize=10)
+    ax_x.grid(True, linestyle=":", alpha=0.4)
+
+    # 4. Probability plot
+    ax_p = figure.add_subplot(gs[1, 1])
+    if a.size > 2:
+        from scipy.stats import probplot as _probplot
+        _probplot(a, dist="norm", plot=ax_p)
+        line = ax_p.get_lines()
+        if len(line) >= 2:
+            line[0].set_color(_BURGUNDY); line[0].set_marker("o"); line[0].set_markersize(4)
+            line[1].set_color(_GOLD); line[1].set_linewidth(1.5)
+    ax_p.set_title("Probability plot", fontsize=10)
+    ax_p.grid(True, linestyle=":", alpha=0.4)
+
+    if title:
+        figure.suptitle(title, fontsize=12, color=_BURGUNDY, fontweight="bold")
+    figure.tight_layout()

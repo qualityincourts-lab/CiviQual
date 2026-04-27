@@ -837,3 +837,344 @@ class StatisticsEngine:
             'is_random': is_random,
             'interpretation': interpretation
         }
+
+
+# =============================================================================
+# Module-level analysis functions used by free_tools.py panels.
+# Simple dataclass-returning wrappers; do NOT depend on StatisticsEngine above.
+# =============================================================================
+
+from dataclasses import dataclass, field
+from typing import Dict, List
+from itertools import combinations as _combinations
+
+
+@dataclass
+class DescriptiveResult:
+    n: int
+    mean: float
+    std: float
+    sem: float
+    min: float
+    q1: float
+    median: float
+    q3: float
+    max: float
+    skewness: float
+    kurtosis: float
+    ci95_lower: float
+    ci95_upper: float
+
+
+def descriptive(arr) -> DescriptiveResult:
+    a = np.asarray(arr, dtype=float)
+    n = a.size
+    if n == 0:
+        return DescriptiveResult(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    mean = float(a.mean())
+    std = float(a.std(ddof=1)) if n > 1 else 0.0
+    sem = std / np.sqrt(n) if n > 0 else 0.0
+    return DescriptiveResult(
+        n=n, mean=mean, std=std, sem=sem,
+        min=float(a.min()),
+        q1=float(np.percentile(a, 25)),
+        median=float(np.median(a)),
+        q3=float(np.percentile(a, 75)),
+        max=float(a.max()),
+        skewness=float(stats.skew(a)) if n > 2 else 0.0,
+        kurtosis=float(stats.kurtosis(a)) if n > 3 else 0.0,
+        ci95_lower=mean - 1.96 * sem,
+        ci95_upper=mean + 1.96 * sem,
+    )
+
+
+@dataclass
+class AndersonDarlingResult:
+    statistic: float
+    p_value: float
+    normal_at_95: bool
+
+
+def anderson_darling(arr) -> AndersonDarlingResult:
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    if a.size < 8:
+        return AndersonDarlingResult(0.0, 1.0, True)
+    res = stats.anderson(a, dist="norm")
+    crit_5 = float(res.critical_values[2])
+    n = a.size
+    a2_adj = res.statistic * (1 + 0.75 / n + 2.25 / (n * n))
+    if a2_adj >= 0.6:
+        p = float(np.exp(1.2937 - 5.709 * a2_adj + 0.0186 * a2_adj ** 2))
+    elif a2_adj >= 0.34:
+        p = float(np.exp(0.9177 - 4.279 * a2_adj - 1.38 * a2_adj ** 2))
+    elif a2_adj >= 0.2:
+        p = float(1 - np.exp(-8.318 + 42.796 * a2_adj - 59.938 * a2_adj ** 2))
+    else:
+        p = float(1 - np.exp(-13.436 + 101.14 * a2_adj - 223.73 * a2_adj ** 2))
+    p = max(min(p, 1.0), 0.0)
+    return AndersonDarlingResult(
+        statistic=float(res.statistic),
+        p_value=p,
+        normal_at_95=bool(res.statistic < crit_5),
+    )
+
+
+@dataclass
+class XmRResult:
+    data: np.ndarray
+    mr: np.ndarray
+    x_center: float
+    x_ucl: float
+    x_lcl: float
+    mr_center: float
+    mr_ucl: float
+    sigma_hat: float
+    signals: List[Dict] = field(default_factory=list)
+
+
+def xmr_chart(arr) -> XmRResult:
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    n = a.size
+    mr = np.abs(np.diff(a)) if n > 1 else np.array([])
+    x_center = float(a.mean()) if n else 0.0
+    mr_center = float(mr.mean()) if mr.size else 0.0
+    sigma_hat = mr_center / 1.128 if mr_center else 0.0
+    x_ucl = x_center + 3 * sigma_hat
+    x_lcl = x_center - 3 * sigma_hat
+    mr_ucl = 3.267 * mr_center
+    signals: List[Dict] = []
+    for i, v in enumerate(a):
+        if sigma_hat and v > x_ucl:
+            signals.append({"index": int(i), "rule": 1,
+                            "description": f"X above UCL ({v:.3f} > {x_ucl:.3f})"})
+        elif sigma_hat and v < x_lcl:
+            signals.append({"index": int(i), "rule": 1,
+                            "description": f"X below LCL ({v:.3f} < {x_lcl:.3f})"})
+    return XmRResult(
+        data=a, mr=mr,
+        x_center=x_center, x_ucl=x_ucl, x_lcl=x_lcl,
+        mr_center=mr_center, mr_ucl=mr_ucl,
+        sigma_hat=sigma_hat, signals=signals,
+    )
+
+
+@dataclass
+class CapabilityResult:
+    mean: float
+    sigma_within: float
+    sigma_overall: float
+    cp: str
+    cpk: str
+    pp: str
+    ppk: str
+    ppm_below: float
+    ppm_above: float
+    ppm_total: float
+
+
+def _fmt_index(v) -> str:
+    try:
+        v = float(v)
+        if np.isnan(v):
+            return "—"
+        return f"{v:.3f}"
+    except Exception:
+        return "—"
+
+
+def capability(arr, lsl=None, usl=None) -> CapabilityResult:
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    n = a.size
+    mean = float(a.mean()) if n else 0.0
+    sigma_overall = float(a.std(ddof=1)) if n > 1 else 0.0
+    mr = np.abs(np.diff(a)) if n > 1 else np.array([])
+    sigma_within = float(mr.mean() / 1.128) if mr.size else sigma_overall
+
+    cp = cpk = pp = ppk = float("nan")
+    if lsl is not None and usl is not None:
+        if sigma_within:
+            cp = (usl - lsl) / (6 * sigma_within)
+            cpk = min((usl - mean) / (3 * sigma_within),
+                      (mean - lsl) / (3 * sigma_within))
+        if sigma_overall:
+            pp = (usl - lsl) / (6 * sigma_overall)
+            ppk = min((usl - mean) / (3 * sigma_overall),
+                      (mean - lsl) / (3 * sigma_overall))
+    elif usl is not None:
+        if sigma_within:
+            cpk = (usl - mean) / (3 * sigma_within)
+        if sigma_overall:
+            ppk = (usl - mean) / (3 * sigma_overall)
+    elif lsl is not None:
+        if sigma_within:
+            cpk = (mean - lsl) / (3 * sigma_within)
+        if sigma_overall:
+            ppk = (mean - lsl) / (3 * sigma_overall)
+
+    ppm_below = (float(stats.norm.cdf(lsl, mean, sigma_overall) * 1e6)
+                 if lsl is not None and sigma_overall else 0.0)
+    ppm_above = (float((1 - stats.norm.cdf(usl, mean, sigma_overall)) * 1e6)
+                 if usl is not None and sigma_overall else 0.0)
+
+    return CapabilityResult(
+        mean=mean,
+        sigma_within=sigma_within,
+        sigma_overall=sigma_overall,
+        cp=_fmt_index(cp), cpk=_fmt_index(cpk),
+        pp=_fmt_index(pp), ppk=_fmt_index(ppk),
+        ppm_below=ppm_below, ppm_above=ppm_above,
+        ppm_total=ppm_below + ppm_above,
+    )
+
+
+@dataclass
+class RunChartResult:
+    data: np.ndarray
+    median: float
+    runs_observed: int
+    runs_expected: float
+    runs_p: float
+    longest_run: int
+    trend_p: float
+
+
+def run_chart(arr) -> RunChartResult:
+    a = np.asarray(arr, dtype=float)
+    a = a[~np.isnan(a)]
+    n = a.size
+    if n == 0:
+        return RunChartResult(a, 0.0, 0, 0.0, 1.0, 0, 1.0)
+    median = float(np.median(a))
+    above = a > median
+    n_above = int(above.sum())
+    n_below = n - n_above
+    runs = 1 + int(np.sum(above[1:] != above[:-1])) if n > 1 else 1
+    if n_above > 0 and n_below > 0 and n > 1:
+        e_runs = 1 + 2 * n_above * n_below / n
+        v_runs = (2 * n_above * n_below * (2 * n_above * n_below - n)
+                  / (n * n * (n - 1)))
+        z = (runs - e_runs) / np.sqrt(v_runs) if v_runs > 0 else 0.0
+        p = float(2 * (1 - stats.norm.cdf(abs(z))))
+    else:
+        e_runs = 1.0
+        p = 1.0
+    longest = 1
+    cur = 1
+    for i in range(1, n):
+        if above[i] == above[i - 1]:
+            cur += 1
+            longest = max(longest, cur)
+        else:
+            cur = 1
+    if n >= 3:
+        s = 0
+        for i in range(n - 1):
+            s += int(np.sum(np.sign(a[i + 1:] - a[i])))
+        var_s = n * (n - 1) * (2 * n + 5) / 18.0
+        if s > 0:
+            z_mk = (s - 1) / np.sqrt(var_s)
+        elif s < 0:
+            z_mk = (s + 1) / np.sqrt(var_s)
+        else:
+            z_mk = 0.0
+        trend_p = float(2 * (1 - stats.norm.cdf(abs(z_mk))))
+    else:
+        trend_p = 1.0
+    return RunChartResult(a, median, runs, float(e_runs), p, longest, trend_p)
+
+
+@dataclass
+class ANOVAResult:
+    f_statistic: float
+    p_value: float
+    ss_between: float
+    df_between: int
+    ms_between: float
+    ss_within: float
+    df_within: int
+    ms_within: float
+    tukey_pairs: List[Dict] = field(default_factory=list)
+
+
+def one_way_anova(groups: Dict[str, np.ndarray]) -> ANOVAResult:
+    arrays = []
+    names = []
+    for name, vals in groups.items():
+        v = np.asarray(vals, dtype=float)
+        v = v[~np.isnan(v)]
+        if v.size > 0:
+            arrays.append(v)
+            names.append(str(name))
+    if len(arrays) < 2:
+        return ANOVAResult(0.0, 1.0, 0.0, 0, 0.0, 0.0, 0, 0.0)
+    f, p = stats.f_oneway(*arrays)
+    grand = np.concatenate(arrays)
+    grand_mean = float(grand.mean())
+    ss_between = float(sum(len(a) * (a.mean() - grand_mean) ** 2 for a in arrays))
+    ss_within = float(sum(((a - a.mean()) ** 2).sum() for a in arrays))
+    df_between = len(arrays) - 1
+    df_within = int(len(grand) - len(arrays))
+    ms_between = ss_between / df_between if df_between > 0 else 0.0
+    ms_within = ss_within / df_within if df_within > 0 else 0.0
+    tukey_pairs: List[Dict] = []
+    if df_within > 0 and ms_within > 0:
+        try:
+            q_crit = float(stats.studentized_range.ppf(0.95, len(arrays), df_within))
+        except Exception:
+            q_crit = None
+        if q_crit is not None:
+            for i, j in _combinations(range(len(arrays)), 2):
+                a, b = arrays[i], arrays[j]
+                diff = float(a.mean() - b.mean())
+                se = float(np.sqrt(ms_within * (1 / len(a) + 1 / len(b)) / 2))
+                hsd = q_crit * se
+                tukey_pairs.append({
+                    "Pair": f"{names[i]} vs {names[j]}",
+                    "Diff": round(diff, 4),
+                    "HSD": round(hsd, 4),
+                    "Significant": "Yes" if abs(diff) > hsd else "No",
+                })
+    return ANOVAResult(
+        f_statistic=float(f), p_value=float(p),
+        ss_between=ss_between, df_between=df_between, ms_between=ms_between,
+        ss_within=ss_within, df_within=df_within, ms_within=ms_within,
+        tukey_pairs=tukey_pairs,
+    )
+
+
+@dataclass
+class CorrelationResult:
+    n: int
+    pearson_r: float
+    pearson_p: float
+    spearman_r: float
+    spearman_p: float
+
+
+def correlation(x, y) -> CorrelationResult:
+    xa = np.asarray(x, dtype=float)
+    ya = np.asarray(y, dtype=float)
+    mask = ~(np.isnan(xa) | np.isnan(ya))
+    xa = xa[mask]
+    ya = ya[mask]
+    n = int(xa.size)
+    if n < 3:
+        return CorrelationResult(n, 0.0, 1.0, 0.0, 1.0)
+    pr, pp = stats.pearsonr(xa, ya)
+    sr, sp = stats.spearmanr(xa, ya)
+    return CorrelationResult(n, float(pr), float(pp), float(sr), float(sp))
+
+
+def pareto_table(cat, cnt) -> pd.DataFrame:
+    cat = pd.Series(cat).astype(str).reset_index(drop=True)
+    cnt = pd.Series(cnt).astype(float).reset_index(drop=True)
+    df = pd.DataFrame({"Category": cat, "Count": cnt})
+    df = df.groupby("Category", as_index=False)["Count"].sum()
+    df = df.sort_values("Count", ascending=False).reset_index(drop=True)
+    total = float(df["Count"].sum()) if not df.empty else 0.0
+    df["Percent"] = df["Count"] / total * 100 if total else 0.0
+    df["Cumulative %"] = df["Percent"].cumsum()
+    return df
