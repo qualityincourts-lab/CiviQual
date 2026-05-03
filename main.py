@@ -26,6 +26,28 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, List, Any
 
+
+# --- early trace (must appear BEFORE any heavy import) ----------------------
+def _early_trace(msg: str) -> None:
+    """Write a timestamped line to civiqual_crash.log. Best-effort, never raises.
+    Defined here at module-top so we can pinpoint which heavy import hangs."""
+    try:
+        base = os.environ.get("LOCALAPPDATA") or str(Path.home())
+        p = Path(base) / "CiviQualStats"
+        p.mkdir(parents=True, exist_ok=True)
+        with open(p / "civiqual_crash.log", "a", encoding="utf-8") as f:
+            f.write(f"{datetime.now().isoformat()} {msg}\n")
+        try:
+            print(f"[CIVIQUAL] {msg}", flush=True)
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+
+_early_trace("== module-load top of main.py ==")
+_early_trace("about to import PySide6.QtWidgets")
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QPushButton, QFileDialog, QLabel, QComboBox,
@@ -42,9 +64,11 @@ from PySide6.QtGui import (
     QAction, QFont, QIcon, QColor, QPixmap, QPainter, QPen, QBrush,
     QKeySequence, QShortcut, QActionGroup
 )
+_early_trace("PySide6 imported; about to import pandas/numpy")
 
 import pandas as pd
 import numpy as np
+_early_trace("pandas/numpy imported; about to import core modules")
 
 # Core modules
 from statistics_engine import StatisticsEngine
@@ -53,6 +77,7 @@ from report_generator import ReportGenerator
 from data_handler import DataHandler
 from process_diagrams import ProcessDiagramEngine
 from license_manager import LicenseManager
+_early_trace("core modules imported; about to import pro modules")
 
 # Pro modules (gated by license)
 from msa import MSA
@@ -68,9 +93,11 @@ from solution_tools import PughMatrix, ImpactEffortMatrix
 from planning_tools import FMEA, ControlPlan
 from data_tools import OutlierDetection, MissingDataAnalysis
 from chart_editor import ChartEditor
+_early_trace("pro modules imported; about to import free_tools")
 
 # Free-tier tool panels (all concrete QWidget subclasses of ui_common.ToolPanel)
 import free_tools
+_early_trace("free_tools imported; module-level imports complete")
 
 
 # =============================================================================
@@ -2822,5 +2849,53 @@ def main():
     sys.exit(app.exec())
 
 
+def _crash_log_path():
+    """Where to dump unhandled startup exceptions for the windowed bundle."""
+    base = os.environ.get("LOCALAPPDATA") or str(Path.home())
+    log_dir = Path(base) / "CiviQualStats"
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        log_dir = Path(os.environ.get("TEMP", str(Path.home())))
+    return log_dir / "civiqual_crash.log"
+
+
+def _trace(msg: str) -> None:
+    """Append a timestamped line to the crash log (best-effort, never raises)."""
+    try:
+        with open(_crash_log_path(), "a", encoding="utf-8") as f:
+            f.write(f"{datetime.now().isoformat()} {msg}\n")
+    except Exception:
+        pass
+
+
 if __name__ == "__main__":
-    main()
+    _trace("__main__ entered")
+    try:
+        main()
+        _trace("main() returned cleanly")
+    except SystemExit:
+        _trace("SystemExit (normal exit path)")
+        raise
+    except Exception:
+        import traceback
+        path = _crash_log_path()
+        try:
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(f"\n=== {datetime.now().isoformat()} crash ===\n")
+                traceback.print_exc(file=f)
+        except Exception:
+            pass
+        # Show a message box so the user sees something instead of nothing.
+        try:
+            from PySide6.QtWidgets import QApplication, QMessageBox
+            app = QApplication.instance() or QApplication(sys.argv)
+            QMessageBox.critical(
+                None, "CiviQual Stats — startup error",
+                f"The application failed to start.\n\n"
+                f"Details have been written to:\n{path}\n\n"
+                f"{traceback.format_exc()}"
+            )
+        except Exception:
+            pass
+        raise

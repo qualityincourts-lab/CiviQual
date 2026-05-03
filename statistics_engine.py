@@ -933,7 +933,105 @@ class XmRResult:
     signals: List[Dict] = field(default_factory=list)
 
 
-def xmr_chart(arr) -> XmRResult:
+# Western Electric / Nelson rule descriptions, indexed by rule number.
+WE_RULE_LABELS: Dict[int, str] = {
+    1: "1 point beyond 3σ (UCL/LCL)",
+    2: "2 of 3 consecutive points beyond 2σ (same side)",
+    3: "4 of 5 consecutive points beyond 1σ (same side)",
+    4: "8 consecutive points on one side of center",
+    5: "6 consecutive points trending up or down",
+    6: "14 consecutive points alternating up and down",
+}
+
+DEFAULT_WE_RULES: Dict[str, bool] = {f"rule{i}": True for i in range(1, 7)}
+
+
+def _normalize_rules(rules) -> Dict[str, bool]:
+    if rules is None:
+        return dict(DEFAULT_WE_RULES)
+    out = dict(DEFAULT_WE_RULES)
+    for k, v in rules.items():
+        out[k] = bool(v)
+    return out
+
+
+def apply_we_rules(values, center: float, sigma: float, rules=None,
+                   chart: str | None = None) -> List[Dict]:
+    """Detect Western Electric / Nelson rule violations on a control chart.
+
+    Returns a list of signal dicts: {"index", "rule", "description"} (and
+    "chart" if a chart label is supplied). Index is 0-based into ``values``.
+    """
+    rules = _normalize_rules(rules)
+    a = np.asarray(values, dtype=float)
+    n = a.size
+    signals: List[Dict] = []
+    if n == 0 or sigma <= 0:
+        return signals
+
+    ucl = center + 3 * sigma
+    lcl = center - 3 * sigma
+    s2_up, s2_dn = center + 2 * sigma, center - 2 * sigma
+    s1_up, s1_dn = center + 1 * sigma, center - 1 * sigma
+
+    def _emit(i: int, rule: int, description: str) -> None:
+        sig = {"index": int(i), "rule": rule, "description": description}
+        if chart is not None:
+            sig["chart"] = chart
+        signals.append(sig)
+
+    label = "X̄" if chart == "x" else "X"
+
+    # Rule 1: any point beyond 3σ
+    if rules.get("rule1", True):
+        for i, v in enumerate(a):
+            if v > ucl:
+                _emit(i, 1, f"{label} above UCL ({v:.3f} > {ucl:.3f})")
+            elif v < lcl:
+                _emit(i, 1, f"{label} below LCL ({v:.3f} < {lcl:.3f})")
+
+    # Rule 2: 2 of 3 consecutive points beyond 2σ on the same side
+    if rules.get("rule2", True) and n >= 3:
+        for i in range(2, n):
+            window = a[i - 2: i + 1]
+            if np.sum(window > s2_up) >= 2 or np.sum(window < s2_dn) >= 2:
+                _emit(i, 2, "2 of 3 points beyond 2σ (same side)")
+
+    # Rule 3: 4 of 5 consecutive points beyond 1σ on the same side
+    if rules.get("rule3", True) and n >= 5:
+        for i in range(4, n):
+            window = a[i - 4: i + 1]
+            if np.sum(window > s1_up) >= 4 or np.sum(window < s1_dn) >= 4:
+                _emit(i, 3, "4 of 5 points beyond 1σ (same side)")
+
+    # Rule 4: 8 consecutive points on one side of center
+    if rules.get("rule4", True) and n >= 8:
+        for i in range(7, n):
+            window = a[i - 7: i + 1]
+            if np.all(window > center) or np.all(window < center):
+                _emit(i, 4, "8 consecutive points on one side of center")
+
+    # Rule 5: 6 consecutive points steadily increasing or decreasing
+    if rules.get("rule5", True) and n >= 6:
+        diffs = np.diff(a)
+        for i in range(5, n):
+            window = diffs[i - 5: i]
+            if np.all(window > 0) or np.all(window < 0):
+                _emit(i, 5, "6 consecutive points trending")
+
+    # Rule 6: 14 consecutive points alternating up and down
+    if rules.get("rule6", True) and n >= 14:
+        diffs = np.diff(a)
+        signs = np.sign(diffs)
+        for i in range(13, n):
+            window = signs[i - 13: i]
+            if np.all(window != 0) and np.all(window[1:] != window[:-1]):
+                _emit(i, 6, "14 points alternating up/down")
+
+    return signals
+
+
+def xmr_chart(arr, rules=None) -> XmRResult:
     a = np.asarray(arr, dtype=float)
     a = a[~np.isnan(a)]
     n = a.size
@@ -944,14 +1042,7 @@ def xmr_chart(arr) -> XmRResult:
     x_ucl = x_center + 3 * sigma_hat
     x_lcl = x_center - 3 * sigma_hat
     mr_ucl = 3.267 * mr_center
-    signals: List[Dict] = []
-    for i, v in enumerate(a):
-        if sigma_hat and v > x_ucl:
-            signals.append({"index": int(i), "rule": 1,
-                            "description": f"X above UCL ({v:.3f} > {x_ucl:.3f})"})
-        elif sigma_hat and v < x_lcl:
-            signals.append({"index": int(i), "rule": 1,
-                            "description": f"X below LCL ({v:.3f} < {x_lcl:.3f})"})
+    signals = apply_we_rules(a, x_center, sigma_hat, rules=rules)
     return XmRResult(
         data=a, mr=mr,
         x_center=x_center, x_ucl=x_ucl, x_lcl=x_lcl,
@@ -1225,7 +1316,7 @@ class XbarRResult:
     signals: List[Dict] = field(default_factory=list)
 
 
-def xbar_r_chart(arr, subgroup_size: int = 5) -> XbarRResult:
+def xbar_r_chart(arr, subgroup_size: int = 5, rules=None) -> XbarRResult:
     a = np.asarray(arr, dtype=float)
     a = a[~np.isnan(a)]
     n = max(2, min(int(subgroup_size), 25))
@@ -1247,21 +1338,20 @@ def xbar_r_chart(arr, subgroup_size: int = 5) -> XbarRResult:
     x_lcl = x_dbar - A2 * r_bar
     r_ucl = D4 * r_bar
     r_lcl = D3 * r_bar
-    signals: List[Dict] = []
-    for i, m in enumerate(means):
-        if m > x_ucl:
-            signals.append({"index": int(i), "chart": "x", "rule": 1,
-                            "description": f"X̄ above UCL ({m:.3f} > {x_ucl:.3f})"})
-        elif m < x_lcl:
-            signals.append({"index": int(i), "chart": "x", "rule": 1,
-                            "description": f"X̄ below LCL ({m:.3f} < {x_lcl:.3f})"})
-    for i, r in enumerate(ranges):
-        if r > r_ucl:
-            signals.append({"index": int(i), "chart": "r", "rule": 1,
-                            "description": f"R above UCL ({r:.3f} > {r_ucl:.3f})"})
-        elif r_lcl > 0 and r < r_lcl:
-            signals.append({"index": int(i), "chart": "r", "rule": 1,
-                            "description": f"R below LCL ({r:.3f} < {r_lcl:.3f})"})
+    # σ for the X-bar chart is (UCL − X̄̄) / 3, i.e. A2·R̄/3.
+    xbar_sigma = (x_ucl - x_dbar) / 3 if x_ucl > x_dbar else 0.0
+    signals = apply_we_rules(means, x_dbar, xbar_sigma, rules=rules, chart="x")
+    # R chart only checks rule 1 (its sampling distribution is asymmetric, so
+    # the standard WE rules don't apply cleanly).
+    rule_set = _normalize_rules(rules)
+    if rule_set.get("rule1", True):
+        for i, r in enumerate(ranges):
+            if r > r_ucl:
+                signals.append({"index": int(i), "chart": "r", "rule": 1,
+                                "description": f"R above UCL ({r:.3f} > {r_ucl:.3f})"})
+            elif r_lcl > 0 and r < r_lcl:
+                signals.append({"index": int(i), "chart": "r", "rule": 1,
+                                "description": f"R below LCL ({r:.3f} < {r_lcl:.3f})"})
     return XbarRResult(
         subgroup_size=n,
         subgroup_means=means, subgroup_ranges=ranges,

@@ -10,7 +10,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from PySide6.QtWidgets import (
-    QCheckBox, QComboBox, QLineEdit, QPushButton, QSpinBox,
+    QCheckBox, QComboBox, QLabel, QLineEdit, QPushButton, QSpinBox,
     QTableWidget, QTableWidgetItem,
 )
 
@@ -150,6 +150,7 @@ class DataSamplingPanel(ToolPanel):
             parent,
         )
         self.data_handler = data_handler
+        self._last_sample = None
         self.kind = QComboBox()
         self.kind.addItems(["Random", "Systematic (every k)", "Observation range"])
         self.size = make_int_spin(30, 1, 100000)
@@ -159,6 +160,9 @@ class DataSamplingPanel(ToolPanel):
         self.add_control("Sample size / every-k", self.size)
         self.add_control("Start (range)", self.start)
         self.add_control("End (range)", self.end)
+        save_btn = QPushButton("Save sample to CSV…")
+        save_btn.clicked.connect(self._save_sample_csv)
+        self.add_control("", save_btn)
         self.set_run_handler(self._run)
 
     def _run(self) -> None:
@@ -178,10 +182,33 @@ class DataSamplingPanel(ToolPanel):
             end = min(self.end.value(), len(df))
             sample = df.iloc[start:end].reset_index(drop=True)
         self.data_handler.set_dataframe(sample)
+        self._last_sample = sample
         self.results_text.setHtml(
-            f"<p>Kept {len(sample)} rows.</p>" + df_to_html(sample.head(50))
+            f"<p>Kept {len(sample)} rows. Click <b>Save sample to CSV…</b> "
+            f"to export.</p>" + df_to_html(sample.head(50))
         )
         self.figure.clear(); self.canvas.draw()
+
+    def _save_sample_csv(self) -> None:
+        if self._last_sample is None:
+            self.show_error("Run a sample first, then save.")
+            return
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save sample as CSV", "civiqual_sample.csv",
+            "CSV files (*.csv)",
+        )
+        if not path:
+            return
+        if not path.lower().endswith(".csv"):
+            path += ".csv"
+        try:
+            self._last_sample.to_csv(path, index=False)
+            self.results_text.setHtml(
+                f"<p>Saved {len(self._last_sample)} rows to:<br><code>{path}</code></p>"
+            )
+        except Exception as e:
+            self.show_error(f"Could not save: {e}")
 
 
 class SplitWorksheetPanel(ToolPanel):
@@ -331,7 +358,20 @@ class ControlChartsPanel(_SingleColumnPanel):
         self.add_control("Chart type", self.chart_type)
         self.subgroup_size = make_int_spin(5, 2, 25)
         self.add_control("Subgroup size (X-R)", self.subgroup_size)
+
+        # Western Electric / Nelson rule selection. All on by default; user can
+        # uncheck noisier rules (4–6) for short series.
+        self._rule_checks: dict[str, QCheckBox] = {}
+        for rule_num, label_text in se.WE_RULE_LABELS.items():
+            cb = QCheckBox(f"Rule {rule_num}: {label_text}")
+            cb.setChecked(True)
+            self._rule_checks[f"rule{rule_num}"] = cb
+            self.add_control("Tests" if rule_num == 1 else "", cb)
+
         self.set_run_handler(self._run)
+
+    def _selected_rules(self) -> dict[str, bool]:
+        return {key: cb.isChecked() for key, cb in self._rule_checks.items()}
 
     def _run(self) -> None:
         arr = self._arr()
@@ -339,9 +379,10 @@ class ControlChartsPanel(_SingleColumnPanel):
             return
         ct = self.chart_type.currentText()
         label = self.col.currentText()
+        rules = self._selected_rules()
 
         if ct == "X-bar / R Chart":
-            xr = se.xbar_r_chart(arr, self.subgroup_size.value())
+            xr = se.xbar_r_chart(arr, self.subgroup_size.value(), rules=rules)
             viz.draw_xbar_r(self.figure, xr, label=label)
             self.canvas.draw()
             if xr.subgroup_means.size == 0:
@@ -368,7 +409,7 @@ class ControlChartsPanel(_SingleColumnPanel):
             return
 
         # All other types use the XmR result.
-        result = se.xmr_chart(arr)
+        result = se.xmr_chart(arr, rules=rules)
         if ct == "I-Chart only":
             viz.draw_i_chart(self.figure, result, label=label)
         elif ct == "MR-Chart only":
@@ -397,12 +438,23 @@ class CapabilityPanel(_SingleColumnPanel):
                          "Cp, Cpk, Pp, Ppk with PPM projections.", parent)
         self.lsl = make_double_spin(0.0)
         self.usl = make_double_spin(10.0)
-        self.use_lsl = QCheckBox("Use LSL"); self.use_lsl.setChecked(True)
-        self.use_usl = QCheckBox("Use USL"); self.use_usl.setChecked(True)
+        # Default unchecked so the analysis runs against a Cp=1.0 natural-
+        # tolerance baseline (mean ± 3σ). Tick a box and supply a real spec
+        # value to switch to a true capability assessment.
+        self.use_lsl = QCheckBox("Use LSL"); self.use_lsl.setChecked(False)
+        self.use_usl = QCheckBox("Use USL"); self.use_usl.setChecked(False)
         self.add_control("LSL", self.lsl)
         self.add_control("USL", self.usl)
         self.add_control("", self.use_lsl)
         self.add_control("", self.use_usl)
+        note = QLabel(
+            "Leave both unchecked to see the Cp=1.0 natural-tolerance "
+            "baseline (mean ± 3σ). Tick a box and enter a real spec limit "
+            "to compute true capability against your specs."
+        )
+        note.setWordWrap(True)
+        note.setStyleSheet("color: #6d132a; font-size: 9pt; font-style: italic;")
+        self.add_control("", note)
         self.set_run_handler(self._run)
 
     def _run(self) -> None:

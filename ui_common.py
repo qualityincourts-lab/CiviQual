@@ -9,9 +9,9 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox, QDoubleSpinBox, QFormLayout, QGroupBox, QHBoxLayout,
-    QLabel, QPushButton, QSpinBox, QTableView, QTableWidget, QTableWidgetItem,
-    QTextEdit, QVBoxLayout, QWidget,
+    QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QGroupBox, QHBoxLayout,
+    QLabel, QMessageBox, QPushButton, QSpinBox, QSplitter, QTableView,
+    QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget,
 )
 
 BURGUNDY = "#6d132a"
@@ -19,7 +19,20 @@ GOLD = "#dcad73"
 
 
 class ToolPanel(QWidget):
-    """Base class for every tool tab: left controls, right chart/results."""
+    """Base class for every tool tab: left controls, right chart/results.
+
+    Layout:
+        +--------+--------------------------------+
+        | Inputs | [Chart canvas]                 |
+        |        |   (vertical splitter — drag)   |
+        |        | [Results text — scrollable]    |
+        |        | [Run Analysis] [Save Chart...] |
+        +--------+--------------------------------+
+
+    The splitter starts ~80/20 in favour of the canvas so charts have room
+    to breathe (4-Up especially); the results box remains scrollable when
+    its content overflows.
+    """
 
     def __init__(self, title: str, description: str = "", parent=None):
         super().__init__(parent)
@@ -43,25 +56,46 @@ class ToolPanel(QWidget):
         self._controls_layout = QFormLayout(self._controls_box)
         body.addWidget(self._controls_box, 0)
 
-        right = QVBoxLayout()
-        body.addLayout(right, 1)
+        right_widget = QWidget()
+        right = QVBoxLayout(right_widget)
+        right.setContentsMargins(0, 0, 0, 0)
+        body.addWidget(right_widget, 1)
 
         self.figure = Figure(figsize=(6, 4.5), facecolor="white")
         self.canvas = FigureCanvasQTAgg(self.figure)
-        right.addWidget(self.canvas, 2)
 
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
         self.results_text.setStyleSheet(
             f"background:#fff; border:1px solid {GOLD};"
         )
-        right.addWidget(self.results_text, 1)
 
+        # Vertical splitter so the user can resize chart vs. results pane.
+        self._chart_results_splitter = QSplitter(Qt.Orientation.Vertical)
+        self._chart_results_splitter.addWidget(self.canvas)
+        self._chart_results_splitter.addWidget(self.results_text)
+        self._chart_results_splitter.setStretchFactor(0, 4)
+        self._chart_results_splitter.setStretchFactor(1, 1)
+        self._chart_results_splitter.setSizes([800, 200])
+        self._chart_results_splitter.setChildrenCollapsible(False)
+        right.addWidget(self._chart_results_splitter, 1)
+
+        button_row = QHBoxLayout()
         self._run_button = QPushButton("Run Analysis")
         self._run_button.setStyleSheet(
             f"background:{BURGUNDY}; color:white; padding:6px 12px; font-weight:bold;"
         )
-        right.addWidget(self._run_button)
+        button_row.addWidget(self._run_button)
+
+        self._save_chart_button = QPushButton("Save Chart…")
+        self._save_chart_button.setStyleSheet(
+            f"background:white; color:{BURGUNDY}; padding:6px 12px; "
+            f"border:1px solid {BURGUNDY};"
+        )
+        self._save_chart_button.clicked.connect(self._save_chart)
+        button_row.addWidget(self._save_chart_button)
+        button_row.addStretch(1)
+        right.addLayout(button_row)
 
     # Convenience wrappers -------------------------------------------------
     def add_control(self, label: str, widget: QWidget) -> None:
@@ -72,6 +106,21 @@ class ToolPanel(QWidget):
 
     def show_error(self, msg: str) -> None:
         self.results_text.setHtml(f"<span style='color:#c0392b'>{msg}</span>")
+
+    def _save_chart(self) -> None:
+        """Save the current matplotlib figure to a user-chosen file."""
+        safe_title = "".join(c for c in self.title if c.isalnum() or c in "-_ ").strip()
+        default_name = f"{safe_title.replace(' ', '_')}.png" if safe_title else "chart.png"
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save Chart", default_name,
+            "PNG image (*.png);;PDF (*.pdf);;SVG (*.svg);;JPEG (*.jpg)",
+        )
+        if not path:
+            return
+        try:
+            self.figure.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
+        except Exception as e:
+            QMessageBox.critical(self, "Save Chart", f"Could not save chart:\n{e}")
 
 
 def df_to_html(df: pd.DataFrame, max_rows: int = 200) -> str:
