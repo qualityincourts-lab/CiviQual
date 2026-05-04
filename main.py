@@ -2793,58 +2793,72 @@ class CiviQualStatsMainWindow(QMainWindow):
 # =============================================================================
 def main():
     """Application entry point."""
+    _early_trace("main() entered; setting HighDPI policy")
     # Enable high DPI scaling (must be before QApplication)
     QApplication.setHighDpiScaleFactorRoundingPolicy(
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
     )
-    
+
+    _early_trace("about to construct QApplication")
     # Create application
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setOrganizationName(ORG_NAME)
     app.setOrganizationDomain(ORG_DOMAIN)
     app.setApplicationVersion(VERSION)
-    
+    _early_trace("QApplication constructed")
+
     # Application style
     app.setStyle("Fusion")
-    
+
     # Set palette for burgundy/gold theme
     from PySide6.QtGui import QPalette
     palette = app.palette()
     palette.setColor(QPalette.ColorRole.Highlight, QColor(COLOR_BURGUNDY))
     palette.setColor(QPalette.ColorRole.HighlightedText, QColor("white"))
     app.setPalette(palette)
-    
+    _early_trace("palette set")
+
     # Settings
     settings = QSettings(ORG_NAME, APP_NAME)
-    
+    _early_trace(f"QSettings ready; license_accepted={settings.value(SETTINGS_LICENSE_ACCEPTED, False)!r}")
+
     # Show splash screen
+    _early_trace("about to construct SplashScreen")
     splash = SplashScreen()
+    _early_trace("SplashScreen constructed; about to show()")
     splash.show()
     app.processEvents()
-    
+    _early_trace("splash shown")
+
     # Check license acceptance
     if not settings.value(SETTINGS_LICENSE_ACCEPTED, False):
+        _early_trace("license not yet accepted; opening LicenseDialog (modal)")
         splash.close()
         license_dialog = LicenseDialog()
         if license_dialog.exec() != QDialog.DialogCode.Accepted or not license_dialog.accepted_license:
+            _early_trace("license dialog rejected; exiting")
             sys.exit(0)
-        
+
         if license_dialog.dont_show_again:
             settings.setValue(SETTINGS_LICENSE_ACCEPTED, True)
-        
+        _early_trace("license accepted; reshowing splash")
+
         splash.show()
         app.processEvents()
-    
+
     # Create main window
+    _early_trace("about to construct CiviQualStatsMainWindow")
     window = CiviQualStatsMainWindow()
-    
+    _early_trace("CiviQualStatsMainWindow constructed")
+
     # Close splash and show window
     import time
     time.sleep(0.5)  # Brief pause to show splash
     splash.close()
     window.show()
-    
+    _early_trace("main window shown; entering app.exec()")
+
     # Run application
     sys.exit(app.exec())
 
